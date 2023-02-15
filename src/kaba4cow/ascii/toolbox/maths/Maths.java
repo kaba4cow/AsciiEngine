@@ -87,8 +87,8 @@ public final class Maths {
 		return (float) Math.atan2(v.x, v.z);
 	}
 
-	public static Vector2f direction(Vector2f start, Vector2f end) {
-		Vector2f direction = Vectors.sub(end, start, 1f, null);
+	public static Vector2f direction(Vector2f start, Vector2f end, Vector2f dest) {
+		Vector2f direction = Vectors.sub(end, start, 1f, dest);
 		try {
 			direction.normalize();
 		} catch (IllegalStateException e) {
@@ -99,8 +99,8 @@ public final class Maths {
 		return direction;
 	}
 
-	public static Vector3f direction(Vector3f start, Vector3f end) {
-		Vector3f direction = Vectors.sub(end, start, 1f, null);
+	public static Vector3f direction(Vector3f start, Vector3f end, Vector3f dest) {
+		Vector3f direction = Vectors.sub(end, start, 1f, dest);
 		try {
 			direction.normalize();
 		} catch (IllegalStateException e) {
@@ -270,7 +270,7 @@ public final class Maths {
 		return (float) Math.asin(x);
 	}
 
-	public static float saw(float x, int sharpness) {
+	public static float waveSaw(float x, int sharpness) {
 		sharpness = max(sharpness, 1);
 		float sum = 0f;
 		float sign = -1f;
@@ -281,7 +281,7 @@ public final class Maths {
 		return sum;
 	}
 
-	public static float tri(float x) {
+	public static float waveTri(float x) {
 		return abs(cos(x)) - abs(sin(x));
 	}
 

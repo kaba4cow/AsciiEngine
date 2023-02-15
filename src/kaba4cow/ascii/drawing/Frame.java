@@ -1,5 +1,7 @@
 package kaba4cow.ascii.drawing;
 
+import kaba4cow.ascii.drawing.glyphs.Glyphs;
+
 public class Frame {
 
 	public final int width;
@@ -16,7 +18,7 @@ public class Frame {
 		this.chars = new char[length];
 		this.colors = new int[length];
 	}
-	
+
 	public void fill(char c, int color) {
 		for (int i = 0; i < length; i++) {
 			chars[i] = c;
@@ -26,7 +28,7 @@ public class Frame {
 
 	public char getChar(int x, int y) {
 		if (x < 0 || x >= width || y < 0 || y >= height)
-			return 0;
+			return Glyphs.SPACE;
 		return chars[y * width + x];
 	}
 

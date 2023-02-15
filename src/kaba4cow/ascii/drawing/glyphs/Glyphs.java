@@ -2,7 +2,7 @@ package kaba4cow.ascii.drawing.glyphs;
 
 public final class Glyphs {
 
-	public static final char CURSOR = (char) 0;
+	public static final char STAR = (char) 0;
 	public static final char WHITE_SMILING_FACE = (char) 1;
 	public static final char BLACK_SMILING_FACE = (char) 2;
 	public static final char BLACK_HEART_SUIT = (char) 3;
@@ -20,7 +20,7 @@ public final class Glyphs {
 	public static final char WHITE_SUN_WITH_RAYS = (char) 15;
 	public static final char BLACK_RIGHT_POINTING_POINTER = (char) 16;
 	public static final char BLACK_LEFT_POINTING_POINTER = (char) 17;
-	public static final char TRIPLE_ALMOST_EQUAL_VERTICAL_SIGN = (char) 18;
+	public static final char TRIPLE_VERTICAL_WAVE = (char) 18;
 	public static final char DOUBLE_EXCLAMATION_MARK = (char) 19;
 	public static final char PILCROW_SIGN = (char) 20;
 	public static final char SECTION_SIGN = (char) 21;
@@ -258,6 +258,11 @@ public final class Glyphs {
 	public static final char SUPERSCRIPT_TWO = (char) 253;
 	public static final char BLACK_SQUARE = (char) 254;
 	public static final char CROSS = (char) 255;
+	public static final char SYSTEM_MINIMIZE = (char) 256;
+	public static final char SYSTEM_CLOSE = (char) 257;
+	public static final char SYSTEM_CURSOR = (char) 258;
+	public static final char SYSTEM_CURSOR_GRAB = (char) 259;
+	public static final char SYSTEM_CURSOR_WAIT = (char) 260;
 
 	private Glyphs() {
 

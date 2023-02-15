@@ -22,7 +22,7 @@ public class MatrixStream implements MainProgram {
 		for (int i = 0; i < Display.getWidth(); i++)
 			streams.add(new Stream(i));
 
-		Display.drawCursor(false);
+		Display.setDrawCursor(false);
 	}
 
 	public void update(float dt) {

@@ -143,7 +143,7 @@ public final class Engine {
 		if (exception == null)
 			exception = new Exception();
 		exception.printStackTrace();
-		Printer.outln("Program terminated: " + error.getMessage() + " [" + error.getCode() + "]");
+		Printer.outln("Program terminated");
 		Printer.saveLog();
 		System.exit(error.getCode());
 	}

@@ -1,9 +1,19 @@
 package kaba4cow.ascii.toolbox.maths.vectors;
 
+import kaba4cow.ascii.toolbox.maths.Maths;
+
 public final class Vectors {
 
 	private Vectors() {
 
+	}
+
+	public static Vector2f fromAngle(float angle, Vector2f dest) {
+		if (dest == null)
+			dest = new Vector2f();
+		dest.x = Maths.cos(angle);
+		dest.y = Maths.sin(angle);
+		return dest;
 	}
 
 	public static Vector2i add(Vector2i vec1, Vector2i vec2, int scale, Vector2i dest) {

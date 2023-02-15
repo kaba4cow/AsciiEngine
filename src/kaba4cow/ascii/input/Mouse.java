@@ -148,12 +148,7 @@ public final class Mouse implements MouseListener, MouseMotionListener, MouseWhe
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		int newX = e.getX();
-		int newY = e.getY() - Display.getCharHeight();
-		cursorDelta.x = newX - cursorPosition.x;
-		cursorDelta.y = newY - cursorPosition.y;
-		cursorPosition.x = newX;
-		cursorPosition.y = newY;
+		mouseMoved(e);
 	}
 
 	@Override

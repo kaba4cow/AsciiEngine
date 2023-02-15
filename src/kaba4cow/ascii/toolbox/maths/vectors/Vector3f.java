@@ -1,5 +1,7 @@
 package kaba4cow.ascii.toolbox.maths.vectors;
 
+import java.util.Objects;
+
 import kaba4cow.ascii.toolbox.rng.RNG;
 
 public class Vector3f implements AbstractVector {
@@ -20,6 +22,20 @@ public class Vector3f implements AbstractVector {
 
 	public Vector3f(Vector3f vector) {
 		this(vector == null ? 0 : vector.x, vector == null ? 0 : vector.y, vector == null ? 0 : vector.z);
+	}
+
+	public Vector3f set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		return this;
+	}
+
+	public Vector3f scale(float scale) {
+		x *= scale;
+		y *= scale;
+		z *= scale;
+		return this;
 	}
 
 	public Vector3f randomize() {
@@ -44,6 +60,25 @@ public class Vector3f implements AbstractVector {
 	@Override
 	public String toString() {
 		return "[" + x + ", " + y + ", " + z + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(x, y, z);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Vector3f other = (Vector3f) obj;
+		return Float.floatToIntBits(x) == Float.floatToIntBits(other.x)
+				&& Float.floatToIntBits(y) == Float.floatToIntBits(other.y)
+				&& Float.floatToIntBits(z) == Float.floatToIntBits(other.z);
 	}
 
 }

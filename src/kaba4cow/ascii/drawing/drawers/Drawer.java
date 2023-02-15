@@ -56,26 +56,26 @@ public final class Drawer {
 	}
 
 	public static void drawStrings(int x, int y, boolean centered, String[] strings, int color) {
-		int startX = x;
-		int s, c;
-		for (s = 0; s < strings.length; s++) {
-			x = startX;
-			if (centered)
-				x -= strings[s].length() / 2;
-			for (c = 0; c < strings[s].length(); c++)
-				if (drawChar(x, y, strings[s].charAt(c), color))
-					x++;
-				else
-					break;
-			y++;
-		}
+		for (int s = 0; s < strings.length; s++)
+			drawString(x, y, centered, strings[s], color);
 	}
 
-	public static void drawString(int x, int y, boolean centered, int maxLength, String string, int color) {
+	public static int drawStrings(int x, int y, boolean centered, int maxLength, String[] strings, int color) {
+		int lines = 0, totalLines = 0;
+		for (int s = 0; s < strings.length; s++) {
+			lines = drawString(x, y, centered, maxLength, strings[s], color);
+			y += lines;
+			totalLines += lines;
+		}
+		return totalLines;
+	}
+
+	public static int drawString(int x, int y, boolean centered, int maxLength, String string, int color) {
 		if (centered)
 			x -= maxLength / 2;
 		int length = 0;
 		int startX = x;
+		int lines = 1;
 		for (int c = 0; c < string.length(); c++) {
 			drawChar(x, y, string.charAt(c), color);
 			length++;
@@ -83,9 +83,11 @@ public final class Drawer {
 				length = 0;
 				x = startX;
 				y++;
+				lines++;
 			} else
 				x++;
 		}
+		return lines;
 	}
 
 	public static void drawPattern(int x, int y, boolean centered, char[][] pattern, int color) {
