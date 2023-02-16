@@ -142,6 +142,13 @@ public final class Keyboard implements KeyListener {
 			instance.prevStates[i] = instance.states[i];
 	}
 
+	public static void reset() {
+		for (int i = 0; i < NUM_KEYBOARD_BUTTONS; i++) {
+			instance.prevStates[i] = false;
+			instance.states[i] = false;
+		}
+	}
+
 	@Override
 	public void keyTyped(KeyEvent e) {
 

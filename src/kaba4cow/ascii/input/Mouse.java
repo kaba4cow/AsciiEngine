@@ -58,6 +58,16 @@ public final class Mouse implements MouseListener, MouseMotionListener, MouseWhe
 			instance.prevStates[i] = false;
 	}
 
+	public static void reset() {
+		instance.cursorDelta.x = 0;
+		instance.cursorDelta.y = 0;
+		instance.scroll = 0;
+		for (int i = 0; i < NUM_MOUSE_BUTTONS; i++) {
+			instance.prevStates[i] = false;
+			instance.states[i] = false;
+		}
+	}
+
 	public static boolean isKey(int code) {
 		return instance.states[index(code)];
 	}

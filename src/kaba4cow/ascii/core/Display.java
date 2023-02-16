@@ -1,8 +1,13 @@
 package kaba4cow.ascii.core;
 
+import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -34,17 +39,22 @@ public final class Display {
 
 	private static int IMAGE_CHAR_COLUMNS;
 
+	private static int SCREEN_WIDTH;
+	private static int SCREEN_HEIGHT;
+
 	private static String TITLE;
 
 	private static int WIDTH;
 	private static int HEIGHT;
 
-	private static int SCREEN_WIDTH;
-	private static int SCREEN_HEIGHT;
+	private static int DISPLAY_WIDTH;
+	private static int DISPLAY_HEIGHT;
 
-	private static JPanel display;
-	private static JFrame window;
+	private static GraphicsDevice device;
 	private static WindowListener windowListener;
+	private static Cursor cursor;
+	private static JFrame window;
+	private static JPanel display;
 
 	private static GlyphImage glyphImage;
 
@@ -53,10 +63,11 @@ public final class Display {
 	private static char backgroundChar;
 	private static int backgroundColor;
 
+	private static boolean fullscreen;
 	private static boolean drawCursor;
 	private static boolean cursorWaiting;
-
 	private static boolean cursorPressed;
+	private static boolean ignoreClosing;
 
 	private static int screenX, screenY, tileX, tileY;
 	private static int bColorTemp, brTemp, bgTemp, bbTemp, fColorTemp, frTemp, fgTemp, fbTemp, xTemp, yTemp;
@@ -65,12 +76,16 @@ public final class Display {
 
 	}
 
-	@SuppressWarnings("serial")
-	public static void init(String title, int width, int height, boolean square) {
+	public static void init(String title) {
 		Printer.outln("Initializing display");
 
-		CHAR_WIDTH = square ? IMAGE_CHAR_HEIGHT : IMAGE_CHAR_WIDTH;
-		CHAR_HEIGHT = IMAGE_CHAR_HEIGHT;
+		device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		cursor = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB),
+				new Point(0, 0), "null");
+
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		SCREEN_WIDTH = screenSize.width;
+		SCREEN_HEIGHT = screenSize.height;
 
 		try {
 			glyphImage = new GlyphImage("kaba4cow/ascii/drawing/glyphs.png");
@@ -82,30 +97,61 @@ public final class Display {
 
 		TITLE = title;
 
-		WIDTH = width;
-		HEIGHT = height;
+		backgroundChar = Glyphs.SPACE;
+		backgroundColor = 0x000000;
+	}
+
+	public static void createFullscreen(boolean squareGlyphs) {
+		create(0, 0, squareGlyphs);
+	}
+
+	public static void createWindowed(int width, int height, boolean squareGlyphs) {
+		create(width, height, squareGlyphs);
+	}
+
+	@SuppressWarnings("serial")
+	private static void create(int width, int height, boolean squareGlyphs) {
+		fullscreen = width == 0 || height == 0;
+
+		CHAR_WIDTH = squareGlyphs ? IMAGE_CHAR_HEIGHT : IMAGE_CHAR_WIDTH;
+		CHAR_HEIGHT = IMAGE_CHAR_HEIGHT;
+
+		if (fullscreen) {
+			WIDTH = SCREEN_WIDTH / CHAR_WIDTH;
+			HEIGHT = SCREEN_HEIGHT / CHAR_HEIGHT;
+		} else {
+			WIDTH = width;
+			HEIGHT = height;
+		}
+
+		Printer.outln("Creating " + (fullscreen ? "fullscreen" : "windowed") + " display: " + WIDTH + "x" + HEIGHT);
+
+		if (window != null) {
+			ignoreClosing = true;
+			window.dispose();
+		}
+		ignoreClosing = false;
+
+		DISPLAY_WIDTH = WIDTH * CHAR_WIDTH;
+		DISPLAY_HEIGHT = HEIGHT * CHAR_HEIGHT + CHAR_HEIGHT;
 
 		drawCursor = true;
 		cursorWaiting = false;
-
 		cursorPressed = false;
 
-		frame = new Frame(width, height);
-		backgroundChar = Glyphs.SPACE;
-		backgroundColor = 0x000000;
+		frame = new Frame(WIDTH, HEIGHT);
 		Drawer.resetFrame();
-
-		SCREEN_WIDTH = WIDTH * CHAR_WIDTH;
-		SCREEN_HEIGHT = HEIGHT * CHAR_HEIGHT + CHAR_HEIGHT;
 
 		window = new JFrame(TITLE);
 		window.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				Engine.requestClose();
+				if (!ignoreClosing)
+					Engine.requestClose();
 			}
 		});
 		window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		windowListener = new WindowListener(window);
 
 		display = new JPanel() {
 			@Override
@@ -115,8 +161,6 @@ public final class Display {
 			}
 		};
 		display.setFocusable(true);
-
-		windowListener = new WindowListener(window);
 		display.addMouseListener(windowListener);
 		display.addMouseMotionListener(windowListener);
 		display.addKeyListener(Keyboard.get());
@@ -124,24 +168,29 @@ public final class Display {
 		display.addMouseMotionListener(Mouse.get());
 		display.addMouseWheelListener(Mouse.get());
 
-		window.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
+		window.setPreferredSize(new Dimension(DISPLAY_WIDTH, DISPLAY_HEIGHT));
 		window.setUndecorated(true);
 		window.setVisible(true);
 		window.add(display);
-
 		window.setResizable(false);
 		window.createBufferStrategy(2);
 		window.pack();
 		window.setLocationRelativeTo(null);
+		window.setCursor(cursor);
 
-		window.setCursor(window.getToolkit().createCustomCursor(new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB),
-				new Point(0, 0), "null"));
+		if (fullscreen)
+			device.setFullScreenWindow(window);
+
+		Keyboard.reset();
+		Mouse.reset();
+		display.requestFocus();
 	}
 
 	public static void destroy() {
 		if (!window.isVisible())
 			return;
 		Printer.outln("Destroying display");
+		ignoreClosing = false;
 		window.dispose();
 	}
 
@@ -151,6 +200,9 @@ public final class Display {
 	}
 
 	private static void paint(Graphics g) {
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, DISPLAY_WIDTH + CHAR_WIDTH, DISPLAY_HEIGHT + CHAR_HEIGHT);
+
 		int titleLength = TITLE.length();
 		char barChar;
 		char cursorChar;
@@ -163,8 +215,8 @@ public final class Display {
 		}
 		if (!cursorOnBar && drawCursor)
 			mouseIndex = Mouse.getTileY() * WIDTH + Mouse.getTileX();
-		cursorChar = cursorWaiting ? Glyphs.SYSTEM_CURSOR_WAIT
-				: (Mouse.isKey(Mouse.LEFT) ? Glyphs.SYSTEM_CURSOR_GRAB : Glyphs.SYSTEM_CURSOR);
+		cursorChar = cursorWaiting ? Glyphs.SYSTEM_CURSOR_WAITING
+				: (Mouse.isKey(Mouse.LEFT) ? Glyphs.SYSTEM_CURSOR_GRABBED : Glyphs.SYSTEM_CURSOR);
 
 		windowListener.setActive(cursorOnBar);
 
@@ -173,9 +225,9 @@ public final class Display {
 			screenX = CHAR_WIDTH * i;
 
 			if (i == WIDTH - 2)
-				barChar = Glyphs.SYSTEM_MINIMIZE;
+				barChar = Glyphs.SYSTEM_HIDE_WINDOW;
 			else if (i == WIDTH - 1)
-				barChar = Glyphs.SYSTEM_CLOSE;
+				barChar = Glyphs.SYSTEM_CLOSE_WINDOW;
 			else
 				barChar = Glyphs.SPACE;
 			if (cursorOnBar && i == mouseIndex)
@@ -186,8 +238,8 @@ public final class Display {
 			if (cursorOnBar && cursorPressed) {
 				if (mouseIndex == WIDTH - 1)
 					Engine.requestClose();
-				else if (window.getState() != JFrame.ICONIFIED && mouseIndex == WIDTH - 2)
-					window.setState(JFrame.ICONIFIED);
+				else if (window.getExtendedState() != JFrame.ICONIFIED && mouseIndex == WIDTH - 2)
+					window.setExtendedState(JFrame.ICONIFIED);
 			}
 
 			tileX = IMAGE_CHAR_WIDTH * (barChar % IMAGE_CHAR_COLUMNS);
@@ -294,7 +346,7 @@ public final class Display {
 		}
 
 		public void mousePressed(MouseEvent e) {
-			mousePosition = active ? e.getPoint() : null;
+			mousePosition = (active && !fullscreen) ? e.getPoint() : null;
 			if (e.getButton() == MouseEvent.BUTTON1)
 				Display.cursorPressed = false;
 		}

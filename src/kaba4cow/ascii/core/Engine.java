@@ -24,7 +24,7 @@ public final class Engine {
 
 	}
 
-	public static void init(String title, int framerate, int width, int height, boolean square) {
+	public static void init(String title, int framerate) {
 		Printer.outln("Initializing engine");
 
 		FRAMERATE = framerate;
@@ -35,7 +35,7 @@ public final class Engine {
 
 		CLOSE_REQUESTED = false;
 
-		Display.init(title, width, height, square);
+		Display.init(title);
 	}
 
 	public static void start(MainProgram program) {

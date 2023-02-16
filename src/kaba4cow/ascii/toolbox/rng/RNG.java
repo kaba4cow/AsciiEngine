@@ -44,6 +44,12 @@ public abstract class RNG {
 		return ((float) getNext() / (float) (0x7FFFFFFFFFFFFFFFl));
 	}
 
+	public char nextChar(char min, char max) {
+		if (max <= min)
+			return min;
+		return (char) ((getNext() % (max - min)) + min);
+	}
+
 	public int nextInt(int min, int max) {
 		if (max <= min)
 			return min;
@@ -70,6 +76,18 @@ public abstract class RNG {
 
 	public static boolean chance(float chance) {
 		return randomFloat(1f) < chance;
+	}
+
+	public static char randomChar(char min, char max) {
+		return (char) Maths.map(Math.random(), 0d, 1d, min, max);
+	}
+
+	public static char randomChar(char max) {
+		return randomChar((char) 0, max);
+	}
+
+	public static char randomChar() {
+		return randomChar((char) 0, Character.MAX_VALUE);
 	}
 
 	public static long randomLong(long min, long max) {

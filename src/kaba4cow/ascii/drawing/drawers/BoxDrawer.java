@@ -38,16 +38,18 @@ public final class BoxDrawer {
 	}
 
 	public static void drawBoxSingle(int x, int y, int width, int height, int color) {
-		drawChar(x, y, Glyphs.BOX_DRAWINGS_LIGHT_DOWN_AND_RIGHT, color);
-		drawChar(x, y + height - 1, Glyphs.BOX_DRAWINGS_LIGHT_UP_AND_RIGHT, color);
-		drawChar(x + width - 1, y, Glyphs.BOX_DRAWINGS_LIGHT_DOWN_AND_LEFT, color);
-		drawChar(x + width - 1, y + height - 1, Glyphs.BOX_DRAWINGS_LIGHT_UP_AND_LEFT, color);
+		drawChar(x, y, Glyphs.BOX_DRAWINGS_SINGLE_DOWN_AND_RIGHT, color);
+		drawChar(x, y + height - 1, Glyphs.BOX_DRAWINGS_SINGLE_UP_AND_RIGHT, color);
+		drawChar(x + width - 1, y, Glyphs.BOX_DRAWINGS_SINGLE_DOWN_AND_LEFT, color);
+		drawChar(x + width - 1, y + height - 1, Glyphs.BOX_DRAWINGS_SINGLE_UP_AND_LEFT, color);
 
-		drawHorizontalLine(y, x + 1, x + width - 2, Glyphs.BOX_DRAWINGS_LIGHT_HORIZONTAL, color);
-		drawHorizontalLine(y + height - 1, x + 1, x + width - 2, Glyphs.BOX_DRAWINGS_LIGHT_HORIZONTAL, color);
+		drawHorizontalLine(y, x + 1, x + width - 2, Glyphs.BOX_DRAWINGS_SINGLE_HORIZONTAL, color);
+		drawHorizontalLine(y + height - 1, x + 1, x + width - 2, Glyphs.BOX_DRAWINGS_SINGLE_HORIZONTAL, color);
 
-		drawVerticalLine(x, y + 1, y + height - 2, Glyphs.BOX_DRAWINGS_LIGHT_VERTICAL, color);
-		drawVerticalLine(x + width - 1, y + 1, y + height - 2, Glyphs.BOX_DRAWINGS_LIGHT_VERTICAL, color);
+		drawVerticalLine(x, y + 1, y + height - 2, Glyphs.BOX_DRAWINGS_SINGLE_VERTICAL, color);
+		drawVerticalLine(x + width - 1, y + 1, y + height - 2, Glyphs.BOX_DRAWINGS_SINGLE_VERTICAL, color);
+
+		Drawer.fillRect(x + 1, y + 1, width - 2, height - 2, false, Glyphs.SPACE, color);
 	}
 
 	public static void drawBoxDouble(int x, int y, int width, int height, int color) {
@@ -61,6 +63,8 @@ public final class BoxDrawer {
 
 		drawVerticalLine(x, y + 1, y + height - 2, Glyphs.BOX_DRAWINGS_DOUBLE_VERTICAL, color);
 		drawVerticalLine(x + width - 1, y + 1, y + height - 2, Glyphs.BOX_DRAWINGS_DOUBLE_VERTICAL, color);
+
+		Drawer.fillRect(x + 1, y + 1, width - 2, height - 2, false, Glyphs.SPACE, color);
 	}
 
 	public static void drawGlyphTable(int color) {

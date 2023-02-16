@@ -7,7 +7,6 @@ import kaba4cow.ascii.toolbox.maths.Maths;
 public final class Drawer {
 
 	private static Frame frame;
-	private static int index;
 
 	private Drawer() {
 
@@ -25,7 +24,7 @@ public final class Drawer {
 	public static boolean drawChar(int x, int y, char c, int color) {
 		if (x < 0 || x >= frame.width || y < 0 || y >= frame.height)
 			return false;
-		index = y * frame.width + x;
+		int index = y * frame.width + x;
 		frame.chars[index] = c;
 		frame.colors[index] = color;
 		return true;
@@ -58,6 +57,26 @@ public final class Drawer {
 	public static void drawStrings(int x, int y, boolean centered, String[] strings, int color) {
 		for (int s = 0; s < strings.length; s++)
 			drawString(x, y, centered, strings[s], color);
+	}
+
+	public static int totalLines(int maxLength, String[] strings) {
+		int totalLines = 0;
+		for (int s = 0; s < strings.length; s++)
+			totalLines += totalLines(maxLength, strings[s]);
+		return totalLines;
+	}
+
+	public static int totalLines(int maxLength, String string) {
+		int length = 0;
+		int lines = 1;
+		for (int c = 0; c < string.length(); c++) {
+			length++;
+			if (length == maxLength) {
+				length = 0;
+				lines++;
+			}
+		}
+		return lines;
 	}
 
 	public static int drawStrings(int x, int y, boolean centered, int maxLength, String[] strings, int color) {

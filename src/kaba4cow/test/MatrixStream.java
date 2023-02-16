@@ -6,6 +6,7 @@ import kaba4cow.ascii.MainProgram;
 import kaba4cow.ascii.core.Display;
 import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.drawing.drawers.Drawer;
+import kaba4cow.ascii.input.Keyboard;
 import kaba4cow.ascii.toolbox.maths.Maths;
 import kaba4cow.ascii.toolbox.rng.RNG;
 
@@ -27,6 +28,9 @@ public class MatrixStream implements MainProgram {
 
 	public void update(float dt) {
 		streams.forEach(s -> s.update(dt));
+
+		if (Keyboard.isKey(Keyboard.KEY_ESCAPE))
+			Engine.requestClose();
 	}
 
 	public void render() {
@@ -38,7 +42,8 @@ public class MatrixStream implements MainProgram {
 	}
 
 	public static void main(String[] args) {
-		Engine.init("Matrix Stream", 30, 100, 40, false);
+		Engine.init("Matrix Stream", 30);
+		Display.createWindowed(100, 40, false);
 		Engine.start(new MatrixStream());
 	}
 

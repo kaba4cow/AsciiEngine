@@ -64,7 +64,8 @@ public class Pong implements MainProgram {
 	}
 
 	public static void main(String[] args) {
-		Engine.init("ASCII Pong", 30, 40, 40, true);
+		Engine.init("ASCII Pong", 30);
+		Display.createWindowed(40, 40, true);
 		Engine.start(new Pong());
 	}
 

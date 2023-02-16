@@ -181,8 +181,8 @@ public final class Glyphs {
 	public static final char LIGHT_SHADE = (char) 176;
 	public static final char MEDIUM_SHADE = (char) 177;
 	public static final char DARK_SHADE = (char) 178;
-	public static final char BOX_DRAWINGS_LIGHT_VERTICAL = (char) 179;
-	public static final char BOX_DRAWINGS_LIGHT_VERTICAL_AND_LEFT = (char) 180;
+	public static final char BOX_DRAWINGS_SINGLE_VERTICAL = (char) 179;
+	public static final char BOX_DRAWINGS_SINGLE_VERTICAL_AND_LEFT = (char) 180;
 	public static final char BOX_DRAWINGS_VERTICAL_SINGLE_AND_LEFT_DOUBLE = (char) 181;
 	public static final char BOX_DRAWINGS_VERTICAL_DOUBLE_AND_LEFT_SINGLE = (char) 182;
 	public static final char BOX_DRAWINGS_DOWN_DOUBLE_AND_LEFT_SINGLE = (char) 183;
@@ -193,13 +193,13 @@ public final class Glyphs {
 	public static final char BOX_DRAWINGS_DOUBLE_UP_AND_LEFT = (char) 188;
 	public static final char BOX_DRAWINGS_UP_DOUBLE_AND_LEFT_SINGLE = (char) 189;
 	public static final char BOX_DRAWINGS_UP_SINGLE_AND_LEFT_DOUBLE = (char) 190;
-	public static final char BOX_DRAWINGS_LIGHT_DOWN_AND_LEFT = (char) 191;
-	public static final char BOX_DRAWINGS_LIGHT_UP_AND_RIGHT = (char) 192;
-	public static final char BOX_DRAWINGS_LIGHT_UP_AND_HORIZONTAL = (char) 193;
-	public static final char BOX_DRAWINGS_LIGHT_DOWN_AND_HORIZONTAL = (char) 194;
-	public static final char BOX_DRAWINGS_LIGHT_VERTICAL_AND_RIGHT = (char) 195;
-	public static final char BOX_DRAWINGS_LIGHT_HORIZONTAL = (char) 196;
-	public static final char BOX_DRAWINGS_LIGHT_VERTICAL_AND_HORIZONTAL = (char) 197;
+	public static final char BOX_DRAWINGS_SINGLE_DOWN_AND_LEFT = (char) 191;
+	public static final char BOX_DRAWINGS_SINGLE_UP_AND_RIGHT = (char) 192;
+	public static final char BOX_DRAWINGS_SINGLE_UP_AND_HORIZONTAL = (char) 193;
+	public static final char BOX_DRAWINGS_SINGLE_DOWN_AND_HORIZONTAL = (char) 194;
+	public static final char BOX_DRAWINGS_SINGLE_VERTICAL_AND_RIGHT = (char) 195;
+	public static final char BOX_DRAWINGS_SINGLE_HORIZONTAL = (char) 196;
+	public static final char BOX_DRAWINGS_SINGLE_VERTICAL_AND_HORIZONTAL = (char) 197;
 	public static final char BOX_DRAWINGS_VERTICAL_SINGLE_AND_RIGHT_DOUBLE = (char) 198;
 	public static final char BOX_DRAWINGS_VERTICAL_DOUBLE_AND_RIGHT_SINGLE = (char) 199;
 	public static final char BOX_DRAWINGS_DOUBLE_UP_AND_RIGHT = (char) 200;
@@ -219,8 +219,8 @@ public final class Glyphs {
 	public static final char BOX_DRAWINGS_DOWN_DOUBLE_AND_RIGHT_SINGLE = (char) 214;
 	public static final char BOX_DRAWINGS_VERTICAL_DOUBLE_AND_HORIZONTAL_SINGLE = (char) 215;
 	public static final char BOX_DRAWINGS_VERTICAL_SINGLE_AND_HORIZONTAL_DOUBLE = (char) 216;
-	public static final char BOX_DRAWINGS_LIGHT_UP_AND_LEFT = (char) 217;
-	public static final char BOX_DRAWINGS_LIGHT_DOWN_AND_RIGHT = (char) 218;
+	public static final char BOX_DRAWINGS_SINGLE_UP_AND_LEFT = (char) 217;
+	public static final char BOX_DRAWINGS_SINGLE_DOWN_AND_RIGHT = (char) 218;
 	public static final char FULL_BLOCK = (char) 219;
 	public static final char LOWER_HALF_BLOCK = (char) 220;
 	public static final char LEFT_HALF_BLOCK = (char) 221;
@@ -258,11 +258,11 @@ public final class Glyphs {
 	public static final char SUPERSCRIPT_TWO = (char) 253;
 	public static final char BLACK_SQUARE = (char) 254;
 	public static final char CROSS = (char) 255;
-	public static final char SYSTEM_MINIMIZE = (char) 256;
-	public static final char SYSTEM_CLOSE = (char) 257;
+	public static final char SYSTEM_HIDE_WINDOW = (char) 256;
+	public static final char SYSTEM_CLOSE_WINDOW = (char) 257;
 	public static final char SYSTEM_CURSOR = (char) 258;
-	public static final char SYSTEM_CURSOR_GRAB = (char) 259;
-	public static final char SYSTEM_CURSOR_WAIT = (char) 260;
+	public static final char SYSTEM_CURSOR_GRABBED = (char) 259;
+	public static final char SYSTEM_CURSOR_WAITING = (char) 260;
 
 	private Glyphs() {
 

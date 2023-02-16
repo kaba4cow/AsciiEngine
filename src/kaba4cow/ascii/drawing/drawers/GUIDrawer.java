@@ -22,8 +22,9 @@ public final class GUIDrawer {
 			maxLength = Maths.max(maxLength, strings[s].length());
 		y -= strings.length / 2 + 1;
 
-		int lines = Drawer.drawStrings(x, y + 1, true, width - 4, strings, color);
+		int lines = Drawer.totalLines(width - 4, strings);
 		BoxDrawer.drawBoxSingle(x - width / 2, y, width, lines + 2, color);
+		Drawer.drawStrings(x, y + 1, true, width - 4, strings, color);
 	}
 
 }

@@ -181,7 +181,8 @@ public class Snake implements MainProgram {
 	}
 
 	public static void main(String[] args) {
-		Engine.init("Snake", 60, 30, 30, true);
+		Engine.init("Snake", 60);
+		Display.createWindowed(30, 30, true);
 		Engine.start(new Snake());
 	}
 
