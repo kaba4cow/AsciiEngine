@@ -6,7 +6,6 @@ import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.drawing.drawers.GUIDrawer;
 import kaba4cow.ascii.input.Keyboard;
-import kaba4cow.ascii.input.Mouse;
 
 public class Test implements MainProgram {
 
@@ -28,7 +27,7 @@ public class Test implements MainProgram {
 			Display.setDrawCursor(!Display.isDrawCursor());
 		if (Keyboard.isKeyDown(Keyboard.KEY_W))
 			Display.setCursorWaiting(!Display.isCursorWaiting());
-		
+
 		if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
 			full = !full;
 			if (full)
@@ -36,17 +35,29 @@ public class Test implements MainProgram {
 			else
 				Display.createWindowed(40, 30, true);
 		}
+
+		GUIDrawer.update();
 	}
 
 	public void render() {
+		GUIDrawer.startDrawing();
+		GUIDrawer.setColor(0x148FFF);
+
+		GUIDrawer.addString("TITLE");
+		GUIDrawer.addSeparator(GUIDrawer.TYPE_SINGLE);
+		GUIDrawer.addString("A string!");
+		GUIDrawer.addSeparator();
+		GUIDrawer.addString("A very very very very very very long string!!!");
+		GUIDrawer.addSeparator(GUIDrawer.TYPE_SINGLE);
+		for (int i = 1; i <= 10; i++)
+			GUIDrawer.addString("line " + i);
+
+		GUIDrawer.finishDrawing(0, 0, 20, 15, GUIDrawer.TYPE_SINGLE);
+
+//		char mouseChar = Display.getChar(Mouse.getTileX(), Mouse.getTileY());
+//		Drawer.drawString(Display.getWidth() - 10, 0, false, mouseChar + " = " + (int) mouseChar, 0x222FFF);
+
 		Drawer.drawString(0, Display.getHeight() - 1, false, "FPS: " + Engine.getCurrentFramerate(), 0x000FFF);
-
-//		BoxDrawer.drawGlyphTable(0x000FFF);
-
-		GUIDrawer.drawMessage(0x700FFF, "line1", "line2", "line3");
-
-		char mouseChar = Display.getChar(Mouse.getTileX(), Mouse.getTileY());
-		Drawer.drawString(Display.getWidth() - 10, 0, false, mouseChar + " = " + (int) mouseChar, 0x222FFF);
 	}
 
 	public void onClose() {

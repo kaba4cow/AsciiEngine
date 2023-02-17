@@ -166,11 +166,11 @@ public class Snake implements MainProgram {
 		if (gameOver) {
 			String scoreString = "SCORE - " + score;
 			int width = 2 + Maths.max(scoreString.length(), 9);
-			BoxDrawer.drawBoxDouble(Display.getWidth() / 2 - width / 2, Display.getHeight() / 2, width, 4, 0x000FFF);
+			BoxDrawer.drawBox(Display.getWidth() / 2 - width / 2, Display.getHeight() / 2, width, 4, true, 0x000FFF);
 			Drawer.drawString(Display.getWidth() / 2, Display.getHeight() / 2 + 1, true, "GAME OVER", 0x000FFF);
 			Drawer.drawString(Display.getWidth() / 2, Display.getHeight() / 2 + 2, true, scoreString, 0x000FFF);
 		} else if (pause) {
-			BoxDrawer.drawBoxDouble(Display.getWidth() / 2 - 5, Display.getHeight() / 2, 10, 3, 0x000FFF);
+			BoxDrawer.drawBox(Display.getWidth() / 2 - 5, Display.getHeight() / 2, 10, 3, true, 0x000FFF);
 			Drawer.drawString(Display.getWidth() / 2, Display.getHeight() / 2 + 1, true, "PAUSE", 0x000FFF);
 		}
 	}

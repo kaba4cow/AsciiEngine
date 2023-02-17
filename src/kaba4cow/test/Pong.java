@@ -53,7 +53,7 @@ public class Pong implements MainProgram {
 		ball.render();
 
 		if (pause) {
-			BoxDrawer.drawBoxDouble(Display.getWidth() / 2 - 3, Display.getHeight() / 2 - 1, 7, 3, 0x000FFF);
+			BoxDrawer.drawBox(Display.getWidth() / 2 - 3, Display.getHeight() / 2 - 1, 7, 3, false, 0x000FFF);
 			Drawer.drawString(Display.getWidth() / 2, Display.getHeight() / 2, true, "PAUSE", 0x000FFF);
 		}
 	}

@@ -204,8 +204,7 @@ public final class Display {
 		g.fillRect(0, 0, DISPLAY_WIDTH + CHAR_WIDTH, DISPLAY_HEIGHT + CHAR_HEIGHT);
 
 		int titleLength = TITLE.length();
-		char barChar;
-		char cursorChar;
+		char currentChar, barChar, cursorChar;
 
 		int mouseIndex = 0;
 		boolean cursorOnBar = false;
@@ -249,6 +248,10 @@ public final class Display {
 		}
 
 		for (int i = 0; i < frame.length; i++) {
+			currentChar = frame.chars[i];
+			if (currentChar >= Glyphs.numGlyphs())
+				continue;
+
 			screenX = CHAR_WIDTH * (i % WIDTH);
 			screenY = CHAR_HEIGHT * (i / WIDTH + 1);
 
@@ -257,8 +260,8 @@ public final class Display {
 				tileY = IMAGE_CHAR_HEIGHT * (cursorChar / IMAGE_CHAR_COLUMNS);
 				frame.colors[i] |= 0x000FFF;
 			} else {
-				tileX = IMAGE_CHAR_WIDTH * (frame.chars[i] % IMAGE_CHAR_COLUMNS);
-				tileY = IMAGE_CHAR_HEIGHT * (frame.chars[i] / IMAGE_CHAR_COLUMNS);
+				tileX = IMAGE_CHAR_WIDTH * (currentChar % IMAGE_CHAR_COLUMNS);
+				tileY = IMAGE_CHAR_HEIGHT * (currentChar / IMAGE_CHAR_COLUMNS);
 			}
 
 			glyphImage.draw(frame.colors[i], g);
