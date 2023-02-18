@@ -40,6 +40,8 @@ public class Snake implements MainProgram {
 		direction = new Vector2i();
 
 		reset();
+
+		Display.setDrawCursor(false);
 	}
 
 	private void reset() {

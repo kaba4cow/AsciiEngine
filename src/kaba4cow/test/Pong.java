@@ -30,6 +30,8 @@ public class Pong implements MainProgram {
 		plates = new Plate[] { new Plate(true), new Plate(false) };
 
 		pause = true;
+
+		Display.setDrawCursor(false);
 	}
 
 	@Override
@@ -48,9 +50,9 @@ public class Pong implements MainProgram {
 
 	@Override
 	public void render() {
+		ball.render();
 		for (Plate plate : plates)
 			plate.render();
-		ball.render();
 
 		if (pause) {
 			BoxDrawer.drawBox(Display.getWidth() / 2 - 3, Display.getHeight() / 2 - 1, 7, 3, false, 0x000FFF);
@@ -116,8 +118,17 @@ public class Pong implements MainProgram {
 		}
 
 		public boolean isColliding(Vector2f ballPos) {
-			return ballPos.x >= pos.x - SIZE / 2 && ballPos.x < pos.x + SIZE / 2 + 1f && ballPos.y >= pos.y
-					&& ballPos.y < pos.y + 1f;
+			boolean collidingX = ballPos.x >= pos.x - SIZE / 2 && ballPos.x <= pos.x + SIZE / 2;
+			if (!collidingX)
+				return false;
+			if ((int) ballPos.y == (int) pos.y) {
+				if (top)
+					ballPos.y = (int) pos.y + 1;
+				else
+					ballPos.y = (int) pos.y - 1;
+				return true;
+			}
+			return false;
 		}
 
 		public float getSignedDistance(float x) {
@@ -161,11 +172,11 @@ public class Pong implements MainProgram {
 
 			for (int i = 0; i < plates.length; i++)
 				if (plates[i].isColliding(pos)) {
-					float sd = plates[i].getSignedDistance(pos.x);
+					float sd = 0.9f * plates[i].getSignedDistance(pos.x);
 					if (sd < 0f)
-						vel.x = -RNG.randomFloat(0.25f, 0.5f + sd);
+						vel.x = -0.1f + sd;
 					else
-						vel.x = RNG.randomFloat(0.25f, 0.5f + sd);
+						vel.x = 0.1f + sd;
 					vel.y *= -1f;
 					vel.normalize();
 					break;

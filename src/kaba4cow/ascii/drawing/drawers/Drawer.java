@@ -3,13 +3,30 @@ package kaba4cow.ascii.drawing.drawers;
 import kaba4cow.ascii.core.Display;
 import kaba4cow.ascii.drawing.Frame;
 import kaba4cow.ascii.toolbox.maths.Maths;
+import kaba4cow.ascii.toolbox.maths.vectors.Vector2i;
 
 public final class Drawer {
 
 	private static Frame frame;
 
+	private static final Vector2i clipStart = new Vector2i();
+	private static final Vector2i clipEnd = new Vector2i();
+	private static boolean clipEnable = false;
+
 	private Drawer() {
 
+	}
+
+	public static void enableClipping(int x0, int y0, int x1, int y1) {
+		clipEnable = true;
+		clipStart.x = x0;
+		clipStart.y = y0;
+		clipEnd.x = x1;
+		clipEnd.y = y1;
+	}
+
+	public static void disableClipping() {
+		clipEnable = false;
 	}
 
 	public static Frame getCurrentFrame() {
@@ -25,8 +42,14 @@ public final class Drawer {
 		Drawer.frame = Display.getFrame();
 	}
 
+	public static boolean isClipped(int x, int y) {
+		if (!clipEnable)
+			return false;
+		return x < clipStart.x || x > clipEnd.x || y < clipStart.y || y > clipEnd.y;
+	}
+
 	public static boolean drawChar(int x, int y, char c, int color) {
-		if (x < 0 || x >= frame.width || y < 0 || y >= frame.height)
+		if (x < 0 || x >= frame.width || y < 0 || y >= frame.height || isClipped(x, y))
 			return false;
 		int index = y * frame.width + x;
 		frame.chars[index] = c;

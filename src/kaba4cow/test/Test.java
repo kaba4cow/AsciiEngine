@@ -4,8 +4,9 @@ import kaba4cow.ascii.MainProgram;
 import kaba4cow.ascii.core.Display;
 import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.drawing.drawers.Drawer;
-import kaba4cow.ascii.drawing.drawers.GUIDrawer;
+import kaba4cow.ascii.drawing.drawers.gui.GUIDrawer;
 import kaba4cow.ascii.input.Keyboard;
+import kaba4cow.ascii.toolbox.Printer;
 
 public class Test implements MainProgram {
 
@@ -40,19 +41,25 @@ public class Test implements MainProgram {
 	}
 
 	public void render() {
-		GUIDrawer.startDrawing();
-		GUIDrawer.setColor(0x148FFF);
+		GUIDrawer.startDrawing("frame");
+		GUIDrawer.setColor(0x35AFFF);
 
 		GUIDrawer.addString("TITLE");
-		GUIDrawer.addSeparator(GUIDrawer.TYPE_SINGLE);
+		GUIDrawer.addLineSeparator();
+
 		GUIDrawer.addString("A string!");
-		GUIDrawer.addSeparator();
-		GUIDrawer.addString("A very very very very very very long string!!!");
-		GUIDrawer.addSeparator(GUIDrawer.TYPE_SINGLE);
+		GUIDrawer.addLineSeparator();
+
 		for (int i = 1; i <= 10; i++)
 			GUIDrawer.addString("line " + i);
+		GUIDrawer.addLineSeparator();
 
-		GUIDrawer.finishDrawing(0, 0, 20, 15, GUIDrawer.TYPE_SINGLE);
+		GUIDrawer.addButton("A button!", function -> {
+			Printer.outln("function!!!");
+		});
+		GUIDrawer.addLineSeparator();
+
+		GUIDrawer.finishDrawing(0, 0, 20, 15);
 
 //		char mouseChar = Display.getChar(Mouse.getTileX(), Mouse.getTileY());
 //		Drawer.drawString(Display.getWidth() - 10, 0, false, mouseChar + " = " + (int) mouseChar, 0x222FFF);
