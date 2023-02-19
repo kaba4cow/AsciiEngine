@@ -41,8 +41,9 @@ public class Test implements MainProgram {
 	}
 
 	public void render() {
-		GUIDrawer.startDrawing("frame");
 		GUIDrawer.setColor(0x35AFFF);
+
+		GUIDrawer.startDrawing("frame");
 
 		GUIDrawer.addString("TITLE");
 		GUIDrawer.addLineSeparator();
@@ -54,12 +55,12 @@ public class Test implements MainProgram {
 			GUIDrawer.addString("line " + i);
 		GUIDrawer.addLineSeparator();
 
-		GUIDrawer.addButton("A button!", function -> {
+		GUIDrawer.addButton("A button!", f -> {
 			Printer.outln("function!!!");
 		});
 		GUIDrawer.addLineSeparator();
 
-		GUIDrawer.finishDrawing(0, 0, 20, 15);
+		GUIDrawer.finishDrawing(0, 0, Display.getWidth() - 1, Display.getHeight(), false);
 
 //		char mouseChar = Display.getChar(Mouse.getTileX(), Mouse.getTileY());
 //		Drawer.drawString(Display.getWidth() - 10, 0, false, mouseChar + " = " + (int) mouseChar, 0x222FFF);

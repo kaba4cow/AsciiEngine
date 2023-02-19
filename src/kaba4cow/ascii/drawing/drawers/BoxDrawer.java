@@ -6,13 +6,23 @@ import kaba4cow.ascii.drawing.glyphs.Glyphs;
 
 public final class BoxDrawer {
 
+	private static boolean collisionEnable = true;
+
 	private BoxDrawer() {
 
 	}
 
+	public static void enableCollision() {
+		collisionEnable = true;
+	}
+
+	public static void disableCollision() {
+		collisionEnable = false;
+	}
+
 	public static void drawChar(int x, int y, char c, int color) {
 		char s = Display.getChar(x, y);
-		if (BoxGlyphs.isBoxGlyph(s) && BoxGlyphs.isBoxGlyph(c))
+		if (collisionEnable && BoxGlyphs.isBoxGlyph(s) && BoxGlyphs.isBoxGlyph(c))
 			c = BoxGlyphs.getIntersection(s, c);
 		Drawer.drawChar(x, y, c, color);
 	}

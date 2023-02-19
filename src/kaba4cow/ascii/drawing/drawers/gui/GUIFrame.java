@@ -31,19 +31,19 @@ class GUIFrame {
 
 	public void update(int mX, int mY, boolean clicked) {
 		this.clicked = false;
-		if (!drawn)
+		if (!this.drawn)
 			return;
 
 		this.mouseX = mX;
 		this.mouseY = mY;
 
-		if (mX > x && mX < x + width && mY > y && mY < y + height) {
-			scroll += Mouse.getScroll();
-			this.clicked = clicked && mY > y + 1 && mY < y + height - 1;
+		if (mX > x && mX < x + width && mY > y && mY < y + height - 1) {
+			this.scroll += Mouse.getScroll();
+			this.clicked = clicked;
 		} else
 			this.clicked = false;
 
-		drawn = false;
+		this.drawn = false;
 	}
 
 	public void draw(int x, int y, int width, int height) {

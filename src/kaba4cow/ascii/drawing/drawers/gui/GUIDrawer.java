@@ -28,7 +28,6 @@ public final class GUIDrawer {
 			map.put(tag, currentFrame);
 		}
 		list.clear();
-		color = 0x000FFF;
 	}
 
 	public static void setColor(int color) {
@@ -59,10 +58,15 @@ public final class GUIDrawer {
 			map.get(tag).update(mX, mY, clicked);
 	}
 
-	public static void finishDrawing(int x, int y, int width, int height) {
+	public static void finishDrawing(int x, int y, int width, int height, boolean centered) {
 		int totalHeight = 2;
 		for (int i = 0; i < list.size(); i++)
 			totalHeight += list.get(i).totalLines(width);
+
+		if (centered) {
+			x -= width / 2;
+			y -= totalHeight / 2;
+		}
 
 		if (currentFrame.scroll > 0)
 			currentFrame.scroll = 0;
