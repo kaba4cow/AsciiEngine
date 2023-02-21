@@ -71,6 +71,7 @@ public final class Engine {
 				unprocessedTime -= FRAMETIME;
 
 				PROGRAM.update(FRAMETIME);
+				Display.update();
 				Keyboard.update();
 				Mouse.update();
 				ELAPSED_TIME += FRAMETIME;
@@ -84,7 +85,7 @@ public final class Engine {
 
 			if (render) {
 				PROGRAM.render();
-				Display.update();
+				Display.render();
 				frames++;
 			} else
 				sleep(1l);

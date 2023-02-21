@@ -64,7 +64,7 @@ public class PatternEditor implements MainProgram {
 	public void render() {
 		Display.setBackground(Glyphs.SPACE, 0x111000);
 
-		int x = Display.getWidth() - 8;
+		int x = Display.getWidth() - 9;
 		int center = Display.getHeight() / 4;
 		int num = Glyphs.numGlyphs();
 		BoxDrawer.drawBox(x - 1, 0, 9, Display.getHeight() / 2, false, 0x000FFF);
