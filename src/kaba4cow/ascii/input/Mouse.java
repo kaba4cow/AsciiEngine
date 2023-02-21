@@ -94,14 +94,6 @@ public final class Mouse implements MouseListener, MouseMotionListener, MouseWhe
 		return instance.cursorPosition;
 	}
 
-	public static int getTileX() {
-		return instance.cursorPosition.x / Display.getCharWidth();
-	}
-
-	public static int getTileY() {
-		return instance.cursorPosition.y / Display.getCharHeight();
-	}
-
 	public static float getX() {
 		return instance.cursorPosition.x;
 	}
@@ -120,6 +112,22 @@ public final class Mouse implements MouseListener, MouseMotionListener, MouseWhe
 
 	public static float getDY() {
 		return instance.cursorDelta.y;
+	}
+
+	public static int getTileX() {
+		return instance.cursorPosition.x / Display.getCharWidth();
+	}
+
+	public static int getTileY() {
+		return instance.cursorPosition.y / Display.getCharHeight();
+	}
+
+	public static int getTileDX() {
+		return instance.cursorDelta.x / Display.getCharWidth();
+	}
+
+	public static int getTileDY() {
+		return instance.cursorDelta.y / Display.getCharHeight();
 	}
 
 	@Override
@@ -164,7 +172,7 @@ public final class Mouse implements MouseListener, MouseMotionListener, MouseWhe
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		int newX = e.getX();
-		int newY = e.getY() - Display.getCharHeight();
+		int newY = e.getY() + Display.getCursorOffset();
 		cursorDelta.x = newX - cursorPosition.x;
 		cursorDelta.y = newY - cursorPosition.y;
 		cursorPosition.x = newX;

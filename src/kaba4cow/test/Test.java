@@ -29,7 +29,7 @@ public class Test implements MainProgram {
 		if (Keyboard.isKeyDown(Keyboard.KEY_W))
 			Display.setCursorWaiting(!Display.isCursorWaiting());
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
+		if (Keyboard.isKey(Keyboard.KEY_CONTROL_LEFT) && Keyboard.isKeyDown(Keyboard.KEY_F)) {
 			full = !full;
 			if (full)
 				Display.createFullscreen(true);

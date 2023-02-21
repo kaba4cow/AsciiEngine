@@ -326,6 +326,10 @@ public final class Display {
 		return CHAR_HEIGHT;
 	}
 
+	public static int getCursorOffset() {
+		return -CHAR_HEIGHT;
+	}
+
 	private static class WindowListener extends MouseAdapter {
 
 		private final JFrame frame;
