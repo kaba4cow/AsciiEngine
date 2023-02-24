@@ -8,6 +8,16 @@ public interface MainProgram {
 
 	public void render();
 
-	public void onClose();
+	public default void onGainedFocus() {
+
+	}
+
+	public default void onLostFocus() {
+
+	}
+
+	public default void onClose() {
+
+	}
 
 }

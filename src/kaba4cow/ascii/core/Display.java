@@ -9,6 +9,8 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -22,7 +24,6 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-import kaba4cow.ascii.Errors;
 import kaba4cow.ascii.drawing.Frame;
 import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.drawing.glyphs.Glyphs;
@@ -59,7 +60,7 @@ public final class Display {
 	private static BufferStrategy bufferStrategy;
 	private static Graphics graphics;
 
-	private static GlyphImage glyphImage;
+	private static GlyphSheet glyphSheet;
 
 	private static Frame frame;
 
@@ -91,12 +92,12 @@ public final class Display {
 		SCREEN_HEIGHT = screenSize.height;
 
 		try {
-			glyphImage = new GlyphImage("kaba4cow/ascii/drawing/glyphs.png");
+			glyphSheet = new GlyphSheet("kaba4cow/ascii/drawing/glyphs.png");
 		} catch (IOException e) {
-			Engine.terminate(Errors.LOAD_IMAGE, e);
+			Engine.terminate(e);
 		}
 
-		IMAGE_CHAR_COLUMNS = glyphImage.width / IMAGE_CHAR_WIDTH;
+		IMAGE_CHAR_COLUMNS = glyphSheet.width / IMAGE_CHAR_WIDTH;
 
 		TITLE = title;
 
@@ -162,6 +163,7 @@ public final class Display {
 		canvas.setMinimumSize(dimension);
 		canvas.addMouseListener(windowListener);
 		canvas.addMouseMotionListener(windowListener);
+		canvas.addFocusListener(windowListener);
 		canvas.addKeyListener(Keyboard.get());
 		canvas.addMouseListener(Mouse.get());
 		canvas.addMouseMotionListener(Mouse.get());
@@ -186,6 +188,9 @@ public final class Display {
 		Keyboard.reset();
 		Mouse.reset();
 		canvas.requestFocus();
+
+		window.setIgnoreRepaint(true);
+		canvas.setIgnoreRepaint(true);
 	}
 
 	public static void destroy() {
@@ -273,27 +278,25 @@ public final class Display {
 				tileX = IMAGE_CHAR_WIDTH * (currentChar % IMAGE_CHAR_COLUMNS);
 				tileY = IMAGE_CHAR_HEIGHT * (currentChar / IMAGE_CHAR_COLUMNS);
 
-				glyphImage.draw(0xEEE000);
+				glyphSheet.draw(0xEEE000);
 			}
 
 		for (int i = 0; i < frame.length; i++) {
 			currentChar = frame.chars[i];
+			if (!cursorOnBar && drawCursor && i == mouseIndex) {
+				currentChar = cursorChar;
+				frame.colors[i] |= 0x000FFF;
+			}
 			if (currentChar >= Glyphs.numGlyphs())
 				continue;
 
 			screenX = CHAR_WIDTH * (i % WIDTH);
 			screenY = CHAR_HEIGHT * (i / WIDTH + barOffset);
 
-			if (!cursorOnBar && drawCursor && i == mouseIndex) {
-				tileX = IMAGE_CHAR_WIDTH * (cursorChar % IMAGE_CHAR_COLUMNS);
-				tileY = IMAGE_CHAR_HEIGHT * (cursorChar / IMAGE_CHAR_COLUMNS);
-				frame.colors[i] |= 0x000FFF;
-			} else {
-				tileX = IMAGE_CHAR_WIDTH * (currentChar % IMAGE_CHAR_COLUMNS);
-				tileY = IMAGE_CHAR_HEIGHT * (currentChar / IMAGE_CHAR_COLUMNS);
-			}
+			tileX = IMAGE_CHAR_WIDTH * (currentChar % IMAGE_CHAR_COLUMNS);
+			tileY = IMAGE_CHAR_HEIGHT * (currentChar / IMAGE_CHAR_COLUMNS);
 
-			glyphImage.draw(frame.colors[i]);
+			glyphSheet.draw(frame.colors[i]);
 
 			frame.chars[i] = backgroundChar;
 			frame.colors[i] = backgroundColor;
@@ -359,7 +362,7 @@ public final class Display {
 		return fullscreen ? 0 : -CHAR_HEIGHT;
 	}
 
-	private static class WindowListener extends MouseAdapter {
+	private static class WindowListener extends MouseAdapter implements FocusListener {
 
 		private final JFrame frame;
 		private Point mousePosition = null;
@@ -391,30 +394,39 @@ public final class Display {
 			int newY = screenPosition.y - mousePosition.y;
 			frame.setLocation(newX / CHAR_WIDTH * CHAR_WIDTH, newY / CHAR_HEIGHT * CHAR_HEIGHT);
 		}
+
+		@Override
+		public void focusGained(FocusEvent e) {
+			Engine.getProgram().onGainedFocus();
+		}
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			Engine.getProgram().onLostFocus();
+		}
 	}
 
-	private static class GlyphImage {
+	private static class GlyphSheet {
 
-		private BufferedImage image;
-
+		private BufferedImage sheet;
 		public final boolean[][] map;
 
 		public final int width;
 		public final int height;
 
-		public GlyphImage(String path) throws IOException {
+		public GlyphSheet(String path) throws IOException {
 			InputStream is = getClass().getClassLoader().getResourceAsStream(path);
-			image = ImageIO.read(is);
+			sheet = ImageIO.read(is);
 
-			width = image.getWidth();
-			height = image.getHeight();
+			width = sheet.getWidth();
+			height = sheet.getHeight();
 
-			ColorModel colorModel = image.getColorModel();
+			ColorModel colorModel = sheet.getColorModel();
 			map = new boolean[width][height];
 			for (int y = 0; y < height; y++)
 				for (int x = 0; x < width; x++)
-					map[x][y] = colorModel.getRed(image.getRaster().getDataElements(x, y, null)) > 0;
-			image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+					map[x][y] = colorModel.getRed(sheet.getRaster().getDataElements(x, y, null)) > 0;
+			sheet = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		}
 
 		public void draw(int color) {
@@ -432,9 +444,9 @@ public final class Display {
 
 			for (yTemp = tileY; yTemp < tileY + IMAGE_CHAR_HEIGHT; yTemp++)
 				for (xTemp = tileX; xTemp < tileX + IMAGE_CHAR_WIDTH; xTemp++)
-					image.setRGB(xTemp, yTemp, map[xTemp][yTemp] ? fColorTemp : bColorTemp);
+					sheet.setRGB(xTemp, yTemp, map[xTemp][yTemp] ? fColorTemp : bColorTemp);
 
-			graphics.drawImage(image, screenX, screenY, screenX + CHAR_WIDTH, screenY + CHAR_HEIGHT, tileX, tileY,
+			graphics.drawImage(sheet, screenX, screenY, screenX + CHAR_WIDTH, screenY + CHAR_HEIGHT, tileX, tileY,
 					tileX + IMAGE_CHAR_WIDTH, tileY + IMAGE_CHAR_HEIGHT, canvas);
 		}
 

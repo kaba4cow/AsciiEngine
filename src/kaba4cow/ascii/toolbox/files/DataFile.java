@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
 
-import kaba4cow.ascii.Errors;
 import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.toolbox.Printer;
 import kaba4cow.ascii.toolbox.maths.vectors.Vector2f;
@@ -60,16 +59,11 @@ public class DataFile {
 		Printer.outln("Loading data file: " + file.getAbsolutePath());
 		DataFile dataFile = new DataFile();
 
-		if (!file.exists()) {
-			Engine.terminate(Errors.FILE_DATA_LOAD, null);
-			return null;
-		}
-
 		String[] propertyLine;
 		String propertyName = "";
 		String propertyValue = "";
 
-		Stack<DataFile> stack = new Stack<DataFile>();
+		Stack<DataFile> stack = new Stack<>();
 		stack.push(dataFile);
 
 		try {
@@ -130,7 +124,7 @@ public class DataFile {
 			reader.close();
 			files.put(file.getAbsolutePath(), dataFile);
 		} catch (IOException e) {
-			Engine.terminate(Errors.FILE_DATA_READ, e);
+			Engine.terminate(e);
 		}
 
 		return dataFile;
@@ -148,7 +142,7 @@ public class DataFile {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				Engine.terminate(Errors.FILE_DATA_CREATE, e);
+				Engine.terminate(e);
 				return false;
 			}
 
@@ -158,7 +152,7 @@ public class DataFile {
 			print.append(string);
 			print.close();
 		} catch (FileNotFoundException e) {
-			Engine.terminate(Errors.FILE_DATA_SAVE, e);
+			Engine.terminate(e);
 			return false;
 		}
 		return true;

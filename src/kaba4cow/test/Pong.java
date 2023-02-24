@@ -60,13 +60,8 @@ public class Pong implements MainProgram {
 		}
 	}
 
-	@Override
-	public void onClose() {
-
-	}
-
 	public static void main(String[] args) {
-		Engine.init("ASCII Pong", 30);
+		Engine.init("Pong", 30);
 		Display.createWindowed(40, 40, true);
 		Engine.start(new Pong());
 	}

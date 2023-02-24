@@ -70,11 +70,6 @@ public class BrickBreaker implements MainProgram {
 		BoxDrawer.enableCollision();
 	}
 
-	@Override
-	public void onClose() {
-
-	}
-
 	public static void main(String[] args) {
 		Engine.init("Brick Breaker", 60);
 		Display.createFullscreen(true);

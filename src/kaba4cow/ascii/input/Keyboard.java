@@ -119,12 +119,15 @@ public final class Keyboard implements KeyListener {
 
 	private static Keyboard instance;
 
+	private static KeyEvent lastTyped;
+
 	private Keyboard() {
 
 	}
 
 	static {
 		instance = new Keyboard();
+		lastTyped = null;
 	}
 
 	public static Keyboard get() {
@@ -149,23 +152,6 @@ public final class Keyboard implements KeyListener {
 		}
 	}
 
-	@Override
-	public void keyTyped(KeyEvent e) {
-
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-		int index = index(e.getKeyCode());
-		states[index] = true;
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		int index = index(e.getKeyCode());
-		states[index] = false;
-	}
-
 	public static boolean isKey(int code) {
 		return instance.states[index(code)];
 	}
@@ -181,7 +167,35 @@ public final class Keyboard implements KeyListener {
 	}
 
 	private static int index(int code) {
-		return indices.get(code);
+		Integer index = indices.get(code);
+		if (index == null)
+			return 0;
+		return index;
+	}
+
+	public static KeyEvent getLastTyped() {
+		return lastTyped;
+	}
+
+	public static void resetLastTyped() {
+		lastTyped = null;
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		lastTyped = e;
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		int index = index(e.getKeyCode());
+		states[index] = true;
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		int index = index(e.getKeyCode());
+		states[index] = false;
 	}
 
 }

@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-import kaba4cow.ascii.Errors;
 import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.toolbox.Printer;
 
@@ -44,11 +43,6 @@ public class TableFile {
 
 	public static TableFile read(File file) {
 		Printer.outln("Loading table file: " + file.getAbsolutePath());
-
-		if (!file.exists()) {
-			Engine.terminate(Errors.FILE_TABLE_LOAD, null);
-			return null;
-		}
 
 		try {
 			FileInputStream in = new FileInputStream(file);
@@ -95,7 +89,7 @@ public class TableFile {
 			files.put(file.getAbsolutePath(), tableFile);
 			return tableFile;
 		} catch (IOException e) {
-			Engine.terminate(Errors.FILE_TABLE_READ, e);
+			Engine.terminate(e);
 			return null;
 		}
 	}
@@ -107,7 +101,7 @@ public class TableFile {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				Engine.terminate(Errors.FILE_TABLE_CREATE, e);
+				Engine.terminate(e);
 				return false;
 			}
 
@@ -117,7 +111,7 @@ public class TableFile {
 			print.append(string);
 			print.close();
 		} catch (FileNotFoundException e) {
-			Engine.terminate(Errors.FILE_CONFIG_SAVE, e);
+			Engine.terminate(e);
 			return false;
 		}
 		return true;

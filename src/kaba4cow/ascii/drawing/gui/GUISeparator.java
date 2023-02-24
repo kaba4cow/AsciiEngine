@@ -1,21 +1,19 @@
-package kaba4cow.ascii.drawing.drawers.gui;
-
-import java.util.ArrayList;
+package kaba4cow.ascii.drawing.gui;
 
 import kaba4cow.ascii.drawing.drawers.BoxDrawer;
 import kaba4cow.ascii.drawing.glyphs.Glyphs;
 
-class GUISeparator extends GUIObject {
+public class GUISeparator extends GUIObject {
 
 	private final boolean empty;
 
-	public GUISeparator(ArrayList<GUIObject> list, boolean empty, int color) {
-		super(list, color);
+	public GUISeparator(GUIFrame frame, int color, boolean empty) {
+		super(frame, color);
 		this.empty = empty;
 	}
 
 	@Override
-	public int draw(GUIFrame currentFrame, int x, int y, int width, int height) {
+	public int render(int x, int y, int width, int height) {
 		if (!empty)
 			BoxDrawer.drawHorizontalLine(y, x, x + width, Glyphs.BOX_DRAWINGS_SINGLE_HORIZONTAL, color);
 		return 1;

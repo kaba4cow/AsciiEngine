@@ -78,11 +78,6 @@ public class PatternEditor implements MainProgram {
 		Drawer.drawFrame(0, 0, false, frame);
 	}
 
-	@Override
-	public void onClose() {
-
-	}
-
 	public static void main(String[] args) {
 		Engine.init("PatternEditor", 60);
 		Display.createFullscreen(true);

@@ -9,7 +9,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.LinkedHashMap;
 
-import kaba4cow.ascii.Errors;
 import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.toolbox.Printer;
 
@@ -21,17 +20,12 @@ public class ConfigFile {
 	private final LinkedHashMap<String, String> content;
 
 	public ConfigFile() {
-		this.content = new LinkedHashMap<String, String>();
+		this.content = new LinkedHashMap<>();
 	}
 
 	public static ConfigFile read(File file) {
 		Printer.outln("Loading config file: " + file.getAbsolutePath());
 		ConfigFile configFile = new ConfigFile();
-
-		if (!file.exists()) {
-			Engine.terminate(Errors.FILE_CONFIG_LOAD, null);
-			return null;
-		}
 
 		try {
 			FileInputStream in = new FileInputStream(file);
@@ -52,7 +46,7 @@ public class ConfigFile {
 			}
 			reader.close();
 		} catch (IOException e) {
-			Engine.terminate(Errors.FILE_TABLE_READ, e);
+			Engine.terminate(e);
 		}
 
 		return configFile;
@@ -65,7 +59,7 @@ public class ConfigFile {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				Engine.terminate(Errors.FILE_CONFIG_CREATE, e);
+				Engine.terminate(e);
 				return false;
 			}
 
@@ -75,7 +69,7 @@ public class ConfigFile {
 			print.append(string);
 			print.close();
 		} catch (FileNotFoundException e) {
-			Engine.terminate(Errors.FILE_CONFIG_SAVE, e);
+			Engine.terminate(e);
 			return false;
 		}
 		return true;

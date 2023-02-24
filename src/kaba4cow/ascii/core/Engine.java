@@ -1,6 +1,5 @@
 package kaba4cow.ascii.core;
 
-import kaba4cow.ascii.Errors;
 import kaba4cow.ascii.MainProgram;
 import kaba4cow.ascii.input.Keyboard;
 import kaba4cow.ascii.input.Mouse;
@@ -99,6 +98,7 @@ public final class Engine {
 		PROGRAM.onClose();
 		if (SAVE_LOG_ON_EXIT)
 			Printer.saveLog();
+		System.exit(0);
 	}
 
 	public static void setFramerate(int framerate) {
@@ -138,15 +138,13 @@ public final class Engine {
 		}
 	}
 
-	public static void terminate(Errors error, Exception exception) {
-		if (error == null)
-			error = Errors.UNKNOWN;
+	public static void terminate(Exception exception) {
 		if (exception == null)
 			exception = new Exception();
 		exception.printStackTrace();
 		Printer.outln("Program terminated");
 		Printer.saveLog();
-		System.exit(error.getCode());
+		System.exit(-1);
 	}
 
 }

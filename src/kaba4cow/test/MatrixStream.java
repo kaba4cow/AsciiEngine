@@ -37,10 +37,6 @@ public class MatrixStream implements MainProgram {
 		streams.forEach(s -> s.render());
 	}
 
-	public void onClose() {
-
-	}
-
 	public static void main(String[] args) {
 		Engine.init("Matrix Stream", 30);
 		Display.createFullscreen(false);

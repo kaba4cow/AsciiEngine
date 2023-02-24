@@ -81,11 +81,6 @@ public class Snake implements MainProgram {
 		if (pause)
 			return;
 
-		time += dt;
-		if (time < maxTime)
-			return;
-		time = 0f;
-
 		if (direction.x == 0) {
 			if (Keyboard.isKey(Keyboard.KEY_A)) {
 				direction.x = -1;
@@ -105,6 +100,11 @@ public class Snake implements MainProgram {
 				direction.x = 0;
 			}
 		}
+
+		time += dt;
+		if (time < maxTime)
+			return;
+		time = 0f;
 
 		Vector2i pos;
 		for (int i = 0; i < snake.size(); i++) {
@@ -156,6 +156,11 @@ public class Snake implements MainProgram {
 
 	@Override
 	public void render() {
+		for (int y = 0; y < Display.getHeight(); y++)
+			for (int x = 0; x < Display.getWidth(); x++)
+				if ((x + y) % 2 == 0)
+					Drawer.drawChar(x, y, Glyphs.SPACE, 0x111000);
+
 		Drawer.drawChar(food.x, food.y, Glyphs.BLACK_HEART_SUIT, 0x000FF7);
 
 		int x, y;
@@ -168,18 +173,13 @@ public class Snake implements MainProgram {
 		if (gameOver) {
 			String scoreString = "SCORE - " + score;
 			int width = 2 + Maths.max(scoreString.length(), 9);
-			BoxDrawer.drawBox(Display.getWidth() / 2 - width / 2, Display.getHeight() / 2, width, 4, true, 0x000FFF);
+			BoxDrawer.drawBox(Display.getWidth() / 2 - width / 2, Display.getHeight() / 2, width, 3, true, 0x000FFF);
 			Drawer.drawString(Display.getWidth() / 2, Display.getHeight() / 2 + 1, true, "GAME OVER", 0x000FFF);
 			Drawer.drawString(Display.getWidth() / 2, Display.getHeight() / 2 + 2, true, scoreString, 0x000FFF);
 		} else if (pause) {
-			BoxDrawer.drawBox(Display.getWidth() / 2 - 5, Display.getHeight() / 2, 10, 3, true, 0x000FFF);
+			BoxDrawer.drawBox(Display.getWidth() / 2 - 5, Display.getHeight() / 2, 10, 2, true, 0x000FFF);
 			Drawer.drawString(Display.getWidth() / 2, Display.getHeight() / 2 + 1, true, "PAUSE", 0x000FFF);
 		}
-	}
-
-	@Override
-	public void onClose() {
-
 	}
 
 	public static void main(String[] args) {
