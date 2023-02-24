@@ -19,7 +19,7 @@ public class GUIButton extends GUIObject {
 
 	@Override
 	public void update(int mouseX, int mouseY, boolean clicked) {
-		if (frame.clicked && mouseInBounds(mouseX, mouseY))
+		if (clicked && mouseInBounds(mouseX, mouseY))
 			function.accept(null);
 	}
 
@@ -36,6 +36,10 @@ public class GUIButton extends GUIObject {
 	@Override
 	public int totalLines(int width) {
 		return 2 + Drawer.totalLines(width, text);
+	}
+
+	public String getText() {
+		return text;
 	}
 
 }

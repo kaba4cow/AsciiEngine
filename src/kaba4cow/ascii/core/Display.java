@@ -24,6 +24,7 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import kaba4cow.ascii.drawing.Colors;
 import kaba4cow.ascii.drawing.Frame;
 import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.drawing.glyphs.Glyphs;
@@ -102,7 +103,7 @@ public final class Display {
 		TITLE = title;
 
 		backgroundChar = Glyphs.SPACE;
-		backgroundColor = 0x000000;
+		backgroundColor = 0x000FFF;
 	}
 
 	public static void createFullscreen(boolean squareGlyphs) {
@@ -285,7 +286,7 @@ public final class Display {
 			currentChar = frame.chars[i];
 			if (!cursorOnBar && drawCursor && i == mouseIndex) {
 				currentChar = cursorChar;
-				frame.colors[i] |= 0x000FFF;
+				frame.colors[i] = Colors.swap(frame.colors[i]);
 			}
 			if (currentChar >= Glyphs.numGlyphs())
 				continue;

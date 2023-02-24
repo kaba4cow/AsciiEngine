@@ -9,10 +9,11 @@ import kaba4cow.ascii.drawing.gui.GUICheckbox;
 import kaba4cow.ascii.drawing.gui.GUIFrame;
 import kaba4cow.ascii.drawing.gui.GUIProgressBar;
 import kaba4cow.ascii.drawing.gui.GUISeparator;
+import kaba4cow.ascii.drawing.gui.GUISlider;
 import kaba4cow.ascii.drawing.gui.GUIText;
 import kaba4cow.ascii.drawing.gui.GUITextField;
 import kaba4cow.ascii.input.Keyboard;
-import kaba4cow.ascii.toolbox.Printer;
+import kaba4cow.ascii.toolbox.rng.RNG;
 
 public class Test implements MainProgram {
 
@@ -26,20 +27,32 @@ public class Test implements MainProgram {
 
 	@Override
 	public void init() {
-		frame = new GUIFrame(0x35AFFF);
-		new GUIText(frame, -1, "TITLE");
-		new GUICheckbox(frame, -1, "A checkbox!", false);
+		frame = new GUIFrame(0xFFF000, true, true);
+
+		new GUIText(frame, -1, "Sliders:");
+		for (int i = 1; i <= 3; i++)
+			new GUISlider(frame, -1, RNG.randomFloat(1f));
 		new GUISeparator(frame, -1, false);
+
+		new GUIText(frame, -1, "Checkboxes:");
+		for (int i = 1; i <= 3; i++)
+			new GUICheckbox(frame, -1, "Checkbox #" + i, RNG.randomBoolean());
+		new GUISeparator(frame, -1, false);
+
+		new GUIText(frame, -1, "Progress bar:");
+		new GUIProgressBar(frame, -1, f -> (0.04f * Engine.getElapsedTime()) % 1.01f);
+		new GUISeparator(frame, -1, false);
+
 		new GUITextField(frame, -1,
-				"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vehicula metus non efficitur fringilla. Maecenas vulputate at eros non porttitor.");
-		new GUIProgressBar(frame, -1, f -> (0.3f * Engine.getElapsedTime()) % 1.01f);
+				"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vehicula metus non efficitur fringilla. Maecenas vulputate at eros non porttitor. Donec pharetra non ipsum sed dapibus. Sed ullamcorper, sem non pharetra pellentesque, sapien lectus facilisis enim, at lacinia arcu neque a justo. Donec sodales suscipit libero, eu maximus felis faucibus et. Mauris interdum egestas lacus, ut convallis neque convallis ut. Nam lobortis imperdiet orci, a pellentesque enim faucibus sed. Duis sit amet velit dui. Curabitur ornare, nunc ac aliquam malesuada, mauris orci efficitur sem, non mollis metus ipsum nec nisi. Duis laoreet mi a tortor bibendum iaculis. Ut et mollis libero, id mollis libero. In ac viverra lacus. Aenean auctor commodo maximus.");
+		new GUISeparator(frame, -1, false);
 
-		for (int i = 1; i <= 16; i++)
+		for (int i = 1; i <= 3; i++)
+			new GUIButton(frame, -1, "Button #" + i, f -> new GUIText(frame, -1, "Line generated"));
+		new GUISeparator(frame, -1, false);
+
+		for (int i = 1; i <= 5; i++)
 			new GUIText(frame, -1, "Line #" + i);
-		new GUISeparator(frame, -1, false);
-
-		new GUIButton(frame, -1, "A button!", f -> Printer.outln("Button pressed"));
-		new GUISeparator(frame, -1, false);
 	}
 
 	@Override
@@ -68,7 +81,8 @@ public class Test implements MainProgram {
 
 	@Override
 	public void render() {
-		frame.render(0, 0, Display.getWidth() - 1, Display.getHeight(), false);
+//		frame.render(0, 0, Display.getWidth(), Display.getHeight(), false);
+		frame.render();
 
 //		char mouseChar = Display.getChar(Mouse.getTileX(), Mouse.getTileY());
 //		Drawer.drawString(Display.getWidth() - 10, 0, false, mouseChar + " = " + (int) mouseChar, 0x222FFF);
@@ -78,7 +92,7 @@ public class Test implements MainProgram {
 
 	public static void main(String[] args) throws Exception {
 		Engine.init("Test", 60);
-		Display.createWindowed(40, 30, true);
+		Display.createWindowed(60, 40, true);
 		Engine.start(new Test());
 	}
 

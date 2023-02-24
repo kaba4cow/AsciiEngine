@@ -1,6 +1,10 @@
 package kaba4cow.ascii.drawing.gui;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+
 import kaba4cow.ascii.core.Display;
+import kaba4cow.ascii.drawing.Colors;
 import kaba4cow.ascii.drawing.drawers.BoxDrawer;
 import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.input.Keyboard;
@@ -40,7 +44,7 @@ public class GUITextField extends GUIObject {
 
 	@Override
 	public void update(int mouseX, int mouseY, boolean clicked) {
-		if (frame.clicked) {
+		if (clicked) {
 			active = mouseX >= bX + 1 && mouseX < bX + bWidth - 1 && mouseY >= bY + 1 && mouseY < bY + bHeight - 1;
 
 			if (active) {
@@ -57,6 +61,8 @@ public class GUITextField extends GUIObject {
 						cursorY++;
 					}
 				}
+				if (lineLength == 0)
+					lineLength = bWidth - 2;
 			}
 		}
 
@@ -78,7 +84,19 @@ public class GUITextField extends GUIObject {
 				moveCursor(UP);
 			else if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
 				moveCursor(DOWN);
-			else if (Keyboard.getLastTyped() != null) {
+			else if (Keyboard.isKey(Keyboard.KEY_CONTROL_LEFT) && Keyboard.isKeyDown(Keyboard.KEY_V)) {
+				try {
+					String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard()
+							.getData(DataFlavor.stringFlavor);
+					data = data.replace('\t', ' ').replace('\r', ' ').replace('\n', ' ');
+					int dataLength = data.length();
+					builder.insert(cursor, data);
+					text = builder.toString();
+					for (int i = 0; i < dataLength; i++)
+						moveCursor(RIGHT);
+				} catch (Exception e) {
+				}
+			} else if (Keyboard.getLastTyped() != null) {
 				char c = Keyboard.getLastTyped().getKeyChar();
 				if (c == BACKSPACE) {
 					if (cursor > 0 && cursor <= length) {
@@ -112,12 +130,10 @@ public class GUITextField extends GUIObject {
 		totalLines = 2 + Drawer.drawString(x + 1, y + 1, false, width - 2, text, color);
 
 		if (active) {
-			int newColor = Display.getColor(x + 1 + cursorX, y + 1 + cursorY);
-			newColor = (newColor << 12 & 0xFFF000) | (newColor >> 12 & 0x000FFF);
+			int newColor = Colors.swap(Display.getColor(x + 1 + cursorX, y + 1 + cursorY));
 			char newChar = Display.getChar(x + 1 + cursorX, y + 1 + cursorY);
 			Drawer.drawChar(x + 1 + cursorX, y + 1 + cursorY, newChar, newColor);
 		}
-		Drawer.drawString(0, 1, false, cursor + " / " + text.length(), 0x111FFF);
 		return totalLines;
 	}
 

@@ -17,7 +17,7 @@ public class GUICheckbox extends GUIObject {
 
 	@Override
 	public void update(int mouseX, int mouseY, boolean clicked) {
-		if (frame.clicked && mouseInBounds(mouseX, mouseY))
+		if (clicked && mouseY == bY && mouseX >= bX && mouseX <= bX + 2)
 			selected = !selected;
 	}
 
@@ -25,8 +25,10 @@ public class GUICheckbox extends GUIObject {
 	public int render(int x, int y, int width, int height) {
 		int totalLines = totalLines(width);
 		updateBounds(x, y, width, totalLines);
-		Drawer.drawChar(x, y, selected ? Glyphs.WHITE_SUN_WITH_RAYS : Glyphs.WHITE_CIRCLE, color);
-		return Drawer.drawString(x + 2, y, false, width - 2, text, color);
+		Drawer.drawChar(x, y, Glyphs.LEFT_SQUARE_BRACKET, color);
+		Drawer.drawChar(x + 2, y, Glyphs.RIGHT_SQUARE_BRACKET, color);
+		Drawer.drawChar(x + 1, y, selected ? Glyphs.WHITE_SUN_WITH_RAYS : Glyphs.WHITE_CIRCLE, color);
+		return Drawer.drawString(x + 4, y, false, width - 4, text, color);
 	}
 
 	@Override
