@@ -133,16 +133,16 @@ public class GUIFrame {
 		} else
 			scrollable = false;
 
+		if (centered) {
+			x -= width / 2;
+			y -= totalHeight / 2;
+		}
+
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 		this.rendered = true;
-
-		if (centered) {
-			x -= width / 2;
-			y -= totalHeight / 2;
-		}
 
 		maxScroll = totalHeight - height;
 		if (scroll < 0)

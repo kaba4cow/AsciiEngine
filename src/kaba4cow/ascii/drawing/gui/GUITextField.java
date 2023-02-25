@@ -4,10 +4,10 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 
 import kaba4cow.ascii.core.Display;
-import kaba4cow.ascii.drawing.Colors;
 import kaba4cow.ascii.drawing.drawers.BoxDrawer;
 import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.input.Keyboard;
+import kaba4cow.ascii.toolbox.Colors;
 
 public class GUITextField extends GUIObject {
 

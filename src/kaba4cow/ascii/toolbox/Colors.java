@@ -1,4 +1,4 @@
-package kaba4cow.ascii.drawing;
+package kaba4cow.ascii.toolbox;
 
 public final class Colors {
 

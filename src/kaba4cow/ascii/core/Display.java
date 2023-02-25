@@ -24,7 +24,6 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-import kaba4cow.ascii.drawing.Colors;
 import kaba4cow.ascii.drawing.Frame;
 import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.drawing.glyphs.Glyphs;
@@ -107,18 +106,26 @@ public final class Display {
 	}
 
 	public static void createFullscreen(boolean squareGlyphs) {
-		create(0, 0, squareGlyphs);
+		create(0, 0, 1, squareGlyphs);
+	}
+
+	public static void createFullscreen(int scale, boolean squareGlyphs) {
+		create(0, 0, scale, squareGlyphs);
 	}
 
 	public static void createWindowed(int width, int height, boolean squareGlyphs) {
-		create(width, height, squareGlyphs);
+		create(width, height, 1, squareGlyphs);
 	}
 
-	private static void create(int width, int height, boolean squareGlyphs) {
+	public static void createWindowed(int width, int height, int scale, boolean squareGlyphs) {
+		create(width, height, scale, squareGlyphs);
+	}
+
+	private static void create(int width, int height, int scale, boolean squareGlyphs) {
 		fullscreen = width == 0 || height == 0;
 
-		CHAR_WIDTH = squareGlyphs ? IMAGE_CHAR_HEIGHT : IMAGE_CHAR_WIDTH;
-		CHAR_HEIGHT = IMAGE_CHAR_HEIGHT;
+		CHAR_WIDTH = scale * (squareGlyphs ? IMAGE_CHAR_HEIGHT : IMAGE_CHAR_WIDTH);
+		CHAR_HEIGHT = scale * (IMAGE_CHAR_HEIGHT);
 
 		if (fullscreen) {
 			WIDTH = SCREEN_WIDTH / CHAR_WIDTH;
@@ -286,7 +293,7 @@ public final class Display {
 			currentChar = frame.chars[i];
 			if (!cursorOnBar && drawCursor && i == mouseIndex) {
 				currentChar = cursorChar;
-				frame.colors[i] = Colors.swap(frame.colors[i]);
+				frame.colors[i] = 0x000FFF;
 			}
 			if (currentChar >= Glyphs.numGlyphs())
 				continue;
