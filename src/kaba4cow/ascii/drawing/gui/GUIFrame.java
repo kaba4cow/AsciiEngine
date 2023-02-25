@@ -2,6 +2,7 @@ package kaba4cow.ascii.drawing.gui;
 
 import java.util.ArrayList;
 
+import kaba4cow.ascii.core.Display;
 import kaba4cow.ascii.drawing.drawers.BoxDrawer;
 import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.drawing.glyphs.Glyphs;
@@ -9,6 +10,8 @@ import kaba4cow.ascii.input.Mouse;
 import kaba4cow.ascii.toolbox.maths.Maths;
 
 public class GUIFrame {
+
+	private String title;
 
 	private int x;
 	private int y;
@@ -34,10 +37,11 @@ public class GUIFrame {
 	public final boolean moveable;
 
 	public GUIFrame(int color, boolean resizable, boolean moveable) {
+		this.title = "";
 		this.x = 0;
 		this.y = 0;
-		this.width = 15;
-		this.height = 10;
+		this.width = 20;
+		this.height = 20;
 		this.scroll = 0;
 		this.maxScroll = 0;
 		this.scrollable = false;
@@ -72,6 +76,10 @@ public class GUIFrame {
 		if (Mouse.isKeyUp(Mouse.LEFT)) {
 			if (resizing) {
 				resizing = false;
+				if (mX >= Display.getWidth())
+					mX = Display.getWidth() - 1;
+				if (mY >= Display.getHeight())
+					mY = Display.getHeight() - 1;
 				width = Maths.max(width + mX - tempX, 5);
 				height = Maths.max(height + mY - tempY, 2);
 			} else if (moving)
@@ -81,6 +89,14 @@ public class GUIFrame {
 		if (moving) {
 			x = mX - tempX;
 			y = mY;
+			if (x < 0)
+				x = 0;
+			if (x >= Display.getWidth())
+				x = Display.getWidth() - 1;
+			if (y < 0)
+				y = 0;
+			if (y >= Display.getHeight())
+				y = Display.getHeight() - 1;
 		}
 
 		if (mX > x && mX < x + width && mY > y && mY < y + height) {
@@ -154,6 +170,11 @@ public class GUIFrame {
 		if (totalHeight > height + 1)
 			currentY -= scroll;
 		BoxDrawer.drawBox(x, y, width, height, false, color);
+		for (int i = 0; i < title.length(); i++) {
+			Drawer.drawChar(x + i + 1, y, title.charAt(i), color);
+			if (i + 2 >= width)
+				break;
+		}
 		if (scrollable)
 			width--;
 		Drawer.enableClipping(x, y + 1, x + width, y + height - 1);
@@ -176,6 +197,15 @@ public class GUIFrame {
 	public void add(GUIObject object) {
 		if (object != null && !list.contains(object))
 			list.add(object);
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public GUIFrame setTitle(String title) {
+		this.title = title;
+		return this;
 	}
 
 }

@@ -42,7 +42,7 @@ public class TableFile {
 	}
 
 	public static TableFile read(File file) {
-		Printer.outln("Loading table file: " + file.getAbsolutePath());
+		Printer.println("Loading table file: " + file.getAbsolutePath());
 
 		try {
 			FileInputStream in = new FileInputStream(file);
@@ -95,7 +95,7 @@ public class TableFile {
 	}
 
 	public static boolean write(TableFile tableFile, File file) {
-		Printer.outln("Saving table file: " + file.getAbsolutePath());
+		Printer.println("Saving table file: " + file.getAbsolutePath());
 
 		if (!file.exists())
 			try {

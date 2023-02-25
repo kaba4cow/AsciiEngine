@@ -26,15 +26,16 @@ public final class MemoryAnalyzer {
 	}
 
 	public static void printCurrentInfo() {
-		Printer.outln("MEMORY ANALYZER: current " + getCurrentUsage() / 1024l + " KB, delta " + getDeltaUsage() / 1024l
-				+ " KB, total " + Runtime.getRuntime().maxMemory() / 1024l + " KB");
+		Printer.println("Memory analyzer: current usage: " + getCurrentUsage() / 1024l + " KB, delta "
+				+ getDeltaUsage() / 1024l + " KB, total usage: " + Runtime.getRuntime().maxMemory() / 1024l + " KB");
 	}
 
 	public static void printFinalInfo() {
 		if (updates < 1)
 			return;
 		long avgUsage = totalUsage / (long) updates;
-		Printer.outln("MEMORY ANALYZER: max " + getMaxUsage() / 1024l + " KB, avg " + avgUsage / 1024l + " KB");
+		Printer.println("Memory analyzer: max usage: " + getMaxUsage() / 1024l + " KB, average usage: "
+				+ avgUsage / 1024l + " KB");
 	}
 
 	public static long getMaxUsage() {

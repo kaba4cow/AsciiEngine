@@ -24,7 +24,7 @@ public class ConfigFile {
 	}
 
 	public static ConfigFile read(File file) {
-		Printer.outln("Loading config file: " + file.getAbsolutePath());
+		Printer.println("Loading config file: " + file.getAbsolutePath());
 		ConfigFile configFile = new ConfigFile();
 
 		try {
@@ -53,7 +53,7 @@ public class ConfigFile {
 	}
 
 	public static boolean write(ConfigFile configFile, File file) {
-		Printer.outln("Saving config file: " + file.getAbsolutePath());
+		Printer.println("Saving config file: " + file.getAbsolutePath());
 
 		if (!file.exists())
 			try {

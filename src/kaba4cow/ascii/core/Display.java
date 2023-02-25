@@ -18,6 +18,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -30,6 +31,7 @@ import kaba4cow.ascii.drawing.glyphs.Glyphs;
 import kaba4cow.ascii.input.Keyboard;
 import kaba4cow.ascii.input.Mouse;
 import kaba4cow.ascii.toolbox.Printer;
+import kaba4cow.ascii.toolbox.utils.ProgramUtils;
 
 public final class Display {
 
@@ -72,6 +74,7 @@ public final class Display {
 	private static boolean drawCursor;
 	private static boolean cursorWaiting;
 	private static boolean ignoreClosing;
+	private static boolean takingScreenshot;
 
 	private static int screenX, screenY, tileX, tileY;
 	private static int bColorTemp, brTemp, bgTemp, bbTemp, fColorTemp, frTemp, fgTemp, fbTemp, xTemp, yTemp;
@@ -81,7 +84,7 @@ public final class Display {
 	}
 
 	public static void init(String title) {
-		Printer.outln("Initializing display");
+		Printer.println("Initializing display");
 
 		device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		cursor = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB),
@@ -135,7 +138,7 @@ public final class Display {
 			HEIGHT = height;
 		}
 
-		Printer.outln("Creating " + (fullscreen ? "fullscreen" : "windowed") + " display: " + WIDTH + "x" + HEIGHT);
+		Printer.println("Creating " + (fullscreen ? "fullscreen" : "windowed") + " display: " + WIDTH + "x" + HEIGHT);
 
 		if (window != null) {
 			ignoreClosing = true;
@@ -204,7 +207,7 @@ public final class Display {
 	public static void destroy() {
 		if (!window.isVisible())
 			return;
-		Printer.outln("Destroying display");
+		Printer.println("Destroying display");
 		ignoreClosing = false;
 		window.dispose();
 	}
@@ -237,6 +240,26 @@ public final class Display {
 	}
 
 	public static void render() {
+		if (takingScreenshot)
+			try {
+				takingScreenshot = false;
+				File file = new File("screenshot_" + ProgramUtils.getDate() + ".png");
+				file.createNewFile();
+
+				BufferedImage image = new BufferedImage(canvas.getWidth(), canvas.getHeight(),
+						BufferedImage.TYPE_INT_RGB);
+				graphics = image.getGraphics();
+				paint();
+				graphics.dispose();
+
+				if (ImageIO.write(image, "png", file))
+					Printer.println("Screenshot saved at: " + file.getAbsolutePath());
+				else
+					Printer.println("Error occured while saving screenshot");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 		do {
 			do {
 				graphics = bufferStrategy.getDrawGraphics();
@@ -322,6 +345,10 @@ public final class Display {
 		backgroundColor = color;
 	}
 
+	public static void takeScreenshot() {
+		takingScreenshot = true;
+	}
+
 	public static char getChar(int x, int y) {
 		return frame.getChar(x, y);
 	}
@@ -405,12 +432,14 @@ public final class Display {
 
 		@Override
 		public void focusGained(FocusEvent e) {
-			Engine.getProgram().onGainedFocus();
+			if (Engine.getProgram() != null)
+				Engine.getProgram().onGainedFocus();
 		}
 
 		@Override
 		public void focusLost(FocusEvent e) {
-			Engine.getProgram().onLostFocus();
+			if (Engine.getProgram() != null)
+				Engine.getProgram().onLostFocus();
 		}
 	}
 

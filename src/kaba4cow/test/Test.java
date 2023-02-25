@@ -27,7 +27,7 @@ public class Test implements MainProgram {
 
 	@Override
 	public void init() {
-		frame = new GUIFrame(0xFFF000, true, true);
+		frame = new GUIFrame(0x000FFF, true, true).setTitle("Window");
 
 		new GUIText(frame, -1, "Sliders:");
 		for (int i = 1; i <= 3; i++)
@@ -64,6 +64,9 @@ public class Test implements MainProgram {
 
 		if (Keyboard.isKeyDown(Keyboard.KEY_ENTER))
 			init();
+
+		if (Keyboard.isKeyDown(Keyboard.KEY_F))
+			Display.takeScreenshot();
 //
 //		if (Keyboard.isKeyDown(Keyboard.KEY_C))
 //			Display.setDrawCursor(!Display.isDrawCursor());
@@ -88,6 +91,17 @@ public class Test implements MainProgram {
 //		Drawer.drawString(Display.getWidth() - 10, 0, false, mouseChar + " = " + (int) mouseChar, 0x222FFF);
 
 		Drawer.drawString(0, 0, false, "" + Engine.getCurrentFramerate(), 0x000FFF);
+
+//		int x = 0, y = 0;
+//		int w = 4;
+//		int h = Glyphs.numGlyphs() / 4 + 1;
+//		int i = 0;
+//		for (x = 0; x < w; x++)
+//			for (y = 0; y < h; y++) {
+//				Drawer.drawString(x * (Display.getWidth() / 4 + 1), y, false, (char) i + " = " + i++, 0x000FFF);
+//				if (i >= Glyphs.numGlyphs())
+//					break;
+//			}
 	}
 
 	public static void main(String[] args) throws Exception {

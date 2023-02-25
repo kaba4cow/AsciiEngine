@@ -56,7 +56,7 @@ public class DataFile {
 	}
 
 	public static DataFile read(File file) {
-		Printer.outln("Loading data file: " + file.getAbsolutePath());
+		Printer.println("Loading data file: " + file.getAbsolutePath());
 		DataFile dataFile = new DataFile();
 
 		String[] propertyLine;
@@ -136,7 +136,7 @@ public class DataFile {
 	}
 
 	public static boolean write(DataFile dataFile, File file) {
-		Printer.outln("Saving data file: " + file.getAbsolutePath());
+		Printer.println("Saving data file: " + file.getAbsolutePath());
 
 		if (!file.exists())
 			try {

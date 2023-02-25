@@ -484,12 +484,12 @@ public final class Maths {
 
 	public static float blend(float x, float y, float blendFactor) {
 		blendFactor = limit(blendFactor);
-		return x * blendFactor + y * (1.0f - blendFactor);
+		return y * blendFactor + x * (1.0f - blendFactor);
 	}
 
 	public static double blend(double x, double y, double blendFactor) {
 		blendFactor = limit(blendFactor);
-		return x * blendFactor + y * (1.0f - blendFactor);
+		return y * blendFactor + x * (1.0f - blendFactor);
 	}
 
 	public static Vector3f blend(Vector3f left, Vector3f right, float blendFactor, Vector3f dest) {

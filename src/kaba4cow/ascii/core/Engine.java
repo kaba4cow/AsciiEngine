@@ -24,7 +24,7 @@ public final class Engine {
 	}
 
 	public static void init(String title, int framerate) {
-		Printer.outln("Initializing engine");
+		Printer.println("Initializing engine");
 
 		FRAMERATE = framerate;
 		FRAMETIME = 1f / (float) FRAMERATE;
@@ -38,7 +38,7 @@ public final class Engine {
 	}
 
 	public static void start(MainProgram program) {
-		Printer.outln("Starting engine");
+		Printer.println("Starting engine");
 
 		PROGRAM = program;
 
@@ -93,7 +93,7 @@ public final class Engine {
 				break;
 		}
 
-		Printer.outln("Destroying engine");
+		Printer.println("Destroying engine");
 		Display.destroy();
 		PROGRAM.onClose();
 		if (SAVE_LOG_ON_EXIT)
@@ -142,7 +142,7 @@ public final class Engine {
 		if (exception == null)
 			exception = new Exception();
 		exception.printStackTrace();
-		Printer.outln("Program terminated");
+		Printer.println("Program terminated");
 		Printer.saveLog();
 		System.exit(-1);
 	}
