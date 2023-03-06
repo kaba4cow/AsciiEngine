@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import kaba4cow.ascii.core.Display;
+import kaba4cow.ascii.toolbox.maths.Maths;
 import kaba4cow.ascii.toolbox.maths.vectors.Vector2i;
 
 public final class Mouse implements MouseListener, MouseMotionListener, MouseWheelListener {
@@ -115,11 +116,11 @@ public final class Mouse implements MouseListener, MouseMotionListener, MouseWhe
 	}
 
 	public static int getTileX() {
-		return instance.cursorPosition.x / Display.getCharWidth();
+		return Maths.max(instance.cursorPosition.x / Display.getCharWidth(), 0);
 	}
 
 	public static int getTileY() {
-		return instance.cursorPosition.y / Display.getCharHeight();
+		return Maths.max(instance.cursorPosition.y / Display.getCharHeight(), 0);
 	}
 
 	public static int getTileDX() {

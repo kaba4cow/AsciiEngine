@@ -57,6 +57,14 @@ public final class Drawer {
 		return true;
 	}
 
+	public static boolean overlayColor(int x, int y, int color) {
+		if (x < 0 || x >= frame.width || y < 0 || y >= frame.height || isClipped(x, y))
+			return false;
+		int index = y * frame.width + x;
+		frame.colors[index] |= color;
+		return true;
+	}
+
 	public static void drawFrame(int x, int y, boolean centered, Frame frame) {
 		drawFrame(x, y, frame.width, frame.height, centered, frame);
 	}

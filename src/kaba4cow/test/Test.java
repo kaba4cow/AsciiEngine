@@ -67,7 +67,7 @@ public class Test implements MainProgram {
 
 		if (Keyboard.isKeyDown(Keyboard.KEY_F))
 			Display.takeScreenshot();
-//
+
 //		if (Keyboard.isKeyDown(Keyboard.KEY_C))
 //			Display.setDrawCursor(!Display.isDrawCursor());
 //		if (Keyboard.isKeyDown(Keyboard.KEY_W))
@@ -106,7 +106,7 @@ public class Test implements MainProgram {
 
 	public static void main(String[] args) throws Exception {
 		Engine.init("Test", 60);
-		Display.createWindowed(60, 40, true);
+		Display.createWindowed(40, 40, true);
 		Engine.start(new Test());
 	}
 
