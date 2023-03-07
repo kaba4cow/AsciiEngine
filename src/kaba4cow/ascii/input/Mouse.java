@@ -70,15 +70,21 @@ public final class Mouse implements MouseListener, MouseMotionListener, MouseWhe
 	}
 
 	public static boolean isKey(int code) {
+		if (Display.isCursorOnBar())
+			return false;
 		return instance.states[index(code)];
 	}
 
 	public static boolean isKeyDown(int code) {
+		if (Display.isCursorOnBar())
+			return false;
 		int index = index(code);
 		return instance.states[index] && !instance.prevStates[index];
 	}
 
 	public static boolean isKeyUp(int code) {
+		if (Display.isCursorOnBar())
+			return false;
 		int index = index(code);
 		return !instance.states[index] && instance.prevStates[index];
 	}
@@ -116,19 +122,19 @@ public final class Mouse implements MouseListener, MouseMotionListener, MouseWhe
 	}
 
 	public static int getTileX() {
-		return Maths.max(instance.cursorPosition.x / Display.getCharWidth(), 0);
+		return Maths.max(instance.cursorPosition.x / Display.getCharSize(), 0);
 	}
 
 	public static int getTileY() {
-		return Maths.max(instance.cursorPosition.y / Display.getCharHeight(), 0);
+		return Maths.max(instance.cursorPosition.y / Display.getCharSize(), 0);
 	}
 
 	public static int getTileDX() {
-		return instance.cursorDelta.x / Display.getCharWidth();
+		return instance.cursorDelta.x / Display.getCharSize();
 	}
 
 	public static int getTileDY() {
-		return instance.cursorDelta.y / Display.getCharHeight();
+		return instance.cursorDelta.y / Display.getCharSize();
 	}
 
 	@Override
