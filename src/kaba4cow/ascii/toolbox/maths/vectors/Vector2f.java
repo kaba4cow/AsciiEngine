@@ -22,6 +22,12 @@ public class Vector2f implements AbstractVector {
 		this(vector == null ? 0 : vector.x, vector == null ? 0 : vector.y);
 	}
 
+	public Vector2f set(Vector2f src) {
+		this.x = src.x;
+		this.y = src.y;
+		return this;
+	}
+
 	public Vector2f set(float x, float y) {
 		this.x = x;
 		this.y = y;

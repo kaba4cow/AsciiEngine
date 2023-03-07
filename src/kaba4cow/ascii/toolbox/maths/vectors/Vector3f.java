@@ -24,6 +24,13 @@ public class Vector3f implements AbstractVector {
 		this(vector == null ? 0 : vector.x, vector == null ? 0 : vector.y, vector == null ? 0 : vector.z);
 	}
 
+	public Vector3f set(Vector3f src) {
+		this.x = src.x;
+		this.y = src.y;
+		this.z = src.z;
+		return this;
+	}
+
 	public Vector3f set(float x, float y, float z) {
 		this.x = x;
 		this.y = y;

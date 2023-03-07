@@ -22,6 +22,13 @@ public class Vector3i implements AbstractVector {
 		this(vector == null ? 0 : vector.x, vector == null ? 0 : vector.y, vector == null ? 0 : vector.z);
 	}
 
+	public Vector3i set(Vector3i src) {
+		this.x = src.x;
+		this.y = src.y;
+		this.z = src.z;
+		return this;
+	}
+
 	public Vector3i set(int x, int y, int z) {
 		this.x = x;
 		this.y = y;

@@ -20,6 +20,12 @@ public class Vector2i implements AbstractVector {
 		this(vector == null ? 0 : vector.x, vector == null ? 0 : vector.y);
 	}
 
+	public Vector2i set(Vector2i src) {
+		this.x = src.x;
+		this.y = src.y;
+		return this;
+	}
+
 	public Vector2i set(int x, int y) {
 		this.x = x;
 		this.y = y;

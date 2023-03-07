@@ -27,6 +27,14 @@ public class Vector4f implements AbstractVector {
 				vector == null ? 0 : vector.w);
 	}
 
+	public Vector4f set(Vector4f src) {
+		this.x = src.x;
+		this.y = src.y;
+		this.z = src.z;
+		this.w = src.w;
+		return this;
+	}
+
 	public Vector4f set(float x, float y, float z, float w) {
 		this.x = x;
 		this.y = y;
