@@ -22,7 +22,7 @@ public final class Glyphs {
 	public static final char WHITE_SUN_WITH_RAYS = (char) numGlyphs++;
 	public static final char BLACK_RIGHT_POINTING_POINTER = (char) numGlyphs++;
 	public static final char BLACK_LEFT_POINTING_POINTER = (char) numGlyphs++;
-	public static final char TRIPLE_VERTICAL_WAVE = (char) numGlyphs++;
+	public static final char ENTER_ARROW = (char) numGlyphs++;
 	public static final char DOUBLE_EXCLAMATION_MARK = (char) numGlyphs++;
 	public static final char PILCROW_SIGN = (char) numGlyphs++;
 	public static final char SECTION_SIGN = (char) numGlyphs++;
