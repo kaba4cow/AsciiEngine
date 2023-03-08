@@ -44,9 +44,7 @@ import kaba4cow.ascii.toolbox.utils.ProgramUtils;
 
 public final class Display {
 
-	private static final int IMAGE_CHAR_SIZE = 16;
-
-	private static int CHAR_SIZE;
+	private static final int CHAR_SIZE = 16;
 
 	private static int IMAGE_CHAR_COLUMNS;
 
@@ -85,8 +83,9 @@ public final class Display {
 
 	private static boolean cursorOnBar;
 
-	private static int screenX, screenY, tileX, tileY;
-	private static int bColorTemp, brTemp, bgTemp, bbTemp, fColorTemp, frTemp, fgTemp, fbTemp, xTemp, yTemp;
+	private static int screenX, screenY, tileX, tileY, prevTileX, prevTileY;
+	private static int prevColorTemp, bColorTemp, brTemp, bgTemp, bbTemp, fColorTemp, frTemp, fgTemp, fbTemp, xTemp,
+			yTemp, xOffsetTemp, yOffsetTemp;
 
 	private Display() {
 
@@ -109,7 +108,7 @@ public final class Display {
 			Engine.terminate(e);
 		}
 
-		IMAGE_CHAR_COLUMNS = glyphSheet.width / IMAGE_CHAR_SIZE;
+		IMAGE_CHAR_COLUMNS = glyphSheet.width / CHAR_SIZE;
 
 		TITLE = title;
 
@@ -118,25 +117,15 @@ public final class Display {
 	}
 
 	public static void createFullscreen() {
-		create(0, 0, 1);
-	}
-
-	public static void createFullscreen(int scale) {
-		create(0, 0, scale);
+		create(0, 0);
 	}
 
 	public static void createWindowed(int width, int height) {
-		create(width, height, 1);
+		create(width, height);
 	}
 
-	public static void createWindowed(int width, int height, int scale) {
-		create(width, height, scale);
-	}
-
-	private static void create(int width, int height, int scale) {
+	private static void create(int width, int height) {
 		fullscreen = width == 0 || height == 0;
-
-		CHAR_SIZE = scale * IMAGE_CHAR_SIZE;
 
 		if (fullscreen) {
 			WIDTH = SCREEN_WIDTH / CHAR_SIZE;
@@ -223,6 +212,8 @@ public final class Display {
 
 	public static void update() {
 		if (fullscreen) {
+			cursorChar = cursorWaiting ? Glyphs.SYSTEM_CURSOR_WAITING
+					: (Mouse.isKey(Mouse.LEFT) ? Glyphs.SYSTEM_CURSOR_GRABBED : Glyphs.SYSTEM_CURSOR);
 			windowListener.setActive(false);
 			return;
 		}
@@ -295,11 +286,10 @@ public final class Display {
 		if (!cursorOnBar && drawCursor)
 			mouseIndex = Mouse.getTileY() * WIDTH + Mouse.getTileX();
 
+		screenX = 0;
 		screenY = 0;
 		if (!fullscreen)
 			for (int i = 0; i < WIDTH; i++) {
-				screenX = CHAR_SIZE * i;
-
 				if (i == WIDTH - 2)
 					currentChar = Glyphs.SYSTEM_HIDE_WINDOW;
 				else if (i == WIDTH - 1)
@@ -311,10 +301,12 @@ public final class Display {
 				else if (i > 0 && i - 1 < titleLength)
 					currentChar = TITLE.charAt(i - 1);
 
-				tileX = IMAGE_CHAR_SIZE * (currentChar % IMAGE_CHAR_COLUMNS);
-				tileY = IMAGE_CHAR_SIZE * (currentChar / IMAGE_CHAR_COLUMNS);
+				tileX = currentChar % IMAGE_CHAR_COLUMNS;
+				tileY = currentChar / IMAGE_CHAR_COLUMNS;
 
 				glyphSheet.draw(0xEEE000);
+
+				screenX += CHAR_SIZE;
 			}
 
 		for (int i = 0; i < frame.length; i++) {
@@ -329,8 +321,8 @@ public final class Display {
 			screenX = CHAR_SIZE * (i % WIDTH);
 			screenY = CHAR_SIZE * (i / WIDTH + barOffset);
 
-			tileX = IMAGE_CHAR_SIZE * (currentChar % IMAGE_CHAR_COLUMNS);
-			tileY = IMAGE_CHAR_SIZE * (currentChar / IMAGE_CHAR_COLUMNS);
+			tileX = currentChar % IMAGE_CHAR_COLUMNS;
+			tileY = currentChar / IMAGE_CHAR_COLUMNS;
 
 			glyphSheet.draw(frame.colors[i]);
 
@@ -405,7 +397,8 @@ public final class Display {
 	private static class WindowListener extends MouseAdapter implements FocusListener, DropTargetListener {
 
 		private final JFrame frame;
-		private Point mousePosition = null;
+
+		private Point mousePosition;
 		private boolean active;
 
 		public WindowListener(JFrame frame) {
@@ -495,6 +488,9 @@ public final class Display {
 		private BufferedImage sheet;
 		public final boolean[][] map;
 
+		private final BufferedImage[][] images;
+		private BufferedImage image;
+
 		public final int width;
 		public final int height;
 
@@ -511,27 +507,49 @@ public final class Display {
 				for (int x = 0; x < width; x++)
 					map[x][y] = colorModel.getRed(sheet.getRaster().getDataElements(x, y, null)) > 0;
 			sheet = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+			int columns = width / CHAR_SIZE;
+			int rows = height / CHAR_SIZE;
+			images = new BufferedImage[columns][rows];
+			for (int y = 0; y < rows; y++)
+				for (int x = 0; x < columns; x++)
+					images[x][y] = sheet.getSubimage(x * CHAR_SIZE, y * CHAR_SIZE, CHAR_SIZE, CHAR_SIZE);
 		}
 
 		public void draw(int color) {
-			bColorTemp = (color >> 12) & 0xFFF;
-			brTemp = (bColorTemp >> 8) & 0xF;
-			bgTemp = (bColorTemp >> 4) & 0xF;
-			bbTemp = (bColorTemp >> 0) & 0xF;
-			bColorTemp = (brTemp << 20) | (bgTemp << 12) | (bbTemp << 4);
+			if (prevColorTemp == color && prevTileX == tileX && prevTileY == tileY) {
+				graphics.drawImage(image, screenX, screenY, canvas);
+				return;
+			}
 
-			fColorTemp = (color >> 0) & 0xFFF;
-			frTemp = (fColorTemp >> 8) & 0xF;
-			fgTemp = (fColorTemp >> 4) & 0xF;
-			fbTemp = (fColorTemp >> 0) & 0xF;
-			fColorTemp = (frTemp << 20) | (fgTemp << 12) | (fbTemp << 4);
+			if (prevColorTemp != color) {
+				bColorTemp = (color >> 12) & 0xFFF;
+				brTemp = (bColorTemp >> 8) & 0xF;
+				bgTemp = (bColorTemp >> 4) & 0xF;
+				bbTemp = (bColorTemp >> 0) & 0xF;
+				bColorTemp = (brTemp << 20) | (bgTemp << 12) | (bbTemp << 4);
 
-			for (yTemp = tileY; yTemp < tileY + IMAGE_CHAR_SIZE; yTemp++)
-				for (xTemp = tileX; xTemp < tileX + IMAGE_CHAR_SIZE; xTemp++)
-					sheet.setRGB(xTemp, yTemp, map[xTemp][yTemp] ? fColorTemp : bColorTemp);
+				fColorTemp = (color >> 0) & 0xFFF;
+				frTemp = (fColorTemp >> 8) & 0xF;
+				fgTemp = (fColorTemp >> 4) & 0xF;
+				fbTemp = (fColorTemp >> 0) & 0xF;
+				fColorTemp = (frTemp << 20) | (fgTemp << 12) | (fbTemp << 4);
+			}
+			prevColorTemp = color;
 
-			graphics.drawImage(sheet, screenX, screenY, screenX + CHAR_SIZE, screenY + CHAR_SIZE, tileX, tileY,
-					tileX + IMAGE_CHAR_SIZE, tileY + IMAGE_CHAR_SIZE, canvas);
+			if (prevTileX != tileX || prevTileY != tileY) {
+				image = images[tileX][tileY];
+				xOffsetTemp = CHAR_SIZE * tileX;
+				yOffsetTemp = CHAR_SIZE * tileY;
+			}
+			prevTileX = tileX;
+			prevTileY = tileY;
+
+			for (yTemp = 0; yTemp < CHAR_SIZE; yTemp++)
+				for (xTemp = 0; xTemp < CHAR_SIZE; xTemp++)
+					image.setRGB(xTemp, yTemp, map[xTemp + xOffsetTemp][yTemp + yOffsetTemp] ? fColorTemp : bColorTemp);
+
+			graphics.drawImage(image, screenX, screenY, canvas);
 		}
 
 	}

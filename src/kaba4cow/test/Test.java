@@ -106,7 +106,7 @@ public class Test implements MainProgram {
 
 	public static void main(String[] args) throws Exception {
 		Engine.init("Test", 60);
-		Display.createWindowed(40, 40);
+		Display.createWindowed(30, 30);
 		Engine.start(new Test());
 	}
 
