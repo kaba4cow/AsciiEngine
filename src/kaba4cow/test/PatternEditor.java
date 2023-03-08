@@ -80,7 +80,7 @@ public class PatternEditor implements MainProgram {
 
 	public static void main(String[] args) {
 		Engine.init("PatternEditor", 60);
-		Display.createFullscreen(true);
+		Display.createFullscreen();
 //		Display.createWindowed(50, 40, true);
 		Engine.start(new PatternEditor());
 	}

@@ -1,5 +1,7 @@
 package kaba4cow.ascii;
 
+import java.io.File;
+
 public interface MainProgram {
 
 	public void init();
@@ -17,6 +19,10 @@ public interface MainProgram {
 	}
 
 	public default void onClose() {
+
+	}
+
+	public default void onFilesDropped(File[] files) {
 
 	}
 

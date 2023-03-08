@@ -9,6 +9,14 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
@@ -21,6 +29,7 @@ import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -108,23 +117,23 @@ public final class Display {
 		backgroundColor = 0x000FFF;
 	}
 
-	public static void createFullscreen(boolean squareGlyphs) {
-		create(0, 0, 1, squareGlyphs);
+	public static void createFullscreen() {
+		create(0, 0, 1);
 	}
 
-	public static void createFullscreen(int scale, boolean squareGlyphs) {
-		create(0, 0, scale, squareGlyphs);
+	public static void createFullscreen(int scale) {
+		create(0, 0, scale);
 	}
 
-	public static void createWindowed(int width, int height, boolean squareGlyphs) {
-		create(width, height, 1, squareGlyphs);
+	public static void createWindowed(int width, int height) {
+		create(width, height, 1);
 	}
 
-	public static void createWindowed(int width, int height, int scale, boolean squareGlyphs) {
-		create(width, height, scale, squareGlyphs);
+	public static void createWindowed(int width, int height, int scale) {
+		create(width, height, scale);
 	}
 
-	private static void create(int width, int height, int scale, boolean squareGlyphs) {
+	private static void create(int width, int height, int scale) {
 		fullscreen = width == 0 || height == 0;
 
 		CHAR_SIZE = scale * IMAGE_CHAR_SIZE;
@@ -164,6 +173,7 @@ public final class Display {
 		});
 		window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		windowListener = new WindowListener(window);
+		new DropTarget(window, windowListener);
 
 		Dimension dimension = new Dimension(DISPLAY_WIDTH, DISPLAY_HEIGHT + CHAR_SIZE);
 
@@ -392,7 +402,7 @@ public final class Display {
 		return fullscreen ? 0 : -CHAR_SIZE;
 	}
 
-	private static class WindowListener extends MouseAdapter implements FocusListener {
+	private static class WindowListener extends MouseAdapter implements FocusListener, DropTargetListener {
 
 		private final JFrame frame;
 		private Point mousePosition = null;
@@ -436,6 +446,48 @@ public final class Display {
 			if (Engine.getProgram() != null)
 				Engine.getProgram().onLostFocus();
 		}
+
+		@Override
+		public void drop(DropTargetDropEvent event) {
+			event.acceptDrop(DnDConstants.ACTION_COPY);
+
+			Transferable transferable = event.getTransferable();
+			DataFlavor[] flavors = transferable.getTransferDataFlavors();
+
+			for (DataFlavor flavor : flavors) {
+				try {
+					if (flavor.isFlavorJavaFileListType()) {
+						@SuppressWarnings("unchecked")
+						List<File> dropped = (List<File>) transferable.getTransferData(flavor);
+						File[] files = new File[dropped.size()];
+						for (int i = 0; i < files.length; i++)
+							files[i] = dropped.get(i);
+						Engine.getProgram().onFilesDropped(files);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			event.dropComplete(true);
+		}
+
+		@Override
+		public void dragEnter(DropTargetDragEvent event) {
+		}
+
+		@Override
+		public void dragOver(DropTargetDragEvent event) {
+		}
+
+		@Override
+		public void dropActionChanged(DropTargetDragEvent event) {
+		}
+
+		@Override
+		public void dragExit(DropTargetEvent event) {
+		}
+
 	}
 
 	private static class GlyphSheet {

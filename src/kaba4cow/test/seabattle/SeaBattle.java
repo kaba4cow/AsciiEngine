@@ -201,9 +201,9 @@ public class SeaBattle implements MainProgram {
 	public static void main(String[] args) {
 		Engine.init("Sea Battle", 30);
 		if (args != null && args.length == 1 && args[0].equals("-fs"))
-			Display.createFullscreen(2, true);
+			Display.createFullscreen(2);
 		else
-			Display.createWindowed(30, 20, 2, true);
+			Display.createWindowed(30, 20, 2);
 		Engine.start(new SeaBattle());
 	}
 

@@ -39,7 +39,7 @@ public class MatrixStream implements MainProgram {
 
 	public static void main(String[] args) {
 		Engine.init("Matrix Stream", 30);
-		Display.createFullscreen(false);
+		Display.createFullscreen();
 		Engine.start(new MatrixStream());
 	}
 

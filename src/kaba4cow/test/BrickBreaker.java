@@ -72,7 +72,7 @@ public class BrickBreaker implements MainProgram {
 
 	public static void main(String[] args) {
 		Engine.init("Brick Breaker", 60);
-		Display.createFullscreen(true);
+		Display.createFullscreen();
 		Display.setDrawCursor(false);
 		Engine.start(new BrickBreaker());
 	}

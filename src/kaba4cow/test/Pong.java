@@ -62,7 +62,7 @@ public class Pong implements MainProgram {
 
 	public static void main(String[] args) {
 		Engine.init("Pong", 30);
-		Display.createWindowed(40, 40, true);
+		Display.createWindowed(40, 40);
 		Engine.start(new Pong());
 	}
 
