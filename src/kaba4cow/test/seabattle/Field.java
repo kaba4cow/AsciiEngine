@@ -109,7 +109,7 @@ public class Field {
 			for (cx = x - 1; cx <= x + 1; cx++) {
 				if (cx < 0 || cx >= SIZE || cy < 0 || cy >= SIZE)
 					continue;
-				if (field[cx][cy] == CELL_HIT && x == cx || y == cy)
+				if (field[cx][cy] == CELL_HIT && (x == cx || y == cy))
 					return true;
 				if (field[cx][cy] == CELL_DESTROYED)
 					return false;

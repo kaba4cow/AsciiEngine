@@ -190,6 +190,10 @@ public class DataFile {
 			indentCount--;
 	}
 
+	public Vector<Pair<String, DataFile>> getNodes() {
+		return objects;
+	}
+
 	public DataFile node(String name) {
 		if (!map.containsKey(name)) {
 			map.put(name, objects.size());

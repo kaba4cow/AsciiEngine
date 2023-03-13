@@ -181,7 +181,6 @@ public final class Display {
 		window.setPreferredSize(dimension);
 		window.setFocusable(true);
 		window.setUndecorated(true);
-		window.setVisible(true);
 		window.add(canvas);
 		window.setResizable(false);
 		window.pack();
@@ -198,8 +197,13 @@ public final class Display {
 		Mouse.reset();
 		canvas.requestFocus();
 
+		canvas.getGraphics().setColor(Color.BLACK);
+		canvas.getGraphics().fillRect(0, 0, DISPLAY_WIDTH + CHAR_SIZE, DISPLAY_HEIGHT + CHAR_SIZE);
+		window.repaint();
+
 		window.setIgnoreRepaint(true);
 		canvas.setIgnoreRepaint(true);
+		window.setVisible(true);
 	}
 
 	public static void destroy() {

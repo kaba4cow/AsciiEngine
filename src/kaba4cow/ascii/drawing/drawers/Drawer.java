@@ -110,7 +110,7 @@ public final class Drawer {
 		int lines = 1;
 		for (int c = 0; c < string.length(); c++) {
 			length++;
-			if (length == maxLength) {
+			if (length == maxLength && c < string.length() - 1) {
 				length = 0;
 				lines++;
 			}
@@ -137,7 +137,7 @@ public final class Drawer {
 		for (int c = 0; c < string.length(); c++) {
 			drawChar(x, y, string.charAt(c), color);
 			length++;
-			if (length == maxLength) {
+			if (length == maxLength && c < string.length() - 1) {
 				length = 0;
 				x = startX;
 				y++;

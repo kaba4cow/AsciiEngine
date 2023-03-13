@@ -10,9 +10,9 @@ import kaba4cow.ascii.toolbox.utils.ProgramUtils;
 
 public final class Printer {
 
-	private static final StringBuilder history = new StringBuilder();
-
 	private static final PrinterStream instance = new PrinterStream();
+
+	private static StringBuilder history = new StringBuilder();
 
 	private Printer() {
 
@@ -20,6 +20,10 @@ public final class Printer {
 
 	public static String getHistory() {
 		return history.toString();
+	}
+
+	public static void clearHistory() {
+		history = new StringBuilder();
 	}
 
 	public static void saveLog() {

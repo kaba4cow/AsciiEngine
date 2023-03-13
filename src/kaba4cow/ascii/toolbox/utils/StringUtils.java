@@ -19,6 +19,10 @@ public final class StringUtils {
 		return string.substring(0, 1).toUpperCase() + string.substring(1);
 	}
 
+	public static String percent(float value) {
+		return (int) (100f * value) + "%";
+	}
+
 	public static String format1(float value) {
 		return String.format("%.1f", value);
 	}
