@@ -57,11 +57,19 @@ public final class Drawer {
 		return true;
 	}
 
-	public static boolean overlayColor(int x, int y, int color) {
+	public static boolean drawBackground(int x, int y, int color) {
 		if (x < 0 || x >= frame.width || y < 0 || y >= frame.height || isClipped(x, y))
 			return false;
 		int index = y * frame.width + x;
-		frame.colors[index] |= color;
+		frame.colors[index] = 0xFFF000 & (color << 12) | (0x000FFF & frame.colors[index]);
+		return true;
+	}
+
+	public static boolean drawForeground(int x, int y, int color) {
+		if (x < 0 || x >= frame.width || y < 0 || y >= frame.height || isClipped(x, y))
+			return false;
+		int index = y * frame.width + x;
+		frame.colors[index] = 0x000FFF & color | (0xFFF000 & frame.colors[index]);
 		return true;
 	}
 
