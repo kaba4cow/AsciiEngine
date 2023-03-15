@@ -194,6 +194,14 @@ public class GUIFrame {
 		}
 	}
 
+	public int totalHeight(int width) {
+		width--;
+		int totalHeight = 2;
+		for (int i = 0; i < list.size(); i++)
+			totalHeight += list.get(i).totalLines(width);
+		return totalHeight;
+	}
+
 	public void add(GUIObject object) {
 		if (object != null && !list.contains(object))
 			list.add(object);
