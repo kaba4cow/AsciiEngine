@@ -202,9 +202,20 @@ public class GUIFrame {
 		return totalHeight;
 	}
 
-	public void add(GUIObject object) {
+	public GUIFrame add(GUIObject object) {
 		if (object != null && !list.contains(object))
 			list.add(object);
+		return this;
+	}
+
+	public GUIFrame resetScrollMin() {
+		scroll = 0;
+		return this;
+	}
+
+	public GUIFrame resetScrollMax() {
+		scroll = maxScroll + 128;
+		return this;
 	}
 
 	public String getTitle() {
