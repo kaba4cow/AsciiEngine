@@ -362,6 +362,10 @@ public final class Display {
 		return frame;
 	}
 
+	public static boolean[][] getGlyphSheetMap() {
+		return glyphSheet.map;
+	}
+
 	public static void setDrawCursor(boolean draw) {
 		drawCursor = draw;
 	}

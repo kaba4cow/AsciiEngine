@@ -156,6 +156,124 @@ public final class Drawer {
 		return lines;
 	}
 
+	public static int drawBigString(int x, int y, boolean centered, String string, char c, int color) {
+		int size = Display.getCharSize();
+		int length = string.length();
+
+		boolean[][] map = Display.getGlyphSheetMap();
+		int columns = map.length / size;
+
+		char glyph;
+		int i, tX, tY, mX, mY, minX, maxX;
+
+		int totalWidth = 0;
+
+		for (i = 0; i < length; i++) {
+			minX = size;
+			maxX = 0;
+			glyph = string.charAt(i);
+
+			tX = glyph % columns;
+			tY = glyph / columns;
+			for (mY = 0; mY < size; mY++)
+				for (mX = 0; mX < size; mX++)
+					if (map[mX + size * tX][mY + size * tY]) {
+						if (mX < minX)
+							minX = mX;
+						else if (mX > maxX)
+							maxX = mX;
+					}
+			if (minX == size) {
+				minX = 0;
+				maxX = size / 2;
+			}
+			minX--;
+			maxX++;
+
+			totalWidth -= minX;
+			totalWidth += maxX;
+		}
+
+		if (centered) {
+			x -= totalWidth / 2;
+			y -= size / 2;
+		}
+
+		for (i = 0; i < length; i++) {
+			minX = size;
+			maxX = 0;
+			glyph = string.charAt(i);
+
+			tX = glyph % columns;
+			tY = glyph / columns;
+			for (mY = 0; mY < size; mY++)
+				for (mX = 0; mX < size; mX++)
+					if (map[mX + size * tX][mY + size * tY]) {
+						if (mX < minX)
+							minX = mX;
+						else if (mX > maxX)
+							maxX = mX;
+					}
+			if (minX == size) {
+				minX = 0;
+				maxX = size / 2;
+			}
+			minX--;
+			maxX++;
+
+			x -= minX;
+
+			for (mY = 0; mY < size; mY++)
+				for (mX = 0; mX < size; mX++)
+					if (map[mX + size * tX][mY + size * tY])
+						drawChar(x + mX, y + mY, c, color);
+			x += maxX;
+		}
+
+		return totalWidth;
+	}
+
+	public static int totalWidth(String string) {
+		int size = Display.getCharSize();
+		int length = string.length();
+
+		boolean[][] map = Display.getGlyphSheetMap();
+		int columns = map.length / size;
+
+		char glyph;
+		int i, tX, tY, mX, mY, minX, maxX;
+
+		int totalWidth = 0;
+
+		for (i = 0; i < length; i++) {
+			minX = size;
+			maxX = 0;
+			glyph = string.charAt(i);
+
+			tX = glyph % columns;
+			tY = glyph / columns;
+			for (mY = 0; mY < size; mY++)
+				for (mX = 0; mX < size; mX++)
+					if (map[mX + size * tX][mY + size * tY]) {
+						if (mX < minX)
+							minX = mX;
+						else if (mX > maxX)
+							maxX = mX;
+					}
+			if (minX == size) {
+				minX = 0;
+				maxX = size / 2;
+			}
+			minX--;
+			maxX++;
+
+			totalWidth -= minX;
+			totalWidth += maxX;
+		}
+
+		return totalWidth;
+	}
+
 	public static void drawPattern(int x, int y, boolean centered, char[][] pattern, int color) {
 		if (centered) {
 			y -= pattern.length / 2;

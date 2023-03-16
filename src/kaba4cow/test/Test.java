@@ -3,7 +3,6 @@ package kaba4cow.test;
 import kaba4cow.ascii.MainProgram;
 import kaba4cow.ascii.core.Display;
 import kaba4cow.ascii.core.Engine;
-import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.drawing.gui.GUIButton;
 import kaba4cow.ascii.drawing.gui.GUICheckbox;
 import kaba4cow.ascii.drawing.gui.GUIFrame;
@@ -84,13 +83,7 @@ public class Test implements MainProgram {
 
 	@Override
 	public void render() {
-//		frame.render(0, 0, Display.getWidth(), Display.getHeight(), false);
 		frame.render();
-
-//		char mouseChar = Display.getChar(Mouse.getTileX(), Mouse.getTileY());
-//		Drawer.drawString(Display.getWidth() - 10, 0, false, mouseChar + " = " + (int) mouseChar, 0x222FFF);
-
-		Drawer.drawString(0, 0, false, "" + Engine.getCurrentFramerate(), 0x000FFF);
 
 //		int x = 0, y = 0;
 //		int w = 4;
@@ -106,7 +99,7 @@ public class Test implements MainProgram {
 
 	public static void main(String[] args) throws Exception {
 		Engine.init("Test", 60);
-		Display.createWindowed(30, 30);
+		Display.createWindowed(70, 40);
 		Engine.start(new Test());
 	}
 
