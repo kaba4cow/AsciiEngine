@@ -1,206 +1,329 @@
 package kaba4cow.ascii.toolbox.files;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 
 import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.toolbox.Printer;
 
 public class TableFile {
 
-	private static final Map<String, TableFile> files = new HashMap<String, TableFile>();
+	private HashMap<String, Table> tables;
 
-	private static final String SEPARATOR = ",";
-	private static final String NEWLINE = "\n";
-
-	private Cell[][] table;
-
-	public TableFile(int columns, int rows) {
-		this.table = new Cell[columns][rows];
+	public TableFile() {
+		tables = new HashMap<>();
 	}
 
-	public static TableFile get(String fileName) {
-		if (!files.containsKey(fileName.toLowerCase())) {
-			TableFile file = read(fileName);
-			files.put(fileName.toLowerCase(), file);
-		}
-		return files.get(fileName.toLowerCase());
+	public HashMap<String, Table> getTables() {
+		return tables;
+	}
+
+	public Table addTable(String name) {
+		Table table = new Table(name);
+		tables.put(name, table);
+		return table;
+	}
+
+	public void print() {
+		for (String name : tables.keySet())
+			tables.get(name).print();
 	}
 
 	public static TableFile read(String fileName) {
-		File file = new File(fileName);
-		return read(file);
+		return read(new File(fileName));
 	}
 
 	public static TableFile read(File file) {
 		Printer.println("Loading table file: " + file.getAbsolutePath());
 
 		try {
-			FileInputStream in = new FileInputStream(file);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-			String line = reader.readLine();
+			FileInputStream fis = new FileInputStream(file);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
 
-			LinkedList<LinkedList<Cell>> rowList = new LinkedList<LinkedList<Cell>>();
-			int row = 0;
-			while (true) {
+			TableFile tableFile = new TableFile();
+
+			String line;
+			String[] strings;
+			String tag;
+
+			Table table = null;
+			while ((line = reader.readLine()) != null) {
 				line = line.trim();
+				if (line.isEmpty() || line.startsWith("//"))
+					continue;
 
-				if (!line.isEmpty()) {
-					LinkedList<Cell> columnList = new LinkedList<Cell>();
-					String[] cells = line.split(SEPARATOR);
-					for (int column = 0; column < cells.length; column++) {
-						Cell cell = new Cell(cells[column]);
-						columnList.add(cell);
-					}
-					rowList.add(columnList);
+				strings = line.split(" :: ");
+				tag = strings[0];
+				strings = readStrings(strings[1]);
+
+				if (tag.equalsIgnoreCase("TABLE")) {
+					table = tableFile.addTable(strings[0]);
+				} else if (table != null) {
+					if (tag.equalsIgnoreCase("COLUMN"))
+						table.addColumn(strings[0]);
+					else if (tag.equalsIgnoreCase("ITEM"))
+						table.addItem(strings);
 				}
-				row++;
 
-				line = reader.readLine();
-				if (line == null)
-					break;
+				line = line.trim();
 			}
 			reader.close();
 
-			TableFile tableFile = new TableFile(rowList.size(), rowList.getFirst().size());
-			Iterator<LinkedList<Cell>> rowIterator = rowList.iterator();
-			row = 0;
-			while (rowIterator.hasNext()) {
-				LinkedList<Cell> columnList = rowIterator.next();
-				Iterator<Cell> columnIterator = columnList.iterator();
-				int column = 0;
-				while (columnIterator.hasNext()) {
-					Cell cell = columnIterator.next();
-					tableFile.table[row][column] = cell;
-					column++;
-				}
-				row++;
-			}
-
-			files.put(file.getAbsolutePath(), tableFile);
 			return tableFile;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			Engine.terminate(e);
 			return null;
 		}
 	}
 
+	public static boolean write(TableFile tableFile, String fileName) {
+		return write(tableFile, new File(fileName));
+	}
+
 	public static boolean write(TableFile tableFile, File file) {
 		Printer.println("Saving table file: " + file.getAbsolutePath());
 
-		if (!file.exists())
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				Engine.terminate(e);
-				return false;
+		try {
+			FileOutputStream fos = new FileOutputStream(file);
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos));
+
+			HashMap<String, Table> tables = tableFile.getTables();
+			for (String key : tables.keySet()) {
+				Table table = tables.get(key);
+				writer.append("TABLE :: \'");
+				writer.append(table.getName());
+				writer.append("\'\n\n");
+
+				LinkedList<String> columns = table.getColumns();
+				for (int i = 0; i < columns.size(); i++) {
+					writer.append("\tCOLUMN :: \'");
+					writer.append(writeString(columns.get(i)));
+					writer.append("\'\n");
+				}
+				writer.append('\n');
+
+				LinkedList<LinkedList<String>> items = table.getItems();
+				for (int i = 0; i < items.size(); i++) {
+					writer.append("\tITEM :: ");
+					LinkedList<String> item = items.get(i);
+					for (int j = 0; j < item.size(); j++) {
+						writer.append('\'');
+						writer.append(writeString(item.get(j)));
+						writer.append('\'');
+						if (j < item.size() - 1)
+							writer.append(' ');
+					}
+					writer.append('\n');
+				}
+				writer.append('\n');
 			}
 
-		try {
-			PrintWriter print = new PrintWriter(file);
-			String string = tableFile.toString();
-			print.append(string);
-			print.close();
-		} catch (FileNotFoundException e) {
+			writer.close();
+		} catch (Exception e) {
 			Engine.terminate(e);
 			return false;
 		}
 		return true;
 	}
 
-	private static void write(TableFile tableFile, StringBuilder writer) {
-		for (int i = 0; i < tableFile.table.length; i++) {
-			for (int j = 0; j < tableFile.table[i].length; j++) {
-				if (j > 0)
-					writer.append(SEPARATOR);
-				writer.append(tableFile.table[i][j].value);
+	private static String writeString(String string) {
+		int i, length = string.length();
+		char c;
+		StringBuilder builder = new StringBuilder();
+		for (i = 0; i < length; i++) {
+			c = string.charAt(i);
+			if (c == '\\' || c == '\'')
+				builder.append('\\');
+			builder.append(c);
+		}
+		return builder.toString();
+	}
+
+	private static String[] readStrings(String string) {
+		boolean quotes = false;
+		boolean backslash = false;
+		int i, length = string.length();
+		char c;
+		StringBuilder builder = new StringBuilder();
+		for (i = 0; i < length; i++) {
+			c = string.charAt(i);
+
+			if (c == '\'') {
+				if (backslash) {
+					builder.append(c);
+					backslash = false;
+				} else
+					quotes = !quotes;
+			} else if (c == '\\') {
+				if (backslash) {
+					builder.append(c);
+					backslash = false;
+				} else
+					backslash = true;
+			} else if (quotes) {
+				builder.append(c);
+				backslash = false;
+			} else if (c == ' ')
+				builder.append('\n');
+		}
+
+		return builder.toString().split("\n");
+	}
+
+	public class Table {
+
+		private String name;
+		private LinkedList<String> columns;
+		private LinkedList<LinkedList<String>> items;
+
+		public Table(String name) {
+			super();
+			this.name = name;
+			this.columns = new LinkedList<>();
+			this.items = new LinkedList<>();
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getColumn(int index) {
+			if (index < 0 || index >= columns.size())
+				return null;
+			return columns.get(index);
+		}
+
+		public String getItemString(int itemIndex, int stringIndex) {
+			if (stringIndex < 0 || itemIndex < 0 || itemIndex >= items.size())
+				return null;
+			LinkedList<String> item = items.get(itemIndex);
+			if (stringIndex >= item.size())
+				return null;
+			return item.get(stringIndex);
+		}
+
+		public void setColumn(int index, String column) {
+			if (index < 0)
+				return;
+			else if (index < columns.size())
+				columns.set(index, column);
+			else
+				columns.add(column);
+		}
+
+		public void insertColumn(int index, String column) {
+			if (index < 0 && index >= columns.size())
+				return;
+			columns.add(index, column);
+			for (int i = 0; i < items.size(); i++)
+				insertItemString(i, index, "");
+		}
+
+		public void removeColumn(int index) {
+			if (index < 0 && index >= columns.size())
+				return;
+			columns.remove(index);
+			for (int i = 0; i < items.size(); i++)
+				removeItemString(i, index);
+		}
+
+		public void addColumn(String column) {
+			columns.add(column);
+		}
+
+		public void addItem(String... newItem) {
+			LinkedList<String> item = new LinkedList<>();
+			for (int i = 0; i < newItem.length; i++)
+				item.add(newItem[i]);
+			items.add(item);
+		}
+
+		public void insertItem(int index, String... newItem) {
+			LinkedList<String> item = new LinkedList<>();
+			for (int i = 0; i < newItem.length; i++)
+				item.add(newItem[i]);
+			items.add(index, item);
+		}
+
+		public void addItemString(int itemIndex, String string) {
+			if (itemIndex < 0 || itemIndex >= items.size())
+				return;
+			LinkedList<String> item = items.get(itemIndex);
+			item.add(string);
+		}
+
+		public void removeItemString(int itemIndex, int stringIndex) {
+			if (itemIndex < 0 || itemIndex >= items.size())
+				return;
+			LinkedList<String> item = items.get(itemIndex);
+			if (stringIndex < item.size())
+				item.remove(stringIndex);
+		}
+
+		public void setItemString(int itemIndex, int stringIndex, String string) {
+			if (stringIndex < 0 || itemIndex < 0 || itemIndex >= items.size())
+				return;
+			LinkedList<String> item = items.get(itemIndex);
+			if (stringIndex < item.size())
+				item.set(stringIndex, string);
+			else
+				item.add(string);
+		}
+
+		public void insertItemString(int itemIndex, int stringIndex, String string) {
+			if (stringIndex < 0 || itemIndex < 0 || itemIndex >= items.size())
+				return;
+			LinkedList<String> item = items.get(itemIndex);
+			if (stringIndex >= item.size())
+				return;
+			item.add(stringIndex, string);
+		}
+
+		public int getColumnWidth(int column) {
+			if (column < 0 || column >= columns.size())
+				return 1;
+			int width = 0;
+			for (int i = 0; i < items.size(); i++) {
+				LinkedList<String> item = items.get(i);
+				if (column >= item.size())
+					continue;
+				int length = item.get(column).length();
+				if (length > width)
+					width = length;
 			}
-			writer.append(NEWLINE);
-		}
-	}
-
-	public int rows() {
-		return table.length;
-	}
-
-	public int columns() {
-		return table[0].length;
-	}
-
-	public Cell cell(int row, int column) {
-		try {
-			return table[row][column];
-		} catch (ArrayIndexOutOfBoundsException e) {
-			return null;
-		}
-	}
-
-	public void set(int row, int column, Cell cell) {
-		try {
-			table[row][column] = cell;
-		} catch (ArrayIndexOutOfBoundsException e) {
-
-		}
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder string = new StringBuilder();
-		write(this, string);
-		return string.toString();
-	}
-
-	public static class Cell {
-
-		private String value;
-
-		public Cell(String value) {
-			this.value = value;
+			return width + 1;
 		}
 
-		public String getString() {
-			return value;
+		public LinkedList<String> getColumns() {
+			return columns;
 		}
 
-		public int getInt() {
-			try {
-				return Integer.parseInt(value);
-			} catch (NumberFormatException e) {
-				return 0;
+		public LinkedList<LinkedList<String>> getItems() {
+			return items;
+		}
+
+		public void print() {
+			System.out.println("TABLE [" + name + "]");
+			for (int i = 0; i < columns.size(); i++)
+				System.out.print(columns.get(i) + "\t");
+			System.out.println();
+			for (int j = 0; j < items.size(); j++) {
+				LinkedList<String> item = items.get(j);
+				int size = item.size();
+				if (size > columns.size())
+					size = columns.size();
+				for (int i = 0; i < size; i++)
+					System.out.print(item.get(i) + "\t");
+				System.out.println();
 			}
-		}
-
-		public float getFloat() {
-			try {
-				return Float.parseFloat(value);
-			} catch (NumberFormatException e) {
-				return 0f;
-			}
-		}
-
-		public long getLong() {
-			try {
-				return Long.parseLong(value);
-			} catch (NumberFormatException e) {
-				return 0l;
-			}
-		}
-
-		public double getDouble() {
-			try {
-				return Double.parseDouble(value);
-			} catch (NumberFormatException e) {
-				return 0d;
-			}
+			System.out.println();
 		}
 
 	}
