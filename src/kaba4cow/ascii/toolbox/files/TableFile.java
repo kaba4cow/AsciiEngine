@@ -15,10 +15,26 @@ import kaba4cow.ascii.toolbox.Printer;
 
 public class TableFile {
 
+	private static HashMap<String, TableFile> files = new HashMap<>();
+
+	private static final String TABLE = "TABLE";
+	private static final String COLUMN = "COLUMN";
+	private static final String ITEM = "ITEM";
+	private static final String COMMENT = "//";
+	private static final String ASSIGNMENT = " :: ";
+
 	private HashMap<String, Table> tables;
 
 	public TableFile() {
 		tables = new HashMap<>();
+	}
+
+	public static TableFile get(String fileName) {
+		if (!files.containsKey(fileName.toLowerCase())) {
+			TableFile file = read(fileName);
+			files.put(fileName.toLowerCase(), file);
+		}
+		return files.get(fileName.toLowerCase());
 	}
 
 	public HashMap<String, Table> getTables() {
@@ -56,19 +72,19 @@ public class TableFile {
 			Table table = null;
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
-				if (line.isEmpty() || line.startsWith("//"))
+				if (line.isEmpty() || line.startsWith(COMMENT))
 					continue;
 
-				strings = line.split(" :: ");
+				strings = line.split(ASSIGNMENT);
 				tag = strings[0];
 				strings = readStrings(strings[1]);
 
-				if (tag.equalsIgnoreCase("TABLE")) {
+				if (tag.equalsIgnoreCase(TABLE)) {
 					table = tableFile.addTable(strings[0]);
 				} else if (table != null) {
-					if (tag.equalsIgnoreCase("COLUMN"))
+					if (tag.equalsIgnoreCase(COLUMN))
 						table.addColumn(strings[0]);
-					else if (tag.equalsIgnoreCase("ITEM"))
+					else if (tag.equalsIgnoreCase(ITEM))
 						table.addItem(strings);
 				}
 
@@ -97,13 +113,18 @@ public class TableFile {
 			HashMap<String, Table> tables = tableFile.getTables();
 			for (String key : tables.keySet()) {
 				Table table = tables.get(key);
-				writer.append("TABLE :: \'");
+				writer.append(TABLE);
+				writer.append(ASSIGNMENT);
+				writer.append("\'");
 				writer.append(table.getName());
 				writer.append("\'\n\n");
 
 				LinkedList<String> columns = table.getColumns();
 				for (int i = 0; i < columns.size(); i++) {
-					writer.append("\tCOLUMN :: \'");
+					writer.append('\t');
+					writer.append(COLUMN);
+					writer.append(ASSIGNMENT);
+					writer.append('\'');
 					writer.append(writeString(columns.get(i)));
 					writer.append("\'\n");
 				}
@@ -111,7 +132,9 @@ public class TableFile {
 
 				LinkedList<LinkedList<String>> items = table.getItems();
 				for (int i = 0; i < items.size(); i++) {
-					writer.append("\tITEM :: ");
+					writer.append('\t');
+					writer.append(ITEM);
+					writer.append(ASSIGNMENT);
 					LinkedList<String> item = items.get(i);
 					for (int j = 0; j < item.size(); j++) {
 						writer.append('\'');

@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -21,7 +20,7 @@ import kaba4cow.ascii.toolbox.utils.StringUtils;
 
 public class DataFile {
 
-	private static final Map<String, DataFile> files = new HashMap<String, DataFile>();
+	private static final HashMap<String, DataFile> files = new HashMap<>();
 
 	private static final String INDENTATION = "\t";
 	private static final String ASSIGNMENT = " = ";
@@ -51,8 +50,7 @@ public class DataFile {
 	}
 
 	public static DataFile read(String fileName) {
-		File file = new File(fileName);
-		return read(file);
+		return read(new File(fileName));
 	}
 
 	public static DataFile read(File file) {
@@ -131,8 +129,7 @@ public class DataFile {
 	}
 
 	public static boolean write(DataFile dataFile, String fileName) {
-		File file = new File(fileName);
-		return write(dataFile, file);
+		return write(dataFile, new File(fileName));
 	}
 
 	public static boolean write(DataFile dataFile, File file) {
