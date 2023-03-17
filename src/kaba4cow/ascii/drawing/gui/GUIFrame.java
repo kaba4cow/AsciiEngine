@@ -32,7 +32,7 @@ public class GUIFrame {
 
 	private final ArrayList<GUIObject> list;
 
-	public final int color;
+	public int color;
 	public final boolean resizable;
 	public final boolean moveable;
 
@@ -151,7 +151,7 @@ public class GUIFrame {
 
 		if (centered) {
 			x -= width / 2;
-			y -= totalHeight / 2;
+			y -= height / 2;
 		}
 
 		this.x = x;
@@ -224,6 +224,17 @@ public class GUIFrame {
 
 	public GUIFrame setTitle(String title) {
 		this.title = title;
+		return this;
+	}
+
+	public int getColor() {
+		return color;
+	}
+
+	public GUIFrame setColor(int color) {
+		this.color = color;
+		for (int i = 0; i < list.size(); i++)
+			list.get(i).setColor(color);
 		return this;
 	}
 

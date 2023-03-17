@@ -3,7 +3,7 @@ package kaba4cow.ascii.drawing.gui;
 public abstract class GUIObject {
 
 	public final GUIFrame frame;
-	public final int color;
+	public int color;
 
 	protected int bX;
 	protected int bY;
@@ -33,6 +33,14 @@ public abstract class GUIObject {
 
 	protected boolean mouseInBounds(int mouseX, int mouseY) {
 		return mouseX >= bX && mouseX < bX + bWidth && mouseY >= bY && mouseY < bY + bHeight;
+	}
+
+	public int getColor() {
+		return color;
+	}
+
+	public void setColor(int color) {
+		this.color = color;
 	}
 
 }

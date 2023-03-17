@@ -92,21 +92,24 @@ public final class Drawer {
 	}
 
 	public static void drawString(int x, int y, boolean centered, String string, int color) {
+		if (string == null)
+			return;
 		if (centered)
 			x -= string.length() / 2;
 		for (int c = 0; c < string.length(); c++)
-			if (drawChar(x, y, string.charAt(c), color))
-				x++;
-			else
-				break;
+			drawChar(x++, y, string.charAt(c), color);
 	}
 
 	public static void drawStrings(int x, int y, boolean centered, String[] strings, int color) {
+		if (strings == null)
+			return;
 		for (int s = 0; s < strings.length; s++)
 			drawString(x, y, centered, strings[s], color);
 	}
 
 	public static int totalLines(int maxLength, String[] strings) {
+		if (strings == null)
+			return 1;
 		int totalLines = 0;
 		for (int s = 0; s < strings.length; s++)
 			totalLines += totalLines(maxLength, strings[s]);
@@ -114,6 +117,8 @@ public final class Drawer {
 	}
 
 	public static int totalLines(int maxLength, String string) {
+		if (string == null)
+			return 1;
 		int length = 0;
 		int lines = 1;
 		for (int c = 0; c < string.length(); c++) {
@@ -127,6 +132,8 @@ public final class Drawer {
 	}
 
 	public static int drawStrings(int x, int y, boolean centered, int maxLength, String[] strings, int color) {
+		if (strings == null)
+			return 1;
 		int lines = 0, totalLines = 0;
 		for (int s = 0; s < strings.length; s++) {
 			lines = drawString(x, y, centered, maxLength, strings[s], color);
@@ -137,6 +144,8 @@ public final class Drawer {
 	}
 
 	public static int drawString(int x, int y, boolean centered, int maxLength, String string, int color) {
+		if (string == null)
+			return 1;
 		if (centered)
 			x -= maxLength / 2;
 		int length = 0;
@@ -157,6 +166,9 @@ public final class Drawer {
 	}
 
 	public static int drawBigString(int x, int y, boolean centered, String string, char c, int color) {
+		if (string == null)
+			return 1;
+
 		int size = Display.getCharSize();
 		int length = string.length();
 
@@ -234,6 +246,9 @@ public final class Drawer {
 	}
 
 	public static int totalWidth(String string) {
+		if (string == null)
+			return 1;
+
 		int size = Display.getCharSize();
 		int length = string.length();
 
@@ -275,13 +290,16 @@ public final class Drawer {
 	}
 
 	public static void drawPattern(int x, int y, boolean centered, char[][] pattern, int color) {
+		if (pattern == null)
+			return;
+
 		if (centered) {
 			y -= pattern.length / 2;
 			x -= pattern[0].length / 2;
 		}
 		int px, py;
 		for (py = 0; py < pattern.length; py++)
-			for (px = 0; px < pattern[0].length; px++)
+			for (px = 0; px < pattern[py].length; px++)
 				drawChar(x + px, y + py, pattern[py][px], color);
 	}
 

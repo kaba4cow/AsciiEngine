@@ -12,6 +12,7 @@ import java.util.LinkedList;
 
 import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.toolbox.Printer;
+import kaba4cow.ascii.toolbox.maths.Maths;
 
 public class TableFile {
 
@@ -41,10 +42,21 @@ public class TableFile {
 		return tables;
 	}
 
+	public Table getTable(String name) {
+		if (containsTable(name))
+			return tables.get(name);
+		else
+			return addTable(name);
+	}
+
 	public Table addTable(String name) {
 		Table table = new Table(name);
 		tables.put(name, table);
 		return table;
+	}
+
+	public boolean containsTable(String name) {
+		return tables.containsKey(name);
 	}
 
 	public void print() {
@@ -200,7 +212,7 @@ public class TableFile {
 		return builder.toString().split("\n");
 	}
 
-	public class Table {
+	public static class Table {
 
 		private String name;
 		private LinkedList<String> columns;
@@ -242,7 +254,7 @@ public class TableFile {
 		}
 
 		public void insertColumn(int index, String column) {
-			if (index < 0 && index >= columns.size())
+			if (index < 0 || index >= columns.size())
 				return;
 			columns.add(index, column);
 			for (int i = 0; i < items.size(); i++)
@@ -250,11 +262,14 @@ public class TableFile {
 		}
 
 		public void removeColumn(int index) {
-			if (index < 0 && index >= columns.size())
+			if (index < 0 || index >= columns.size())
 				return;
 			columns.remove(index);
-			for (int i = 0; i < items.size(); i++)
-				removeItemString(i, index);
+			if (columns.isEmpty())
+				items.clear();
+			else
+				for (int i = 0; i < items.size(); i++)
+					removeItemString(i, index);
 		}
 
 		public void addColumn(String column) {
@@ -280,6 +295,12 @@ public class TableFile {
 				return;
 			LinkedList<String> item = items.get(itemIndex);
 			item.add(string);
+		}
+
+		public void removeItem(int itemIndex) {
+			if (itemIndex < 0 || itemIndex >= items.size())
+				return;
+			items.remove(itemIndex);
 		}
 
 		public void removeItemString(int itemIndex, int stringIndex) {
@@ -312,16 +333,29 @@ public class TableFile {
 		public int getColumnWidth(int column) {
 			if (column < 0 || column >= columns.size())
 				return 1;
-			int width = 0;
+			String columnText = columns.get(column);
+			if (columnText == null)
+				return 1;
+			int width = columnText.length();
 			for (int i = 0; i < items.size(); i++) {
 				LinkedList<String> item = items.get(i);
 				if (column >= item.size())
 					continue;
-				int length = item.get(column).length();
+				String itemText = item.get(column);
+				if (itemText == null)
+					return 1;
+				int length = itemText.length();
 				if (length > width)
 					width = length;
 			}
-			return width + 1;
+			return Maths.max(1, width);
+		}
+
+		public int column(String name) {
+			for (int i = 0; i < columns.size(); i++)
+				if (columns.get(i).equalsIgnoreCase(name))
+					return i;
+			return -1;
 		}
 
 		public LinkedList<String> getColumns() {
