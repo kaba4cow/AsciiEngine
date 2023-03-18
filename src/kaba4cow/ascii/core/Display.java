@@ -398,6 +398,10 @@ public final class Display {
 		return CHAR_SIZE;
 	}
 
+	public static boolean isFullscreen() {
+		return fullscreen;
+	}
+
 	public static int getCursorOffset() {
 		return fullscreen ? 0 : -CHAR_SIZE;
 	}

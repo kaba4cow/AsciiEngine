@@ -21,6 +21,10 @@ public class Table {
 		return name;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public String getColumn(int index) {
 		if (index < 0 || index >= columns.size())
 			return null;

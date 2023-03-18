@@ -55,6 +55,16 @@ public class TableFile {
 		return table;
 	}
 
+	public boolean renameTable(String oldName, String newName) {
+		if (!containsTable(oldName) || containsTable(newName))
+			return false;
+		Table table = tables.get(oldName);
+		table.setName(newName);
+		tables.remove(oldName);
+		tables.put(newName, table);
+		return true;
+	}
+
 	public boolean containsTable(String name) {
 		return tables.containsKey(name);
 	}
