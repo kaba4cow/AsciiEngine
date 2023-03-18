@@ -106,8 +106,12 @@ public class TableFile {
 				} else if (table != null) {
 					if (tag.equalsIgnoreCase(COLUMN))
 						table.addColumn(strings[0]);
-					else if (tag.equalsIgnoreCase(ITEM))
-						table.addItem(strings);
+					else if (tag.equalsIgnoreCase(ITEM)) {
+						table.addItem();
+						int lastRow = table.rows() - 1;
+						for (int i = 0; i < strings.length; i++)
+							table.setItemString(lastRow, i, strings[i]);
+					}
 				}
 
 				line = line.trim();

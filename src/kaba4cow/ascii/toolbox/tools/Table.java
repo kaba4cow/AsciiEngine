@@ -100,17 +100,17 @@ public class Table {
 		columns.add(column);
 	}
 
-	public void addItem(String... newItem) {
+	public void addItem() {
 		LinkedList<String> item = new LinkedList<>();
-		for (int i = 0; i < newItem.length; i++)
-			item.add(newItem[i]);
+		for (int i = 0; i < columns.size(); i++)
+			item.add("");
 		items.add(item);
 	}
 
-	public void insertItem(int index, String... newItem) {
+	public void insertItem(int index) {
 		LinkedList<String> item = new LinkedList<>();
-		for (int i = 0; i < newItem.length; i++)
-			item.add(newItem[i]);
+		for (int i = 0; i < columns.size(); i++)
+			item.add("");
 		items.add(index, item);
 	}
 
@@ -163,11 +163,9 @@ public class Table {
 		int width = columnText.length();
 		for (int i = 0; i < items.size(); i++) {
 			LinkedList<String> item = items.get(i);
-			if (column >= item.size())
-				continue;
+			while (column >= item.size())
+				item.add("");
 			String itemText = item.get(column);
-			if (itemText == null)
-				return 1;
 			int length = itemText.length();
 			if (length > width)
 				width = length;
