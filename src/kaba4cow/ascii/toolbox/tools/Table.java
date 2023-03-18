@@ -27,6 +27,22 @@ public class Table {
 		return columns.get(index);
 	}
 
+	public int getColumn(String column) {
+		for (int i = 0; i < columns.size(); i++)
+			if (columns.get(i).equals(column))
+				return i;
+		return -1;
+	}
+
+	public int getRow(int column, String string) {
+		if (column < 0 || column >= columns.size())
+			return -1;
+		for (int i = 0; i < items.size(); i++)
+			if (items.get(i).get(column).equals(string))
+				return i;
+		return -1;
+	}
+
 	public String getItemString(int itemIndex, int stringIndex) {
 		if (stringIndex < 0 || itemIndex < 0 || itemIndex >= items.size())
 			return null;
@@ -34,6 +50,18 @@ public class Table {
 		if (stringIndex >= item.size())
 			return null;
 		return item.get(stringIndex);
+	}
+
+	public String getItemString(int itemIndex, String column) {
+		if (itemIndex < 0 || itemIndex >= items.size())
+			return null;
+		int j = getColumn(column);
+		if (j == -1)
+			return null;
+		LinkedList<String> item = items.get(itemIndex);
+		while (j >= item.size())
+			item.add("");
+		return item.get(j);
 	}
 
 	public void setColumn(int index, String column) {
@@ -156,6 +184,14 @@ public class Table {
 
 	public LinkedList<LinkedList<String>> getItems() {
 		return items;
+	}
+
+	public int columns() {
+		return columns.size();
+	}
+
+	public int rows() {
+		return items.size();
 	}
 
 	public void print() {
