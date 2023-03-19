@@ -2,9 +2,8 @@ package kaba4cow.ascii.toolbox.tools;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 
-public class TableSorter implements Comparator<LinkedList<String>> {
+public class TableSorter implements Comparator<Table.Row> {
 
 	private static final TableSorter instance = new TableSorter();
 
@@ -16,13 +15,13 @@ public class TableSorter implements Comparator<LinkedList<String>> {
 
 	public static void sort(Table table, int column, boolean ascending) {
 		instance.column = column;
-		Collections.sort(table.getItems(), instance);
+		Collections.sort(table.getRows(), instance);
 		if (!ascending)
-			Collections.reverse(table.getItems());
+			Collections.reverse(table.getRows());
 	}
 
 	@Override
-	public int compare(LinkedList<String> o1, LinkedList<String> o2) {
+	public int compare(Table.Row o1, Table.Row o2) {
 		if (column < 0 || column >= o1.size() || column >= o2.size())
 			return 0;
 

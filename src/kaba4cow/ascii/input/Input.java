@@ -2,6 +2,7 @@ package kaba4cow.ascii.input;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 
 public class Input {
 
@@ -11,7 +12,7 @@ public class Input {
 
 	public static String typeString(String string) {
 		if (Keyboard.isKey(Keyboard.KEY_CONTROL_LEFT) && Keyboard.isKeyDown(Keyboard.KEY_V)) {
-			string += getClipboardString();
+			string += readClipboard();
 		} else if (Keyboard.getLastTyped() != null) {
 			char c = Keyboard.getLastTyped().getKeyChar();
 			if (c == 0x08 && string.length() > 0)
@@ -23,7 +24,7 @@ public class Input {
 		return string;
 	}
 
-	public static String getClipboardString() {
+	public static String readClipboard() {
 		try {
 			String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
 			data = data.replace('\t', ' ').replace('\r', ' ').replace('\n', ' ');
@@ -31,6 +32,11 @@ public class Input {
 		} catch (Exception e) {
 			return "";
 		}
+	}
+
+	public static void writeToClipboard(String string) {
+		StringSelection selection = new StringSelection(string);
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
 	}
 
 }

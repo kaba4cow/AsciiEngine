@@ -107,10 +107,10 @@ public class TableFile {
 					if (tag.equalsIgnoreCase(COLUMN))
 						table.addColumn(strings[0]);
 					else if (tag.equalsIgnoreCase(ITEM)) {
-						table.addItem();
+						table.addRow();
 						int lastRow = table.rows() - 1;
-						for (int i = 0; i < strings.length; i++)
-							table.setItemString(lastRow, i, strings[i]);
+						for (int row = 0; row < strings.length; row++)
+							table.setCell(row, lastRow, strings[row]);
 					}
 				}
 
@@ -156,12 +156,12 @@ public class TableFile {
 				}
 				writer.append('\n');
 
-				LinkedList<LinkedList<String>> items = table.getItems();
+				LinkedList<Table.Row> items = table.getRows();
 				for (int i = 0; i < items.size(); i++) {
 					writer.append('\t');
 					writer.append(ITEM);
 					writer.append(ASSIGNMENT);
-					LinkedList<String> item = items.get(i);
+					Table.Row item = items.get(i);
 					for (int j = 0; j < item.size(); j++) {
 						writer.append('\'');
 						writer.append(writeString(item.get(j)));
