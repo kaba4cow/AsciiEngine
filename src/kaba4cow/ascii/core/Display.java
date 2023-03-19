@@ -133,6 +133,11 @@ public final class Display {
 		} else {
 			WIDTH = width;
 			HEIGHT = height;
+
+			if (WIDTH >= SCREEN_WIDTH / CHAR_SIZE)
+				WIDTH = SCREEN_WIDTH / CHAR_SIZE - 1;
+			if (HEIGHT >= SCREEN_HEIGHT / CHAR_SIZE)
+				HEIGHT = SCREEN_HEIGHT / CHAR_SIZE - 1;
 		}
 
 		Printer.println("Creating " + (fullscreen ? "fullscreen" : "windowed") + " display: " + WIDTH + "x" + HEIGHT);
