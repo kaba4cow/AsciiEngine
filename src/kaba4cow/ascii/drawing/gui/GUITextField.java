@@ -11,8 +11,8 @@ import kaba4cow.ascii.toolbox.Colors;
 
 public class GUITextField extends GUIObject {
 
-	private static final char BACKSPACE = 0x0008;
-	private static final char DELETE = 0x007F;
+	private static final char BACKSPACE = 0x08;
+	private static final char DELETE = 0x7F;
 
 	private static final int HOME = 0;
 	private static final int END = 1;
