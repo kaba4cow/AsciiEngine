@@ -113,8 +113,6 @@ public class TableFile {
 							table.setCell(row, lastRow, strings[row]);
 					}
 				}
-
-				line = line.trim();
 			}
 			reader.close();
 

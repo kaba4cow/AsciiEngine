@@ -94,7 +94,6 @@ public class Test implements MainProgram {
 //				Drawer.drawString(x * (Display.getWidth() / 4 + 1), y, false, (char) i + " = " + i++, 0x000FFF);
 //				if (i >= Glyphs.numGlyphs())
 //					break;
-//			}
 	}
 
 	public static void main(String[] args) throws Exception {
