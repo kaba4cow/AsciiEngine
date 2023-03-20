@@ -50,10 +50,10 @@ public class ImageFile {
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
 
-				if (width == -1)
-					width = Integer.parseInt(line);
-				else if (height == -1) {
-					height = Integer.parseInt(line);
+				if (width == -1 && height == -1) {
+					String[] size = line.split(":");
+					width = Integer.parseInt(size[0]);
+					height = Integer.parseInt(size[1]);
 					chars = new char[width * height];
 					colors = new int[width * height];
 				} else if (fillChars) {
@@ -107,7 +107,7 @@ public class ImageFile {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos));
 
 			writer.append(Integer.toString(imageFile.width));
-			writer.append('\n');
+			writer.append(':');
 			writer.append(Integer.toString(imageFile.height));
 			writer.append('\n');
 
@@ -117,13 +117,16 @@ public class ImageFile {
 			int prev, repeats, length = chars.length;
 
 			prev = chars[0];
-			repeats = 0;
-			for (int i = 0; i < length; i++) {
-				if (i > 0 && prev != chars[i]) {
+			repeats = 1;
+			for (int i = 1; i <= length; i++) {
+				if (i == length || prev != chars[i]) {
 					writer.append(Integer.toString(repeats));
 					writer.append(':');
 					writer.append(Integer.toString(prev));
 					writer.append(' ');
+
+					if (i == length)
+						break;
 
 					prev = chars[i];
 					repeats = 1;
@@ -133,14 +136,16 @@ public class ImageFile {
 			writer.append('\n');
 
 			prev = colors[0];
-			repeats = 0;
-			for (int i = 0; i < length; i++) {
-				if (i > 0 && prev != colors[i]) {
+			repeats = 1;
+			for (int i = 1; i <= length; i++) {
+				if (i == length || prev != colors[i]) {
 					writer.append(Integer.toString(repeats));
 					writer.append(':');
 					writer.append(Integer.toString(prev));
 					writer.append(' ');
 
+					if (i == length)
+						break;
 					prev = colors[i];
 					repeats = 1;
 				} else

@@ -11,6 +11,8 @@ import kaba4cow.ascii.toolbox.maths.Maths;
 
 public class GUIFrame {
 
+	private static boolean frameClicked = false;
+
 	private String title;
 
 	private int x;
@@ -29,6 +31,7 @@ public class GUIFrame {
 	private boolean moving;
 
 	private boolean rendered;
+	private boolean clicked;
 
 	private final ArrayList<GUIObject> list;
 
@@ -46,6 +49,7 @@ public class GUIFrame {
 		this.maxScroll = 0;
 		this.scrollable = false;
 		this.rendered = false;
+		this.clicked = false;
 		this.list = new ArrayList<>();
 		this.color = color;
 		this.resizable = resizable;
@@ -55,12 +59,14 @@ public class GUIFrame {
 	}
 
 	public void update() {
-		if (!rendered)
+		if (!rendered || frameClicked) {
+			clicked = false;
 			return;
+		}
+		rendered = false;
 
 		int mX = Mouse.getTileX();
 		int mY = Mouse.getTileY();
-		boolean clicked;
 
 		if (Mouse.isKeyDown(Mouse.LEFT)) {
 			if (resizable && mY == y + height && mX == x + width) {
@@ -118,7 +124,8 @@ public class GUIFrame {
 			scroll = (int) (position * maxScroll);
 		}
 
-		rendered = false;
+		clicked = Mouse.isKey(Mouse.LEFT) && mX >= x && mX <= x + width && mY >= y && mY <= y + height;
+		frameClicked = clicked;
 	}
 
 	public void render() {
@@ -135,6 +142,8 @@ public class GUIFrame {
 	}
 
 	public void render(int x, int y, int width, int height, boolean centered) {
+		frameClicked = false;
+		clicked = false;
 		width--;
 		height--;
 		int totalHeight = 2;
@@ -236,6 +245,46 @@ public class GUIFrame {
 		for (int i = 0; i < list.size(); i++)
 			list.get(i).setColor(color);
 		return this;
+	}
+
+	public boolean wasClicked() {
+		return clicked;
+	}
+
+	public static boolean framesClicked() {
+		return frameClicked;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
 	}
 
 }
