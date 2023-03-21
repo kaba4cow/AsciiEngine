@@ -7,6 +7,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Stack;
 
 import kaba4cow.ascii.core.Engine;
@@ -34,7 +36,7 @@ public class ImageFile {
 
 	public static ImageFile read(File file) {
 		Printer.println("Loading image file: " + file.getAbsolutePath());
-		ImageFile imageFile = new ImageFile(0, 0);
+		ImageFile imageFile = new ImageFile(1, 1);
 
 		try {
 			FileInputStream fis = new FileInputStream(file);
@@ -154,10 +156,18 @@ public class ImageFile {
 
 			writer.close();
 		} catch (Exception e) {
-			Engine.terminate(e);
 			return false;
 		}
 		return true;
+	}
+
+	public ImageFile copy() {
+		ImageFile copy = new ImageFile(width, height);
+		for (int i = 0; i < chars.length; i++) {
+			copy.chars[i] = chars[i];
+			copy.colors[i] = colors[i];
+		}
+		return copy;
 	}
 
 	public Frame toFrame() {
@@ -300,6 +310,29 @@ public class ImageFile {
 
 	public int getHeight() {
 		return height;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(chars);
+		result = prime * result + Arrays.hashCode(colors);
+		result = prime * result + Objects.hash(height, width);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ImageFile other = (ImageFile) obj;
+		return Arrays.equals(chars, other.chars) && Arrays.equals(colors, other.colors) && height == other.height
+				&& width == other.width;
 	}
 
 }

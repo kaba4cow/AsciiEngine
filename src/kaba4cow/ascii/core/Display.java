@@ -182,6 +182,7 @@ public final class Display {
 		canvas.addMouseListener(Mouse.get());
 		canvas.addMouseMotionListener(Mouse.get());
 		canvas.addMouseWheelListener(Mouse.get());
+		canvas.setFocusTraversalKeysEnabled(false);
 
 		window.setPreferredSize(dimension);
 		window.setFocusable(true);
@@ -254,6 +255,7 @@ public final class Display {
 	public static void render() {
 		if (takingScreenshot)
 			try {
+				Printer.println("Saving screenshot");
 				takingScreenshot = false;
 				File file = new File("screenshot_" + ProgramUtils.getDate() + ".png");
 				file.createNewFile();
@@ -267,7 +269,7 @@ public final class Display {
 				if (ImageIO.write(image, "png", file))
 					Printer.println("Screenshot saved at: " + file.getAbsolutePath());
 				else
-					Printer.println("Error occured while saving screenshot");
+					Printer.println("Could not save the screenshot");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -337,6 +339,41 @@ public final class Display {
 
 			frame.chars[i] = backgroundChar;
 			frame.colors[i] = backgroundColor;
+		}
+	}
+
+	public static boolean saveImage(Frame frame, File file) {
+		try {
+			file.createNewFile();
+
+			BufferedImage image = new BufferedImage(frame.width * CHAR_SIZE, frame.height * CHAR_SIZE,
+					BufferedImage.TYPE_INT_RGB);
+			graphics = image.getGraphics();
+
+			char currentChar;
+			for (int i = 0; i < frame.length; i++) {
+				currentChar = frame.chars[i];
+				if (currentChar >= Glyphs.numGlyphs())
+					continue;
+
+				screenX = CHAR_SIZE * (i % frame.width);
+				screenY = CHAR_SIZE * (i / frame.width);
+
+				tileX = currentChar % IMAGE_CHAR_COLUMNS;
+				tileY = currentChar / IMAGE_CHAR_COLUMNS;
+
+				glyphSheet.draw(frame.colors[i]);
+
+				frame.chars[i] = backgroundChar;
+				frame.colors[i] = backgroundColor;
+			}
+
+			graphics.dispose();
+
+			return ImageIO.write(image, "png", file);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 

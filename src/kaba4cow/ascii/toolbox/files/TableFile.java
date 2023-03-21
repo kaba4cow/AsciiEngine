@@ -174,7 +174,6 @@ public class TableFile {
 
 			writer.close();
 		} catch (Exception e) {
-			Engine.terminate(e);
 			return false;
 		}
 		return true;

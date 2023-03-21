@@ -28,6 +28,9 @@ public final class Colors {
 		color0 = getBackground(color0);
 		color1 = getBackground(color1);
 
+		if (color0 == color1)
+			return color0 << 12;
+
 		float r0 = getRed(color0);
 		float g0 = getGreen(color0);
 		float b0 = getBlue(color0);
@@ -46,6 +49,9 @@ public final class Colors {
 	public static int blendForeground(int color0, int color1, float blendFactor) {
 		color0 = getForeground(color0);
 		color1 = getForeground(color1);
+
+		if (color0 == color1)
+			return color0;
 
 		float r0 = getRed(color0);
 		float g0 = getGreen(color0);

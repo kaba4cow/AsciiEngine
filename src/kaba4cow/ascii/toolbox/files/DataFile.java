@@ -149,7 +149,6 @@ public class DataFile {
 			print.append(string);
 			print.close();
 		} catch (FileNotFoundException e) {
-			Engine.terminate(e);
 			return false;
 		}
 		return true;

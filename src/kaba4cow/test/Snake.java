@@ -20,6 +20,7 @@ public class Snake implements MainProgram {
 	private ArrayList<Vector2i> snake;
 
 	private Vector2i direction;
+	private Vector2i newDirection;
 
 	private float time;
 	private float maxTime;
@@ -38,6 +39,7 @@ public class Snake implements MainProgram {
 		food = new Vector2i();
 		snake = new ArrayList<>();
 		direction = new Vector2i();
+		newDirection = new Vector2i();
 
 		reset();
 
@@ -63,6 +65,7 @@ public class Snake implements MainProgram {
 
 		direction.x = 0;
 		direction.y = -1;
+		newDirection.set(direction);
 	}
 
 	@Override
@@ -83,27 +86,28 @@ public class Snake implements MainProgram {
 
 		if (direction.x == 0) {
 			if (Keyboard.isKey(Keyboard.KEY_A)) {
-				direction.x = -1;
-				direction.y = 0;
+				newDirection.x = -1;
+				newDirection.y = 0;
 			} else if (Keyboard.isKey(Keyboard.KEY_D)) {
-				direction.x = 1;
-				direction.y = 0;
+				newDirection.x = 1;
+				newDirection.y = 0;
 			}
 		}
 
 		if (direction.y == 0) {
 			if (Keyboard.isKey(Keyboard.KEY_W)) {
-				direction.y = -1;
-				direction.x = 0;
+				newDirection.y = -1;
+				newDirection.x = 0;
 			} else if (Keyboard.isKey(Keyboard.KEY_S)) {
-				direction.y = 1;
-				direction.x = 0;
+				newDirection.y = 1;
+				newDirection.x = 0;
 			}
 		}
 
 		time += dt;
 		if (time < maxTime)
 			return;
+		direction.set(newDirection);
 		time = 0f;
 
 		Vector2i pos;
@@ -112,8 +116,8 @@ public class Snake implements MainProgram {
 			if (pos.equals(food)) {
 				food.x = RNG.randomInt(Display.getWidth());
 				food.y = RNG.randomInt(Display.getHeight());
-				snake.add(new Vector2i());
-				maxTime *= 0.99f;
+				snake.add(new Vector2i(-1, -1));
+				maxTime *= 0.98f;
 				score++;
 			}
 		}
@@ -184,7 +188,7 @@ public class Snake implements MainProgram {
 
 	public static void main(String[] args) {
 		Engine.init("Snake", 60);
-		Display.createWindowed(30, 30);
+		Display.createWindowed(24, 24);
 		Engine.start(new Snake());
 	}
 
