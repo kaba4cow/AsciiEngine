@@ -253,26 +253,15 @@ public final class Display {
 	}
 
 	public static void render() {
-		if (takingScreenshot)
-			try {
-				Printer.println("Saving screenshot");
-				takingScreenshot = false;
-				File file = new File("screenshot_" + ProgramUtils.getDate() + ".png");
-				file.createNewFile();
-
-				BufferedImage image = new BufferedImage(canvas.getWidth(), canvas.getHeight(),
-						BufferedImage.TYPE_INT_RGB);
-				graphics = image.getGraphics();
-				paint();
-				graphics.dispose();
-
-				if (ImageIO.write(image, "png", file))
-					Printer.println("Screenshot saved at: " + file.getAbsolutePath());
-				else
-					Printer.println("Could not save the screenshot");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		if (takingScreenshot) {
+			takingScreenshot = false;
+			Printer.println("Saving screenshot");
+			File file = new File("screenshot_" + ProgramUtils.getDate() + ".png");
+			if (saveImage(frame, file))
+				Printer.println("Screenshot saved at: " + file.getAbsolutePath());
+			else
+				Printer.println("Could not save the screenshot");
+		}
 
 		do {
 			do {
