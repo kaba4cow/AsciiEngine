@@ -100,6 +100,23 @@ public class Test implements MainProgram {
 		Engine.init("Test", 60);
 		Display.createWindowed(70, 40);
 		Engine.start(new Test());
+
+//		int addLength = 3;
+//		int length = "c = 000".length() + addLength;
+//		int width = 5;
+//		int height = Glyphs.numGlyphs() / width;
+//
+//		Frame frame = new Frame(length * width - addLength, height);
+//		Drawer.setFrame(frame);
+//		int i = 0;
+//		for (int x = 0; x < width; x++)
+//			for (int y = 0; y < height; y++) {
+//				char c = (char) i;
+//				Drawer.drawString(x * length, y, false, c + String.format(" = %3d", i), 0x000FFF);
+//				i++;
+//			}
+//		Drawer.resetFrame();
+//		Display.saveImage(frame, new File("glyphs.png"));
 	}
 
 }

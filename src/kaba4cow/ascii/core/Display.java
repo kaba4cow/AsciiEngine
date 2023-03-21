@@ -315,7 +315,7 @@ public final class Display {
 				currentChar = cursorChar;
 				frame.colors[i] = 0x000FFF;
 			}
-			if (currentChar >= Glyphs.numGlyphs())
+			if (currentChar >= Glyphs.numGlyphs() && i != mouseIndex)
 				continue;
 
 			screenX = CHAR_SIZE * (i % WIDTH);
@@ -423,6 +423,14 @@ public final class Display {
 
 	public static int getHeight() {
 		return HEIGHT;
+	}
+
+	public static int getDisplayWidth() {
+		return DISPLAY_WIDTH;
+	}
+
+	public static int getDisplayHeight() {
+		return DISPLAY_HEIGHT;
 	}
 
 	public static int getCharSize() {
@@ -565,7 +573,7 @@ public final class Display {
 				return;
 			}
 
-			if (prevColorTemp != color) {
+			if (prevColorTemp != color || image == null) {
 				bColorTemp = (color >> 12) & 0xFFF;
 				brTemp = (bColorTemp >> 8) & 0xF;
 				bgTemp = (bColorTemp >> 4) & 0xF;
@@ -580,7 +588,7 @@ public final class Display {
 			}
 			prevColorTemp = color;
 
-			if (prevTileX != tileX || prevTileY != tileY) {
+			if (prevTileX != tileX || prevTileY != tileY || image == null) {
 				image = images[tileX][tileY];
 				xOffsetTemp = CHAR_SIZE * tileX;
 				yOffsetTemp = CHAR_SIZE * tileY;

@@ -179,6 +179,8 @@ public final class Mouse implements MouseListener, MouseMotionListener, MouseWhe
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		int newX = e.getX();
+		if (newX >= Display.getDisplayWidth())
+			newX = Display.getDisplayWidth() - 1;
 		int newY = e.getY() + Display.getCursorOffset();
 		cursorDelta.x = newX - cursorPosition.x;
 		cursorDelta.y = newY - cursorPosition.y;

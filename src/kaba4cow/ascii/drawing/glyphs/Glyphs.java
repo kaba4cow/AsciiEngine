@@ -4,6 +4,7 @@ public final class Glyphs {
 
 	private static int numGlyphs = 0;
 
+	// Printable glyphs
 	public static final char STAR = (char) numGlyphs++;
 	public static final char WHITE_SMILING_FACE = (char) numGlyphs++;
 	public static final char BLACK_SMILING_FACE = (char) numGlyphs++;
@@ -260,11 +261,13 @@ public final class Glyphs {
 	public static final char SUPERSCRIPT_TWO = (char) numGlyphs++;
 	public static final char BLACK_SQUARE = (char) numGlyphs++;
 	public static final char CROSS = (char) numGlyphs++;
-	public static final char SYSTEM_HIDE_WINDOW = (char) numGlyphs++;
-	public static final char SYSTEM_CLOSE_WINDOW = (char) numGlyphs++;
-	public static final char SYSTEM_CURSOR = (char) numGlyphs++;
-	public static final char SYSTEM_CURSOR_GRABBED = (char) numGlyphs++;
-	public static final char SYSTEM_CURSOR_WAITING = (char) numGlyphs++;
+
+	// System glyphs
+	public static final char SYSTEM_HIDE_WINDOW = (char) (numGlyphs + 0);
+	public static final char SYSTEM_CLOSE_WINDOW = (char) (numGlyphs + 1);
+	public static final char SYSTEM_CURSOR = (char) (numGlyphs + 2);
+	public static final char SYSTEM_CURSOR_GRABBED = (char) (numGlyphs + 3);
+	public static final char SYSTEM_CURSOR_WAITING = (char) (numGlyphs + 4);
 
 	private Glyphs() {
 
