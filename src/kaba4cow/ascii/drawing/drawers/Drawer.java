@@ -74,18 +74,14 @@ public final class Drawer {
 	}
 
 	public static void drawFrame(int x, int y, boolean centered, Frame frame) {
-		drawFrame(x, y, frame.width, frame.height, centered, frame);
-	}
-
-	public static void drawFrame(int x, int y, int width, int height, boolean centered, Frame frame) {
 		if (Drawer.frame == frame || frame == null)
 			return;
 		if (centered)
-			x -= width / 2;
+			x -= frame.width / 2;
 		int fx, fy;
 		int fi = 0;
-		for (fy = 0; fy < height; fy++)
-			for (fx = 0; fx < width; fx++) {
+		for (fy = 0; fy < frame.height; fy++)
+			for (fx = 0; fx < frame.width; fx++) {
 				drawChar(x + fx, y + fy, frame.chars[fi], frame.colors[fi]);
 				fi++;
 			}

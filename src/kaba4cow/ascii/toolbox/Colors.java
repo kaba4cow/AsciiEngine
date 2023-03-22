@@ -12,6 +12,10 @@ public final class Colors {
 		return ((r & 0xF) << 8) | ((g & 0xF) << 4) | ((b & 0xF) << 0);
 	}
 
+	public static int create(int value) {
+		return create(value, value, value);
+	}
+
 	public static int combine(int background, int foreground) {
 		return ((background & 0xFFF) << 12) | ((foreground & 0xFFF) << 0);
 	}

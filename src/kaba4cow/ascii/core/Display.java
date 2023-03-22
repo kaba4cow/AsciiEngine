@@ -29,7 +29,10 @@ import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Stack;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -39,10 +42,13 @@ import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.drawing.glyphs.Glyphs;
 import kaba4cow.ascii.input.Keyboard;
 import kaba4cow.ascii.input.Mouse;
+import kaba4cow.ascii.toolbox.DisplayListener;
 import kaba4cow.ascii.toolbox.Printer;
 import kaba4cow.ascii.toolbox.utils.ProgramUtils;
 
 public final class Display {
+
+	private static final int BAR_COLOR = 0xEEE000;
 
 	private static final int CHAR_SIZE = 16;
 
@@ -67,8 +73,8 @@ public final class Display {
 	private static BufferStrategy bufferStrategy;
 	private static Graphics graphics;
 
+	private static final ArrayList<DisplayListener> listeners = new ArrayList<>();
 	private static GlyphSheet glyphSheet;
-
 	private static Frame frame;
 
 	private static char cursorChar;
@@ -86,6 +92,7 @@ public final class Display {
 	private static int screenX, screenY, tileX, tileY, prevTileX, prevTileY;
 	private static int prevColorTemp, bColorTemp, brTemp, bgTemp, bbTemp, fColorTemp, frTemp, fgTemp, fbTemp, xTemp,
 			yTemp, xOffsetTemp, yOffsetTemp;
+	private static int[] barCharsTemp;
 
 	private Display() {
 
@@ -103,7 +110,7 @@ public final class Display {
 		SCREEN_HEIGHT = screenSize.height;
 
 		try {
-			glyphSheet = new GlyphSheet("kaba4cow/ascii/drawing/glyphs.png");
+			glyphSheet = new GlyphSheet();
 		} catch (IOException e) {
 			Engine.terminate(e);
 		}
@@ -203,13 +210,19 @@ public final class Display {
 		Mouse.reset();
 		canvas.requestFocus();
 
-		canvas.getGraphics().setColor(Color.BLACK);
-		canvas.getGraphics().fillRect(0, 0, DISPLAY_WIDTH + CHAR_SIZE, DISPLAY_HEIGHT + CHAR_SIZE);
-		window.repaint();
-
 		window.setIgnoreRepaint(true);
 		canvas.setIgnoreRepaint(true);
 		window.setVisible(true);
+
+		graphics = bufferStrategy.getDrawGraphics();
+		graphics.setColor(Color.BLACK);
+		graphics.fillRect(0, 0, DISPLAY_WIDTH + CHAR_SIZE, DISPLAY_HEIGHT + CHAR_SIZE);
+		bufferStrategy.show();
+
+		barCharsTemp = new int[WIDTH];
+
+		for (DisplayListener listener : listeners)
+			listener.onWindowCreated(WIDTH, HEIGHT);
 	}
 
 	public static void destroy() {
@@ -255,7 +268,6 @@ public final class Display {
 	public static void render() {
 		if (takingScreenshot) {
 			takingScreenshot = false;
-			Printer.println("Saving screenshot");
 			File file = new File("screenshot_" + ProgramUtils.getDate() + ".png");
 			if (saveImage(frame, file))
 				Printer.println("Screenshot saved at: " + file.getAbsolutePath());
@@ -263,71 +275,80 @@ public final class Display {
 				Printer.println("Could not save the screenshot");
 		}
 
-		do {
-			do {
-				graphics = bufferStrategy.getDrawGraphics();
-				paint();
-			} while (bufferStrategy.contentsRestored());
-			bufferStrategy.show();
-		} while (bufferStrategy.contentsLost());
+//		do {
+//			do {
+		graphics = bufferStrategy.getDrawGraphics();
+		paint();
+//			} while (bufferStrategy.contentsRestored());
+		bufferStrategy.show();
+//		} while (bufferStrategy.contentsLost());
 	}
 
+	private static final HashMap<Integer, Stack<int[]>> pixelMap = new HashMap<>();
+
 	private static void paint() {
-		graphics.setColor(Color.BLACK);
-		graphics.fillRect(0, 0, DISPLAY_WIDTH + CHAR_SIZE, DISPLAY_HEIGHT + CHAR_SIZE);
+		Stack<int[]> positions;
+		int[] position;
 
 		int titleLength = TITLE.length();
-		char currentChar;
 		int barOffset = fullscreen ? 0 : 1;
 
-		int mouseIndex = 0;
-		if (Mouse.getY() < 0)
-			mouseIndex = Mouse.getTileX();
-		if (!cursorOnBar && drawCursor)
-			mouseIndex = Mouse.getTileY() * WIDTH + Mouse.getTileX();
+		int mouseX = Mouse.getTileX();
+		int mouseY = Mouse.getTileY();
+		if (drawCursor && Mouse.getY() >= 0) {
+			frame.chars[mouseY * WIDTH + mouseX] = cursorChar;
+			frame.colors[mouseY * WIDTH + mouseX] = 0x000FFF;
+		}
 
-		screenX = 0;
-		screenY = 0;
+		pixelMap.clear();
+		int x, y, c, color;
+		for (y = 0; y < HEIGHT; y++)
+			for (x = 0; x < WIDTH; x++) {
+				color = frame.colors[y * WIDTH + x];
+				if (!pixelMap.containsKey(color))
+					pixelMap.put(color, new Stack<>());
+				pixelMap.get(color).push(new int[] { x, y });
+			}
 		if (!fullscreen)
-			for (int i = 0; i < WIDTH; i++) {
-				if (i == WIDTH - 2)
-					currentChar = Glyphs.SYSTEM_HIDE_WINDOW;
-				else if (i == WIDTH - 1)
-					currentChar = Glyphs.SYSTEM_CLOSE_WINDOW;
+			for (x = 0; x < WIDTH; x++) {
+				if (x == WIDTH - 2)
+					c = Glyphs.SYSTEM_HIDE_WINDOW;
+				else if (x == WIDTH - 1)
+					c = Glyphs.SYSTEM_CLOSE_WINDOW;
 				else
-					currentChar = Glyphs.SPACE;
-				if (cursorOnBar && i == mouseIndex)
-					currentChar = cursorChar;
-				else if (i > 0 && i - 1 < titleLength)
-					currentChar = TITLE.charAt(i - 1);
+					c = Glyphs.SPACE;
+				if (cursorOnBar && x == mouseX)
+					c = cursorChar;
+				else if (x > 0 && x - 1 < titleLength)
+					c = TITLE.charAt(x - 1);
+				barCharsTemp[x] = c;
 
-				tileX = currentChar % IMAGE_CHAR_COLUMNS;
-				tileY = currentChar / IMAGE_CHAR_COLUMNS;
-
-				glyphSheet.draw(0xEEE000);
-
-				screenX += CHAR_SIZE;
+				if (!pixelMap.containsKey(BAR_COLOR))
+					pixelMap.put(BAR_COLOR, new Stack<>());
+				pixelMap.get(BAR_COLOR).push(new int[] { x, -barOffset });
 			}
 
-		for (int i = 0; i < frame.length; i++) {
-			currentChar = frame.chars[i];
-			if (!cursorOnBar && drawCursor && i == mouseIndex) {
-				currentChar = cursorChar;
-				frame.colors[i] = 0x000FFF;
+		for (Integer key : pixelMap.keySet()) {
+			positions = pixelMap.get(key);
+			while (!positions.isEmpty()) {
+				position = positions.pop();
+				if (position[1] < 0)
+					c = barCharsTemp[position[0]];
+				else
+					c = frame.chars[position[1] * WIDTH + position[0]];
+
+				screenX = position[0] * CHAR_SIZE;
+				screenY = (position[1] + barOffset) * CHAR_SIZE;
+
+				tileX = c % IMAGE_CHAR_COLUMNS;
+				tileY = c / IMAGE_CHAR_COLUMNS;
+				glyphSheet.draw(key);
 			}
-			if (currentChar >= Glyphs.numGlyphs() && i != mouseIndex)
-				continue;
+		}
 
-			screenX = CHAR_SIZE * (i % WIDTH);
-			screenY = CHAR_SIZE * (i / WIDTH + barOffset);
-
-			tileX = currentChar % IMAGE_CHAR_COLUMNS;
-			tileY = currentChar / IMAGE_CHAR_COLUMNS;
-
-			glyphSheet.draw(frame.colors[i]);
-
-			frame.chars[i] = backgroundChar;
-			frame.colors[i] = backgroundColor;
+		for (x = 0; x < frame.length; x++) {
+			frame.chars[x] = backgroundChar;
+			frame.colors[x] = backgroundColor;
 		}
 	}
 
@@ -367,14 +388,16 @@ public final class Display {
 	}
 
 	public static void setBackground(char c, int color) {
-		if (backgroundChar != c)
+		if (backgroundChar != c) {
 			for (int i = 0; i < frame.chars.length; i++)
 				frame.chars[i] = c;
-		if (backgroundColor != color)
+			backgroundChar = c;
+		}
+		if (backgroundColor != color) {
 			for (int i = 0; i < frame.chars.length; i++)
 				frame.colors[i] = color;
-		backgroundChar = c;
-		backgroundColor = color;
+			backgroundColor = color;
+		}
 	}
 
 	public static void takeScreenshot() {
@@ -415,6 +438,24 @@ public final class Display {
 
 	public static boolean isCursorOnBar() {
 		return cursorOnBar;
+	}
+
+	public static void addListener(DisplayListener listener) {
+		listeners.add(listener);
+	}
+
+	public static void removeListener(DisplayListener listener) {
+		if (listeners.contains(listener))
+			listeners.remove(listener);
+	}
+
+	public static String getTitle() {
+		return TITLE;
+	}
+
+	public static void setTitle(String title) {
+		if (title != null)
+			TITLE = title;
 	}
 
 	public static int getWidth() {
@@ -545,8 +586,8 @@ public final class Display {
 		public final int width;
 		public final int height;
 
-		public GlyphSheet(String path) throws IOException {
-			InputStream is = getClass().getClassLoader().getResourceAsStream(path);
+		public GlyphSheet() throws IOException {
+			InputStream is = getClass().getClassLoader().getResourceAsStream("kaba4cow/ascii/drawing/glyphs.png");
 			sheet = ImageIO.read(is);
 
 			width = sheet.getWidth();

@@ -3,6 +3,9 @@ package kaba4cow.test;
 import kaba4cow.ascii.MainProgram;
 import kaba4cow.ascii.core.Display;
 import kaba4cow.ascii.core.Engine;
+import kaba4cow.ascii.drawing.Frame;
+import kaba4cow.ascii.drawing.drawers.Drawer;
+import kaba4cow.ascii.drawing.glyphs.Glyphs;
 import kaba4cow.ascii.drawing.gui.GUIButton;
 import kaba4cow.ascii.drawing.gui.GUICheckbox;
 import kaba4cow.ascii.drawing.gui.GUIFrame;
@@ -12,13 +15,15 @@ import kaba4cow.ascii.drawing.gui.GUISlider;
 import kaba4cow.ascii.drawing.gui.GUIText;
 import kaba4cow.ascii.drawing.gui.GUITextField;
 import kaba4cow.ascii.input.Keyboard;
+import kaba4cow.ascii.toolbox.Colors;
+import kaba4cow.ascii.toolbox.noise.Noise;
 import kaba4cow.ascii.toolbox.rng.RNG;
 
 public class Test implements MainProgram {
 
-	boolean full = false;
-
 	private GUIFrame frame;
+
+	private Frame image;
 
 	public Test() {
 
@@ -26,6 +31,20 @@ public class Test implements MainProgram {
 
 	@Override
 	public void init() {
+//		if (SystemTray.isSupported()) {
+//			SystemTray tray = SystemTray.getSystemTray();
+//			Image image = Toolkit.getDefaultToolkit().createImage("glyph_list.png");
+//			TrayIcon icon = new TrayIcon(image, "Tray Demo");
+//			icon.setImageAutoSize(false);
+//			icon.setToolTip("Tool tip");
+//			try {
+//				tray.add(icon);
+//			} catch (AWTException e) {
+//				e.printStackTrace();
+//			}
+//			icon.displayMessage("Hello World", "Notification", MessageType.INFO);
+//		}
+
 		frame = new GUIFrame(0x000FFF, true, true).setTitle("Window");
 
 		new GUIText(frame, -1, "Sliders:");
@@ -50,8 +69,15 @@ public class Test implements MainProgram {
 			new GUIButton(frame, -1, "Button #" + i, f -> new GUIText(frame, -1, "Line generated"));
 		new GUISeparator(frame, -1, false);
 
-		for (int i = 1; i <= 5; i++)
-			new GUIText(frame, -1, "Line #" + i);
+		image = new Frame(Display.getWidth(), Display.getHeight());
+		Noise noise = new Noise(578229l);
+		for (int y = 0; y < image.height; y++)
+			for (int x = 0; x < image.width; x++) {
+				int value = (int) (0xF * noise.getCombinedValue(0.23f * x, 0.35f * y, 3));
+				int color = Colors.create(value);
+				image.chars[y * image.width + x] = Glyphs.MEDIUM_SHADE;
+				image.colors[y * image.width + x] = color;
+			}
 	}
 
 	@Override
@@ -64,41 +90,24 @@ public class Test implements MainProgram {
 		if (Keyboard.isKeyDown(Keyboard.KEY_ENTER))
 			init();
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_F))
-			Display.takeScreenshot();
-
-//		if (Keyboard.isKeyDown(Keyboard.KEY_C))
-//			Display.setDrawCursor(!Display.isDrawCursor());
-//		if (Keyboard.isKeyDown(Keyboard.KEY_W))
-//			Display.setCursorWaiting(!Display.isCursorWaiting());
-//
-//		if (Keyboard.isKey(Keyboard.KEY_CONTROL_LEFT) && Keyboard.isKeyDown(Keyboard.KEY_F)) {
-//			full = !full;
-//			if (full)
-//				Display.createFullscreen(true);
-//			else
-//				Display.createWindowed(40, 30, true);
-//		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_C))
+			Display.setDrawCursor(!Display.isDrawCursor());
+		if (Keyboard.isKeyDown(Keyboard.KEY_V))
+			Display.setCursorWaiting(!Display.isCursorWaiting());
 	}
 
 	@Override
 	public void render() {
+		Display.setBackground(Glyphs.PERCENT_SIGN, 0x400200);
+//		Drawer.drawFrame(0, 0, false, image);
 		frame.render();
-
-//		int x = 0, y = 0;
-//		int w = 4;
-//		int h = Glyphs.numGlyphs() / 4 + 1;
-//		int i = 0;
-//		for (x = 0; x < w; x++)
-//			for (y = 0; y < h; y++) {
-//				Drawer.drawString(x * (Display.getWidth() / 4 + 1), y, false, (char) i + " = " + i++, 0x000FFF);
-//				if (i >= Glyphs.numGlyphs())
-//					break;
+		Drawer.drawString(0, 0, false, "FPS " + Engine.getCurrentFramerate(), 0x333F33);
 	}
 
 	public static void main(String[] args) throws Exception {
-		Engine.init("Test", 60);
-		Display.createWindowed(70, 40);
+		Engine.init("Test", 120);
+		Display.createWindowed(60, 40);
+//		Display.createFullscreen();
 		Engine.start(new Test());
 
 //		int addLength = 3;
