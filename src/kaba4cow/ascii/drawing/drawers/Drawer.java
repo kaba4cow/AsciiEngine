@@ -52,24 +52,14 @@ public final class Drawer {
 		if (x < 0 || x >= frame.width || y < 0 || y >= frame.height || isClipped(x, y))
 			return false;
 		int index = y * frame.width + x;
-		frame.chars[index] = c;
-		frame.colors[index] = color;
-		return true;
-	}
-
-	public static boolean drawBackground(int x, int y, int color) {
-		if (x < 0 || x >= frame.width || y < 0 || y >= frame.height || isClipped(x, y))
-			return false;
-		int index = y * frame.width + x;
-		frame.colors[index] = 0xFFF000 & (color << 12) | (0x000FFF & frame.colors[index]);
-		return true;
-	}
-
-	public static boolean drawForeground(int x, int y, int color) {
-		if (x < 0 || x >= frame.width || y < 0 || y >= frame.height || isClipped(x, y))
-			return false;
-		int index = y * frame.width + x;
-		frame.colors[index] = 0x000FFF & color | (0xFFF000 & frame.colors[index]);
+		if ((color & 0xFF000000) == 0)
+			frame.chars[index] = c;
+		if ((color & 0xF0000000) > 0)
+			frame.colors[index] = (frame.colors[index] & 0xFFF000) | (color & 0x000FFF);
+		else if ((color & 0x0F000000) > 0)
+			frame.colors[index] = (frame.colors[index] & 0x000FFF) | (color & 0xFFF000);
+		else
+			frame.colors[index] = color;
 		return true;
 	}
 
@@ -320,15 +310,67 @@ public final class Drawer {
 				drawChar(x + rx, y + ry, c, color);
 	}
 
-	public static void fillCircle(int x, int y, int radius, char c, int color) {
-		int radiusSq = radius * radius;
-		int distanceSq;
-		for (int cx = -radius; cx < radius; cx++)
-			for (int cy = -radius; cy < radius; cy++) {
-				distanceSq = cx * cx + cy * cy;
-				if (distanceSq < radiusSq)
-					drawChar(x + cx, y + cy, c, color);
+	private static void drawCirclePoints(int centerX, int centerY, int x, int y, char c, int color) {
+		drawChar(x + centerX, y + centerY, c, color);
+		drawChar(x + centerX, -y + centerY, c, color);
+		drawChar(-x + centerX, -y + centerY, c, color);
+		drawChar(-x + centerX, y + centerY, c, color);
+		drawChar(y + centerX, x + centerY, c, color);
+		drawChar(y + centerX, -x + centerY, c, color);
+		drawChar(-y + centerX, -x + centerY, c, color);
+		drawChar(-y + centerX, x + centerY, c, color);
+	}
+
+	public static void drawCircle(int centerX, int centerY, int radius, char c, int color) {
+		int x = 0;
+		int y = radius;
+
+		int d = 3 - 2 * radius;
+
+		drawCirclePoints(centerX, centerY, x, y, c, color);
+		while (x <= y) {
+			if (d <= 0)
+				d = d + 4 * x + 6;
+			else {
+				d = d + 4 * x - 4 * y + 10;
+				y--;
 			}
+
+			x++;
+			drawCirclePoints(centerX, centerY, x, y, c, color);
+		}
+	}
+
+	private static void fillCirclePoints(int centerX, int centerY, int x, int y, char c, int color) {
+		int i;
+		for (i = -x; i <= x; i++) {
+			drawChar(i + centerX, -y + centerY, c, color);
+			drawChar(i + centerX, y + centerY, c, color);
+		}
+		for (i = -y; i <= y; i++) {
+			drawChar(i + centerX, -x + centerY, c, color);
+			drawChar(i + centerX, x + centerY, c, color);
+		}
+	}
+
+	public static void fillCircle(int centerX, int centerY, int radius, char c, int color) {
+		int x = 0;
+		int y = radius;
+
+		int d = 3 - 2 * radius;
+
+		fillCirclePoints(centerX, centerY, x, y, c, color);
+		while (x <= y) {
+			if (d <= 0)
+				d = d + 4 * x + 6;
+			else {
+				d = d + 4 * x - 4 * y + 10;
+				y--;
+			}
+
+			x++;
+			fillCirclePoints(centerX, centerY, x, y, c, color);
+		}
 	}
 
 	public static void drawLine(int x0, int y0, int x1, int y1, char c, int color) {

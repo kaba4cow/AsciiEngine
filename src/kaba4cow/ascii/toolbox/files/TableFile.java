@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import kaba4cow.ascii.core.Engine;
@@ -24,10 +25,10 @@ public class TableFile {
 	private static final String COMMENT = "//";
 	private static final String ASSIGNMENT = " :: ";
 
-	private HashMap<String, Table> tables;
+	private LinkedHashMap<String, Table> tables;
 
 	public TableFile() {
-		tables = new HashMap<>();
+		tables = new LinkedHashMap<>();
 	}
 
 	public static TableFile get(String fileName) {
