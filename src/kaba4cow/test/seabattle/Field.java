@@ -236,7 +236,7 @@ public class Field {
 					color = 0x348359;
 				else
 					color = 0x348FFF;
-				Drawer.drawChar(offX + x, y, c, color);
+				Drawer.draw(offX + x, y, c, color);
 			}
 
 		if (player && length > 0) {
@@ -246,7 +246,7 @@ public class Field {
 			for (int i = 0; i < length; i++) {
 				if (x < 0 || x >= SIZE || y < 0 || y >= SIZE)
 					break;
-				Drawer.drawChar(x, y, CHAR_SHIP, color);
+				Drawer.draw(x, y, CHAR_SHIP, color);
 				if (vertical)
 					y++;
 				else

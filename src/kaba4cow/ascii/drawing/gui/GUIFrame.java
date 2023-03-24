@@ -180,7 +180,7 @@ public class GUIFrame {
 			currentY -= scroll;
 		BoxDrawer.drawBox(x, y, width, height, false, color);
 		for (int i = 0; i < title.length(); i++) {
-			Drawer.drawChar(x + i + 1, y, title.charAt(i), color);
+			Drawer.draw(x + i + 1, y, title.charAt(i), color);
 			if (i + 2 >= width)
 				break;
 		}
@@ -193,13 +193,13 @@ public class GUIFrame {
 
 		if (scrollable) {
 			x = x + width;
-			Drawer.drawChar(x, y + 1, Glyphs.BLACK_UP_POINTING_TRIANGLE, color);
-			Drawer.drawChar(x, y + height - 1, Glyphs.BLACK_DOWN_POINTING_TRIANGLE, color);
+			Drawer.draw(x, y + 1, Glyphs.BLACK_UP_POINTING_TRIANGLE, color);
+			Drawer.draw(x, y + height - 1, Glyphs.BLACK_DOWN_POINTING_TRIANGLE, color);
 			for (currentY = y + 2; currentY < y + height - 1; currentY++)
-				Drawer.drawChar(x, currentY, Glyphs.BOX_DRAWINGS_SINGLE_VERTICAL, color);
+				Drawer.draw(x, currentY, Glyphs.BOX_DRAWINGS_SINGLE_VERTICAL, color);
 
 			float position = (height - 4) * scroll / (float) maxScroll;
-			Drawer.drawChar(x, y + 2 + (int) position, Glyphs.FULL_BLOCK, color);
+			Drawer.draw(x, y + 2 + (int) position, Glyphs.FULL_BLOCK, color);
 		}
 	}
 

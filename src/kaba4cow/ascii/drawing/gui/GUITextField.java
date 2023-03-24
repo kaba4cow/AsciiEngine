@@ -131,8 +131,8 @@ public class GUITextField extends GUIObject {
 
 		if (active) {
 			int newColor = Colors.swap(Display.getColor(x + 1 + cursorX, y + 1 + cursorY));
-			char newChar = Display.getChar(x + 1 + cursorX, y + 1 + cursorY);
-			Drawer.drawChar(x + 1 + cursorX, y + 1 + cursorY, newChar, newColor);
+			char newChar = Display.getGlyph(x + 1 + cursorX, y + 1 + cursorY);
+			Drawer.draw(x + 1 + cursorX, y + 1 + cursorY, newChar, newColor);
 		}
 		return totalLines;
 	}

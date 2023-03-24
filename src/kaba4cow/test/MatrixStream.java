@@ -83,7 +83,7 @@ public class MatrixStream implements MainProgram {
 
 		public void render() {
 			for (int i = 0; i < length; i++)
-				Drawer.drawChar(x, (int) y + i, chars[i], colors[i]);
+				Drawer.draw(x, (int) y + i, chars[i], colors[i]);
 		}
 
 	}

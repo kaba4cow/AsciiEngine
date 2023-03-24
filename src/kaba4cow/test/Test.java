@@ -75,7 +75,7 @@ public class Test implements MainProgram {
 			for (int x = 0; x < image.width; x++) {
 				int value = (int) (0xF * noise.getCombinedValue(0.23f * x, 0.35f * y, 3));
 				int color = Colors.create(value);
-				image.chars[y * image.width + x] = Glyphs.MEDIUM_SHADE;
+				image.glyphs[y * image.width + x] = Glyphs.MEDIUM_SHADE;
 				image.colors[y * image.width + x] = color;
 			}
 	}
@@ -106,8 +106,7 @@ public class Test implements MainProgram {
 
 	public static void main(String[] args) throws Exception {
 		Engine.init("Test", 120);
-		Display.createWindowed(60, 40);
-//		Display.createFullscreen();
+		Display.createWindowed(40, 30);
 		Engine.start(new Test());
 
 //		int addLength = 3;

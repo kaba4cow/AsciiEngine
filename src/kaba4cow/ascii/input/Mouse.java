@@ -122,19 +122,19 @@ public final class Mouse implements MouseListener, MouseMotionListener, MouseWhe
 	}
 
 	public static int getTileX() {
-		return Maths.max(instance.cursorPosition.x / Display.getCharSize(), 0);
+		return Maths.max(instance.cursorPosition.x / Display.getGlyphSize(), 0);
 	}
 
 	public static int getTileY() {
-		return Maths.max(instance.cursorPosition.y / Display.getCharSize(), 0);
+		return Maths.max(instance.cursorPosition.y / Display.getGlyphSize(), 0);
 	}
 
 	public static int getTileDX() {
-		return instance.cursorDelta.x / Display.getCharSize();
+		return instance.cursorDelta.x / Display.getGlyphSize();
 	}
 
 	public static int getTileDY() {
-		return instance.cursorDelta.y / Display.getCharSize();
+		return instance.cursorDelta.y / Display.getGlyphSize();
 	}
 
 	@Override

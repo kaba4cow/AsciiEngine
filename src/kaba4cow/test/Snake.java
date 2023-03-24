@@ -163,15 +163,15 @@ public class Snake implements MainProgram {
 		for (int y = 0; y < Display.getHeight(); y++)
 			for (int x = 0; x < Display.getWidth(); x++)
 				if ((x + y) % 2 == 0)
-					Drawer.drawChar(x, y, Glyphs.SPACE, 0x111000);
+					Drawer.draw(x, y, Glyphs.SPACE, 0x111000);
 
-		Drawer.drawChar(food.x, food.y, Glyphs.BLACK_HEART_SUIT, 0x000FF7);
+		Drawer.draw(food.x, food.y, Glyphs.BLACK_HEART_SUIT, 0x000FF7);
 
 		int x, y;
 		for (int i = 0; i < snake.size(); i++) {
 			x = snake.get(i).x;
 			y = snake.get(i).y;
-			Drawer.drawChar(x, y, Glyphs.FULL_BLOCK, 0x000FFF);
+			Drawer.draw(x, y, Glyphs.FULL_BLOCK, 0x000FFF);
 		}
 
 		if (gameOver) {

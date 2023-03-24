@@ -21,10 +21,10 @@ public final class BoxDrawer {
 	}
 
 	public static void drawChar(int x, int y, char c, int color) {
-		char s = Display.getChar(x, y);
+		char s = Display.getGlyph(x, y);
 		if (collisionEnable && BoxGlyphs.isBoxGlyph(s) && BoxGlyphs.isBoxGlyph(c))
 			c = BoxGlyphs.getIntersection(s, c);
-		Drawer.drawChar(x, y, c, color);
+		Drawer.draw(x, y, c, color);
 	}
 
 	public static void drawHorizontalLine(int y, int x0, int x1, char c, int color) {

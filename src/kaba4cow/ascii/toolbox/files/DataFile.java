@@ -1,12 +1,13 @@
 package kaba4cow.ascii.toolbox.files;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Stack;
 import java.util.Vector;
@@ -26,7 +27,6 @@ public class DataFile {
 	private static final String ASSIGNMENT = " = ";
 	private static final char QUOTATION = '\"';
 	private static final char SEPARATOR = ',';
-	private static final char NEWLINE = '\n';
 
 	private static int indentCount;
 
@@ -144,17 +144,17 @@ public class DataFile {
 			}
 
 		try {
-			PrintWriter print = new PrintWriter(file);
-			String string = dataFile.toString();
-			print.append(string);
-			print.close();
-		} catch (FileNotFoundException e) {
+			FileOutputStream fos = new FileOutputStream(file);
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos));
+			write(dataFile, writer);
+			writer.close();
+		} catch (IOException e) {
 			return false;
 		}
 		return true;
 	}
 
-	private static void write(DataFile dataFile, StringBuilder writer) {
+	private static void write(DataFile dataFile, BufferedWriter writer) throws IOException {
 		for (int i = 0; i < dataFile.objects.size(); i++) {
 			Pair<String, DataFile> property = dataFile.objects.get(i);
 			if (property.getB().objects.isEmpty()) {
@@ -171,15 +171,18 @@ public class DataFile {
 						writer.append(SEPARATOR);
 					items--;
 				}
-				writer.append(NEWLINE);
+				writer.newLine();
 			} else {
 				if (i > 0)
-					writer.append(NEWLINE);
-				writer.append(StringUtils.repeat(INDENTATION, indentCount) + property.getA() + NEWLINE
-						+ StringUtils.repeat(INDENTATION, indentCount) + "{" + NEWLINE);
+					writer.newLine();
+				writer.append(StringUtils.repeat(INDENTATION, indentCount) + property.getA());
+				writer.newLine();
+				writer.append(StringUtils.repeat(INDENTATION, indentCount) + "{");
+				writer.newLine();
 				indentCount++;
 				write(property.getB(), writer);
-				writer.append(StringUtils.repeat(INDENTATION, indentCount) + "}" + NEWLINE);
+				writer.append(StringUtils.repeat(INDENTATION, indentCount) + "}");
+				writer.newLine();
 			}
 		}
 		if (indentCount > 0)
@@ -188,6 +191,10 @@ public class DataFile {
 
 	public Vector<Pair<String, DataFile>> getNodes() {
 		return objects;
+	}
+
+	public boolean containsNode(String name) {
+		return map.containsKey(name);
 	}
 
 	public DataFile node(String name) {
@@ -437,14 +444,6 @@ public class DataFile {
 		for (int i = 0; i < array.length; i++)
 			array[i] = node(i).getVector3();
 		return array;
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder string = new StringBuilder();
-		indentCount = 0;
-		write(this, string);
-		return string.toString();
 	}
 
 }

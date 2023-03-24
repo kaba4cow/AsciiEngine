@@ -7,6 +7,11 @@ import kaba4cow.ascii.toolbox.maths.vectors.Vector2i;
 
 public final class Drawer {
 
+	public static final int IGNORE_COLOR = 0x10000000;
+	public static final int IGNORE_BACKGROUND = 0x20000000;
+	public static final int IGNORE_FOREGROUND = 0x30000000;
+	public static final int IGNORE_GLYPH = 0x01000000;
+
 	private static Frame frame;
 
 	private static final Vector2i clipStart = new Vector2i();
@@ -48,18 +53,25 @@ public final class Drawer {
 		return x < clipStart.x || x > clipEnd.x || y < clipStart.y || y > clipEnd.y;
 	}
 
-	public static boolean drawChar(int x, int y, char c, int color) {
+	public static boolean draw(int x, int y, char glyph, int color) {
 		if (x < 0 || x >= frame.width || y < 0 || y >= frame.height || isClipped(x, y))
 			return false;
 		int index = y * frame.width + x;
-		if ((color & 0xFF000000) == 0)
-			frame.chars[index] = c;
-		if ((color & 0xF0000000) > 0)
-			frame.colors[index] = (frame.colors[index] & 0xFFF000) | (color & 0x000FFF);
-		else if ((color & 0x0F000000) > 0)
-			frame.colors[index] = (frame.colors[index] & 0x000FFF) | (color & 0xFFF000);
-		else
-			frame.colors[index] = color;
+		if ((color & 0xFF000000) != 0) {
+			int colorInfo = (color & 0xF0000000);
+			int glyphInfo = (color & 0x0F000000);
+
+			if (colorInfo == IGNORE_COLOR)
+				color = frame.colors[index];
+			else if (colorInfo == IGNORE_BACKGROUND)
+				color = (0xFFF000 & frame.colors[index]) | (0x000FFF & color);
+			else if (colorInfo == IGNORE_FOREGROUND)
+				color = (0x000FFF & frame.colors[index]) | (0xFFF000 & color);
+			if (glyphInfo == IGNORE_GLYPH)
+				glyph = frame.glyphs[index];
+		}
+		frame.glyphs[index] = glyph;
+		frame.colors[index] = color;
 		return true;
 	}
 
@@ -72,7 +84,7 @@ public final class Drawer {
 		int fi = 0;
 		for (fy = 0; fy < frame.height; fy++)
 			for (fx = 0; fx < frame.width; fx++) {
-				drawChar(x + fx, y + fy, frame.chars[fi], frame.colors[fi]);
+				draw(x + fx, y + fy, frame.glyphs[fi], frame.colors[fi]);
 				fi++;
 			}
 	}
@@ -82,23 +94,23 @@ public final class Drawer {
 			return;
 		if (centered)
 			x -= string.length() / 2;
-		for (int c = 0; c < string.length(); c++)
-			drawChar(x++, y, string.charAt(c), color);
+		for (int i = 0; i < string.length(); i++)
+			draw(x++, y, string.charAt(i), color);
 	}
 
 	public static void drawStrings(int x, int y, boolean centered, String[] strings, int color) {
 		if (strings == null)
 			return;
-		for (int s = 0; s < strings.length; s++)
-			drawString(x, y, centered, strings[s], color);
+		for (int i = 0; i < strings.length; i++)
+			drawString(x, y++, centered, strings[i], color);
 	}
 
 	public static int totalLines(int maxLength, String[] strings) {
 		if (strings == null)
 			return 1;
 		int totalLines = 0;
-		for (int s = 0; s < strings.length; s++)
-			totalLines += totalLines(maxLength, strings[s]);
+		for (int i = 0; i < strings.length; i++)
+			totalLines += totalLines(maxLength, strings[i]);
 		return totalLines;
 	}
 
@@ -107,9 +119,9 @@ public final class Drawer {
 			return 1;
 		int length = 0;
 		int lines = 1;
-		for (int c = 0; c < string.length(); c++) {
+		for (int i = 0; i < string.length(); i++) {
 			length++;
-			if (length == maxLength && c < string.length() - 1) {
+			if (length == maxLength && i < string.length() - 1) {
 				length = 0;
 				lines++;
 			}
@@ -121,8 +133,8 @@ public final class Drawer {
 		if (strings == null)
 			return 1;
 		int lines = 0, totalLines = 0;
-		for (int s = 0; s < strings.length; s++) {
-			lines = drawString(x, y, centered, maxLength, strings[s], color);
+		for (int i = 0; i < strings.length; i++) {
+			lines = drawString(x, y, centered, maxLength, strings[i], color);
 			y += lines;
 			totalLines += lines;
 		}
@@ -137,10 +149,10 @@ public final class Drawer {
 		int length = 0;
 		int startX = x;
 		int lines = 1;
-		for (int c = 0; c < string.length(); c++) {
-			drawChar(x, y, string.charAt(c), color);
+		for (int i = 0; i < string.length(); i++) {
+			draw(x, y, string.charAt(i), color);
 			length++;
-			if (length == maxLength && c < string.length() - 1) {
+			if (length == maxLength && i < string.length() - 1) {
 				length = 0;
 				x = startX;
 				y++;
@@ -151,17 +163,17 @@ public final class Drawer {
 		return lines;
 	}
 
-	public static int drawBigString(int x, int y, boolean centered, String string, char c, int color) {
+	public static int drawBigString(int x, int y, boolean centered, String string, char glyph, int color) {
 		if (string == null)
 			return 1;
 
-		int size = Display.getCharSize();
+		int size = Display.getGlyphSize();
 		int length = string.length();
 
 		boolean[][] map = Display.getGlyphSheetMap();
 		int columns = map.length / size;
 
-		char glyph;
+		char stringGlyph;
 		int i, tX, tY, mX, mY, minX, maxX;
 
 		int totalWidth = 0;
@@ -169,10 +181,10 @@ public final class Drawer {
 		for (i = 0; i < length; i++) {
 			minX = size;
 			maxX = 0;
-			glyph = string.charAt(i);
+			stringGlyph = string.charAt(i);
 
-			tX = glyph % columns;
-			tY = glyph / columns;
+			tX = stringGlyph % columns;
+			tY = stringGlyph / columns;
 			for (mY = 0; mY < size; mY++)
 				for (mX = 0; mX < size; mX++)
 					if (map[mX + size * tX][mY + size * tY]) {
@@ -200,10 +212,10 @@ public final class Drawer {
 		for (i = 0; i < length; i++) {
 			minX = size;
 			maxX = 0;
-			glyph = string.charAt(i);
+			stringGlyph = string.charAt(i);
 
-			tX = glyph % columns;
-			tY = glyph / columns;
+			tX = stringGlyph % columns;
+			tY = stringGlyph / columns;
 			for (mY = 0; mY < size; mY++)
 				for (mX = 0; mX < size; mX++)
 					if (map[mX + size * tX][mY + size * tY]) {
@@ -224,7 +236,7 @@ public final class Drawer {
 			for (mY = 0; mY < size; mY++)
 				for (mX = 0; mX < size; mX++)
 					if (map[mX + size * tX][mY + size * tY])
-						drawChar(x + mX, y + mY, c, color);
+						draw(x + mX, y + mY, glyph, color);
 			x += maxX;
 		}
 
@@ -235,7 +247,7 @@ public final class Drawer {
 		if (string == null)
 			return 1;
 
-		int size = Display.getCharSize();
+		int size = Display.getGlyphSize();
 		int length = string.length();
 
 		boolean[][] map = Display.getGlyphSheetMap();
@@ -275,59 +287,45 @@ public final class Drawer {
 		return totalWidth;
 	}
 
-	public static void drawPattern(int x, int y, boolean centered, char[][] pattern, int color) {
-		if (pattern == null)
-			return;
-
-		if (centered) {
-			y -= pattern.length / 2;
-			x -= pattern[0].length / 2;
-		}
-		int px, py;
-		for (py = 0; py < pattern.length; py++)
-			for (px = 0; px < pattern[py].length; px++)
-				drawChar(x + px, y + py, pattern[py][px], color);
-	}
-
-	public static void drawRect(int x, int y, int width, int height, boolean centered, char c, int color) {
+	public static void drawRect(int x, int y, int width, int height, boolean centered, char glyph, int color) {
 		if (centered) {
 			x -= width / 2;
 			y -= height / 2;
 		}
-		drawLine(x, y, x + width, y, c, color);
-		drawLine(x, y + height, x + width + 1, y + height, c, color);
-		drawLine(x, y, x, y + height, c, color);
-		drawLine(x + width, y, x + width, y + height, c, color);
+		drawLine(x, y, x + width, y, glyph, color);
+		drawLine(x, y + height, x + width + 1, y + height, glyph, color);
+		drawLine(x, y, x, y + height, glyph, color);
+		drawLine(x + width, y, x + width, y + height, glyph, color);
 	}
 
-	public static void fillRect(int x, int y, int width, int height, boolean centered, char c, int color) {
+	public static void fillRect(int x, int y, int width, int height, boolean centered, char glyph, int color) {
 		if (centered) {
 			x -= width / 2;
 			y -= height / 2;
 		}
 		for (int rx = 0; rx < width; rx++)
 			for (int ry = 0; ry < height; ry++)
-				drawChar(x + rx, y + ry, c, color);
+				draw(x + rx, y + ry, glyph, color);
 	}
 
-	private static void drawCirclePoints(int centerX, int centerY, int x, int y, char c, int color) {
-		drawChar(x + centerX, y + centerY, c, color);
-		drawChar(x + centerX, -y + centerY, c, color);
-		drawChar(-x + centerX, -y + centerY, c, color);
-		drawChar(-x + centerX, y + centerY, c, color);
-		drawChar(y + centerX, x + centerY, c, color);
-		drawChar(y + centerX, -x + centerY, c, color);
-		drawChar(-y + centerX, -x + centerY, c, color);
-		drawChar(-y + centerX, x + centerY, c, color);
+	private static void drawCirclePoints(int centerX, int centerY, int x, int y, char glyph, int color) {
+		draw(x + centerX, y + centerY, glyph, color);
+		draw(x + centerX, -y + centerY, glyph, color);
+		draw(-x + centerX, -y + centerY, glyph, color);
+		draw(-x + centerX, y + centerY, glyph, color);
+		draw(y + centerX, x + centerY, glyph, color);
+		draw(y + centerX, -x + centerY, glyph, color);
+		draw(-y + centerX, -x + centerY, glyph, color);
+		draw(-y + centerX, x + centerY, glyph, color);
 	}
 
-	public static void drawCircle(int centerX, int centerY, int radius, char c, int color) {
+	public static void drawCircle(int centerX, int centerY, int radius, char glyph, int color) {
 		int x = 0;
 		int y = radius;
 
 		int d = 3 - 2 * radius;
 
-		drawCirclePoints(centerX, centerY, x, y, c, color);
+		drawCirclePoints(centerX, centerY, x, y, glyph, color);
 		while (x <= y) {
 			if (d <= 0)
 				d = d + 4 * x + 6;
@@ -337,29 +335,29 @@ public final class Drawer {
 			}
 
 			x++;
-			drawCirclePoints(centerX, centerY, x, y, c, color);
+			drawCirclePoints(centerX, centerY, x, y, glyph, color);
 		}
 	}
 
-	private static void fillCirclePoints(int centerX, int centerY, int x, int y, char c, int color) {
+	private static void fillCirclePoints(int centerX, int centerY, int x, int y, char glyph, int color) {
 		int i;
 		for (i = -x; i <= x; i++) {
-			drawChar(i + centerX, -y + centerY, c, color);
-			drawChar(i + centerX, y + centerY, c, color);
+			draw(i + centerX, -y + centerY, glyph, color);
+			draw(i + centerX, y + centerY, glyph, color);
 		}
 		for (i = -y; i <= y; i++) {
-			drawChar(i + centerX, -x + centerY, c, color);
-			drawChar(i + centerX, x + centerY, c, color);
+			draw(i + centerX, -x + centerY, glyph, color);
+			draw(i + centerX, x + centerY, glyph, color);
 		}
 	}
 
-	public static void fillCircle(int centerX, int centerY, int radius, char c, int color) {
+	public static void fillCircle(int centerX, int centerY, int radius, char glyph, int color) {
 		int x = 0;
 		int y = radius;
 
 		int d = 3 - 2 * radius;
 
-		fillCirclePoints(centerX, centerY, x, y, c, color);
+		fillCirclePoints(centerX, centerY, x, y, glyph, color);
 		while (x <= y) {
 			if (d <= 0)
 				d = d + 4 * x + 6;
@@ -369,13 +367,13 @@ public final class Drawer {
 			}
 
 			x++;
-			fillCirclePoints(centerX, centerY, x, y, c, color);
+			fillCirclePoints(centerX, centerY, x, y, glyph, color);
 		}
 	}
 
-	public static void drawLine(int x0, int y0, int x1, int y1, char c, int color) {
+	public static void drawLine(int x0, int y0, int x1, int y1, char glyph, int color) {
 		if (x0 == x1 && y0 == y1)
-			drawChar(x0, y0, c, color);
+			draw(x0, y0, glyph, color);
 		else {
 			int dx = Maths.abs(x1 - x0);
 			int dy = Maths.abs(y1 - y0);
@@ -383,7 +381,7 @@ public final class Drawer {
 			int sy = y0 < y1 ? 1 : -1;
 			int e = dx - dy;
 			int e2 = 0;
-			drawChar(x0, y0, c, color);
+			draw(x0, y0, glyph, color);
 			while (true) {
 				e2 = 2 * e;
 				if (e2 > -dy) {
@@ -394,7 +392,7 @@ public final class Drawer {
 					e += dx;
 					y0 += sy;
 				}
-				drawChar(x0, y0, c, color);
+				draw(x0, y0, glyph, color);
 				if (x0 == x1 && y0 == y1)
 					return;
 			}

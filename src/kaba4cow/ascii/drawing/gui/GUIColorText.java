@@ -24,7 +24,7 @@ public class GUIColorText extends GUIObject {
 		for (int c = 0; c < text.length(); c++) {
 			if (colors.containsKey(c))
 				color = colors.get(c);
-			Drawer.drawChar(x, y, text.charAt(c), color);
+			Drawer.draw(x, y, text.charAt(c), color);
 			length++;
 			if (length == width && c < text.length() - 1) {
 				length = 0;

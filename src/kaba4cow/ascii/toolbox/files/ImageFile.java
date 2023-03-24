@@ -20,13 +20,13 @@ public class ImageFile {
 	private int width;
 	private int height;
 
-	private char[] chars;
+	private char[] glyphs;
 	private int[] colors;
 
 	public ImageFile(int width, int height) {
 		this.width = width;
 		this.height = height;
-		this.chars = new char[width * height];
+		this.glyphs = new char[width * height];
 		this.colors = new int[width * height];
 	}
 
@@ -85,7 +85,7 @@ public class ImageFile {
 			if (chars != null) {
 				imageFile.width = width;
 				imageFile.height = height;
-				imageFile.chars = chars;
+				imageFile.glyphs = chars;
 				imageFile.colors = colors;
 			}
 
@@ -113,7 +113,7 @@ public class ImageFile {
 			writer.append(Integer.toString(imageFile.height));
 			writer.append('\n');
 
-			char[] chars = imageFile.chars;
+			char[] chars = imageFile.glyphs;
 			int[] colors = imageFile.colors;
 
 			int prev, repeats, length = chars.length;
@@ -163,8 +163,8 @@ public class ImageFile {
 
 	public ImageFile copy() {
 		ImageFile copy = new ImageFile(width, height);
-		for (int i = 0; i < chars.length; i++) {
-			copy.chars[i] = chars[i];
+		for (int i = 0; i < glyphs.length; i++) {
+			copy.glyphs[i] = glyphs[i];
 			copy.colors[i] = colors[i];
 		}
 		return copy;
@@ -172,34 +172,34 @@ public class ImageFile {
 
 	public Frame toFrame() {
 		Frame frame = new Frame(width, height);
-		int i, length = chars.length;
+		int i, length = glyphs.length;
 		for (i = 0; i < length; i++) {
-			frame.chars[i] = chars[i];
+			frame.glyphs[i] = glyphs[i];
 			frame.colors[i] = colors[i];
 		}
 		return frame;
 	}
 
-	public void fill(char c, int color) {
-		int i, length = chars.length;
+	public void fill(char glyph, int color) {
+		int i, length = glyphs.length;
 		for (i = 0; i < length; i++) {
-			chars[i] = c;
+			glyphs[i] = glyph;
 			colors[i] = color;
 		}
 	}
 
-	public void set(int x, int y, char c, int color) {
+	public void set(int x, int y, char glyph, int color) {
 		if (x < 0 || x >= width || y < 0 || y >= height)
 			return;
 		int i = y * width + x;
-		chars[i] = c;
+		glyphs[i] = glyph;
 		colors[i] = color;
 	}
 
-	public void setChar(int x, int y, char c) {
+	public void setChar(int x, int y, char glyph) {
 		if (x < 0 || x >= width || y < 0 || y >= height)
 			return;
-		chars[y * width + x] = c;
+		glyphs[y * width + x] = glyph;
 	}
 
 	public void setColor(int x, int y, int color) {
@@ -208,9 +208,11 @@ public class ImageFile {
 		colors[y * width + x] = color;
 	}
 
-	public int floodFill(int startX, int startY, int prevColor, int newColor) {
-		if (startX < 0 || startX >= width || startY < 0 || startY >= height
-				|| colors[startY * width + startX] != prevColor)
+	public int floodFill(int startX, int startY, int newColor) {
+		if (startX < 0 || startX >= width || startY < 0 || startY >= height)
+			return 0;
+		int prevColor = colors[startY * width + startX];
+		if (prevColor == newColor)
 			return 0;
 		boolean[] visited = new boolean[width * height];
 		int area = 0;
@@ -238,9 +240,11 @@ public class ImageFile {
 		return area;
 	}
 
-	public int floodFill(int startX, int startY, char prevChar, char newChar) {
-		if (startX < 0 || startX >= width || startY < 0 || startY >= height
-				|| chars[startY * width + startX] != prevChar)
+	public int floodFill(int startX, int startY, char newGlyph) {
+		if (startX < 0 || startX >= width || startY < 0 || startY >= height)
+			return 0;
+		char prevGlyph = glyphs[startY * width + startX];
+		if (prevGlyph == newGlyph)
 			return 0;
 		boolean[] visited = new boolean[width * height];
 		int area = 0;
@@ -255,8 +259,8 @@ public class ImageFile {
 			i = y * width + x;
 			if (x < 0 || x >= width || y < 0 || y >= height || visited[i])
 				continue;
-			if (chars[i] == prevChar) {
-				chars[i] = newChar;
+			if (glyphs[i] == prevGlyph) {
+				glyphs[i] = newGlyph;
 				area++;
 				stack.push(new int[] { x - 1, y });
 				stack.push(new int[] { x + 1, y });
@@ -269,7 +273,7 @@ public class ImageFile {
 	}
 
 	public void setSize(int newWidth, int newHeight) {
-		final char[] newChars = new char[newWidth * newHeight];
+		final char[] newGlyphs = new char[newWidth * newHeight];
 		final int[] newColors = new int[newWidth * newHeight];
 
 		int x, y, i, j;
@@ -277,25 +281,25 @@ public class ImageFile {
 			for (y = 0; y < newHeight; y++) {
 				i = y * newWidth + x;
 				if (x >= width || y >= height) {
-					newChars[i] = 0;
+					newGlyphs[i] = 0;
 					newColors[i] = 0;
 					continue;
 				}
 				j = y * width + x;
-				newChars[i] = chars[j];
+				newGlyphs[i] = glyphs[j];
 				newColors[i] = colors[j];
 			}
 
 		width = newWidth;
 		height = newHeight;
-		chars = newChars;
+		glyphs = newGlyphs;
 		colors = newColors;
 	}
 
-	public char getChar(int x, int y) {
+	public char getGlyph(int x, int y) {
 		if (x < 0 || x >= width || y < 0 || y >= height)
 			return 0;
-		return chars[y * width + x];
+		return glyphs[y * width + x];
 	}
 
 	public int getColor(int x, int y) {
@@ -316,7 +320,7 @@ public class ImageFile {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + Arrays.hashCode(chars);
+		result = prime * result + Arrays.hashCode(glyphs);
 		result = prime * result + Arrays.hashCode(colors);
 		result = prime * result + Objects.hash(height, width);
 		return result;
@@ -331,7 +335,7 @@ public class ImageFile {
 		if (getClass() != obj.getClass())
 			return false;
 		ImageFile other = (ImageFile) obj;
-		return Arrays.equals(chars, other.chars) && Arrays.equals(colors, other.colors) && height == other.height
+		return Arrays.equals(glyphs, other.glyphs) && Arrays.equals(colors, other.colors) && height == other.height
 				&& width == other.width;
 	}
 

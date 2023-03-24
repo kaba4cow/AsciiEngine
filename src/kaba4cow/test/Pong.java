@@ -179,7 +179,7 @@ public class Pong implements MainProgram {
 		}
 
 		public void render() {
-			Drawer.drawChar((int) pos.x, (int) pos.y, Glyphs.WHITE_CIRCLE, 0x000FFF);
+			Drawer.draw((int) pos.x, (int) pos.y, Glyphs.WHITE_CIRCLE, 0x000FFF);
 		}
 
 		public void reset() {

@@ -50,9 +50,9 @@ public final class Display {
 
 	private static final int BAR_COLOR = 0xEEE000;
 
-	private static final int CHAR_SIZE = 16;
+	private static final int GLYPH_SIZE = 16;
 
-	private static int IMAGE_CHAR_COLUMNS;
+	private static int IMAGE_GLYPH_COLUMNS;
 
 	private static int SCREEN_WIDTH;
 	private static int SCREEN_HEIGHT;
@@ -77,8 +77,8 @@ public final class Display {
 	private static GlyphSheet glyphSheet;
 	private static Frame frame;
 
-	private static char cursorChar;
-	private static char backgroundChar;
+	private static char cursorGlyph;
+	private static char backgroundGlyph;
 	private static int backgroundColor;
 
 	private static boolean fullscreen;
@@ -92,7 +92,7 @@ public final class Display {
 	private static int screenX, screenY, tileX, tileY, prevTileX, prevTileY;
 	private static int prevColorTemp, bColorTemp, brTemp, bgTemp, bbTemp, fColorTemp, frTemp, fgTemp, fbTemp, xTemp,
 			yTemp, xOffsetTemp, yOffsetTemp;
-	private static int[] barCharsTemp;
+	private static int[] barGlyphsTemp;
 
 	private Display() {
 
@@ -115,11 +115,11 @@ public final class Display {
 			Engine.terminate(e);
 		}
 
-		IMAGE_CHAR_COLUMNS = glyphSheet.width / CHAR_SIZE;
+		IMAGE_GLYPH_COLUMNS = glyphSheet.width / GLYPH_SIZE;
 
 		TITLE = title;
 
-		backgroundChar = Glyphs.SPACE;
+		backgroundGlyph = Glyphs.SPACE;
 		backgroundColor = 0x000FFF;
 	}
 
@@ -135,16 +135,16 @@ public final class Display {
 		fullscreen = width == 0 || height == 0;
 
 		if (fullscreen) {
-			WIDTH = SCREEN_WIDTH / CHAR_SIZE;
-			HEIGHT = SCREEN_HEIGHT / CHAR_SIZE;
+			WIDTH = SCREEN_WIDTH / GLYPH_SIZE;
+			HEIGHT = SCREEN_HEIGHT / GLYPH_SIZE;
 		} else {
 			WIDTH = width;
 			HEIGHT = height;
 
-			if (WIDTH >= SCREEN_WIDTH / CHAR_SIZE)
-				WIDTH = SCREEN_WIDTH / CHAR_SIZE - 1;
-			if (HEIGHT >= SCREEN_HEIGHT / CHAR_SIZE)
-				HEIGHT = SCREEN_HEIGHT / CHAR_SIZE - 1;
+			if (WIDTH >= SCREEN_WIDTH / GLYPH_SIZE)
+				WIDTH = SCREEN_WIDTH / GLYPH_SIZE - 1;
+			if (HEIGHT >= SCREEN_HEIGHT / GLYPH_SIZE)
+				HEIGHT = SCREEN_HEIGHT / GLYPH_SIZE - 1;
 		}
 
 		Printer.println("Creating " + (fullscreen ? "fullscreen" : "windowed") + " display: " + WIDTH + "x" + HEIGHT);
@@ -155,8 +155,8 @@ public final class Display {
 		}
 		ignoreClosing = false;
 
-		DISPLAY_WIDTH = WIDTH * CHAR_SIZE;
-		DISPLAY_HEIGHT = HEIGHT * CHAR_SIZE;
+		DISPLAY_WIDTH = WIDTH * GLYPH_SIZE;
+		DISPLAY_HEIGHT = HEIGHT * GLYPH_SIZE;
 
 		drawCursor = true;
 		cursorWaiting = false;
@@ -176,7 +176,7 @@ public final class Display {
 		windowListener = new WindowListener(window);
 		new DropTarget(window, windowListener);
 
-		Dimension dimension = new Dimension(DISPLAY_WIDTH, DISPLAY_HEIGHT + CHAR_SIZE);
+		Dimension dimension = new Dimension(DISPLAY_WIDTH, DISPLAY_HEIGHT + GLYPH_SIZE);
 
 		canvas = new Canvas();
 		canvas.setPreferredSize(dimension);
@@ -216,10 +216,10 @@ public final class Display {
 
 		graphics = bufferStrategy.getDrawGraphics();
 		graphics.setColor(Color.BLACK);
-		graphics.fillRect(0, 0, DISPLAY_WIDTH + CHAR_SIZE, DISPLAY_HEIGHT + CHAR_SIZE);
+		graphics.fillRect(0, 0, DISPLAY_WIDTH + GLYPH_SIZE, DISPLAY_HEIGHT + GLYPH_SIZE);
 		bufferStrategy.show();
 
-		barCharsTemp = new int[WIDTH];
+		barGlyphsTemp = new int[WIDTH];
 
 		for (DisplayListener listener : listeners)
 			listener.onWindowCreated(WIDTH, HEIGHT);
@@ -235,7 +235,7 @@ public final class Display {
 
 	public static void update() {
 		if (fullscreen) {
-			cursorChar = cursorWaiting ? Glyphs.SYSTEM_CURSOR_WAITING
+			cursorGlyph = cursorWaiting ? Glyphs.SYSTEM_CURSOR_WAITING
 					: (Mouse.isKey(Mouse.LEFT) ? Glyphs.SYSTEM_CURSOR_GRABBED : Glyphs.SYSTEM_CURSOR);
 			windowListener.setActive(false);
 			return;
@@ -250,7 +250,7 @@ public final class Display {
 		if (!tempCursorOnBar && drawCursor)
 			mouseIndex = Mouse.getTileY() * WIDTH + Mouse.getTileX();
 		cursorOnBar = false;
-		cursorChar = cursorWaiting ? Glyphs.SYSTEM_CURSOR_WAITING
+		cursorGlyph = cursorWaiting ? Glyphs.SYSTEM_CURSOR_WAITING
 				: (Mouse.isKey(Mouse.LEFT) ? Glyphs.SYSTEM_CURSOR_GRABBED : Glyphs.SYSTEM_CURSOR);
 
 		windowListener.setActive(tempCursorOnBar);
@@ -296,7 +296,7 @@ public final class Display {
 		int mouseX = Mouse.getTileX();
 		int mouseY = Mouse.getTileY();
 		if (drawCursor && Mouse.getY() >= 0) {
-			frame.chars[mouseY * WIDTH + mouseX] = cursorChar;
+			frame.glyphs[mouseY * WIDTH + mouseX] = cursorGlyph;
 			frame.colors[mouseY * WIDTH + mouseX] = 0x000FFF;
 		}
 
@@ -318,10 +318,10 @@ public final class Display {
 				else
 					c = Glyphs.SPACE;
 				if (cursorOnBar && x == mouseX)
-					c = cursorChar;
+					c = cursorGlyph;
 				else if (x > 0 && x - 1 < titleLength)
 					c = TITLE.charAt(x - 1);
-				barCharsTemp[x] = c;
+				barGlyphsTemp[x] = c;
 
 				if (!pixelMap.containsKey(BAR_COLOR))
 					pixelMap.put(BAR_COLOR, new Stack<>());
@@ -333,21 +333,21 @@ public final class Display {
 			while (!positions.isEmpty()) {
 				position = positions.pop();
 				if (position[1] < 0)
-					c = barCharsTemp[position[0]];
+					c = barGlyphsTemp[position[0]];
 				else
-					c = frame.chars[position[1] * WIDTH + position[0]];
+					c = frame.glyphs[position[1] * WIDTH + position[0]];
 
-				screenX = position[0] * CHAR_SIZE;
-				screenY = (position[1] + barOffset) * CHAR_SIZE;
+				screenX = position[0] * GLYPH_SIZE;
+				screenY = (position[1] + barOffset) * GLYPH_SIZE;
 
-				tileX = c % IMAGE_CHAR_COLUMNS;
-				tileY = c / IMAGE_CHAR_COLUMNS;
+				tileX = c % IMAGE_GLYPH_COLUMNS;
+				tileY = c / IMAGE_GLYPH_COLUMNS;
 				glyphSheet.draw(key);
 			}
 		}
 
 		for (x = 0; x < frame.length; x++) {
-			frame.chars[x] = backgroundChar;
+			frame.glyphs[x] = backgroundGlyph;
 			frame.colors[x] = backgroundColor;
 		}
 	}
@@ -356,25 +356,25 @@ public final class Display {
 		try {
 			file.createNewFile();
 
-			BufferedImage image = new BufferedImage(frame.width * CHAR_SIZE, frame.height * CHAR_SIZE,
+			BufferedImage image = new BufferedImage(frame.width * GLYPH_SIZE, frame.height * GLYPH_SIZE,
 					BufferedImage.TYPE_INT_RGB);
 			graphics = image.getGraphics();
 
-			char currentChar;
+			char currentGlyph;
 			for (int i = 0; i < frame.length; i++) {
-				currentChar = frame.chars[i];
-				if (currentChar >= Glyphs.numGlyphs())
+				currentGlyph = frame.glyphs[i];
+				if (currentGlyph >= Glyphs.numGlyphs())
 					continue;
 
-				screenX = CHAR_SIZE * (i % frame.width);
-				screenY = CHAR_SIZE * (i / frame.width);
+				screenX = GLYPH_SIZE * (i % frame.width);
+				screenY = GLYPH_SIZE * (i / frame.width);
 
-				tileX = currentChar % IMAGE_CHAR_COLUMNS;
-				tileY = currentChar / IMAGE_CHAR_COLUMNS;
+				tileX = currentGlyph % IMAGE_GLYPH_COLUMNS;
+				tileY = currentGlyph / IMAGE_GLYPH_COLUMNS;
 
 				glyphSheet.draw(frame.colors[i]);
 
-				frame.chars[i] = backgroundChar;
+				frame.glyphs[i] = backgroundGlyph;
 				frame.colors[i] = backgroundColor;
 			}
 
@@ -388,13 +388,13 @@ public final class Display {
 	}
 
 	public static void setBackground(char c, int color) {
-		if (backgroundChar != c) {
-			for (int i = 0; i < frame.chars.length; i++)
-				frame.chars[i] = c;
-			backgroundChar = c;
+		if (backgroundGlyph != c) {
+			for (int i = 0; i < frame.glyphs.length; i++)
+				frame.glyphs[i] = c;
+			backgroundGlyph = c;
 		}
 		if (backgroundColor != color) {
-			for (int i = 0; i < frame.chars.length; i++)
+			for (int i = 0; i < frame.glyphs.length; i++)
 				frame.colors[i] = color;
 			backgroundColor = color;
 		}
@@ -404,8 +404,8 @@ public final class Display {
 		takingScreenshot = true;
 	}
 
-	public static char getChar(int x, int y) {
-		return frame.getChar(x, y);
+	public static char getGlyph(int x, int y) {
+		return frame.getGlyph(x, y);
 	}
 
 	public static int getColor(int x, int y) {
@@ -474,8 +474,8 @@ public final class Display {
 		return DISPLAY_HEIGHT;
 	}
 
-	public static int getCharSize() {
-		return CHAR_SIZE;
+	public static int getGlyphSize() {
+		return GLYPH_SIZE;
 	}
 
 	public static boolean isFullscreen() {
@@ -483,7 +483,7 @@ public final class Display {
 	}
 
 	public static int getCursorOffset() {
-		return fullscreen ? 0 : -CHAR_SIZE;
+		return fullscreen ? 0 : -GLYPH_SIZE;
 	}
 
 	private static class WindowListener extends MouseAdapter implements FocusListener, DropTargetListener {
@@ -517,7 +517,7 @@ public final class Display {
 			Point screenPosition = e.getLocationOnScreen();
 			int newX = screenPosition.x - mousePosition.x;
 			int newY = screenPosition.y - mousePosition.y;
-			frame.setLocation(newX / CHAR_SIZE * CHAR_SIZE, newY / CHAR_SIZE * CHAR_SIZE);
+			frame.setLocation(newX / GLYPH_SIZE * GLYPH_SIZE, newY / GLYPH_SIZE * GLYPH_SIZE);
 		}
 
 		@Override
@@ -600,12 +600,12 @@ public final class Display {
 					map[x][y] = colorModel.getRed(sheet.getRaster().getDataElements(x, y, null)) > 0;
 			sheet = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-			int columns = width / CHAR_SIZE;
-			int rows = height / CHAR_SIZE;
+			int columns = width / GLYPH_SIZE;
+			int rows = height / GLYPH_SIZE;
 			images = new BufferedImage[columns][rows];
 			for (int y = 0; y < rows; y++)
 				for (int x = 0; x < columns; x++)
-					images[x][y] = sheet.getSubimage(x * CHAR_SIZE, y * CHAR_SIZE, CHAR_SIZE, CHAR_SIZE);
+					images[x][y] = sheet.getSubimage(x * GLYPH_SIZE, y * GLYPH_SIZE, GLYPH_SIZE, GLYPH_SIZE);
 		}
 
 		public void draw(int color) {
@@ -631,14 +631,14 @@ public final class Display {
 
 			if (prevTileX != tileX || prevTileY != tileY || image == null) {
 				image = images[tileX][tileY];
-				xOffsetTemp = CHAR_SIZE * tileX;
-				yOffsetTemp = CHAR_SIZE * tileY;
+				xOffsetTemp = GLYPH_SIZE * tileX;
+				yOffsetTemp = GLYPH_SIZE * tileY;
 			}
 			prevTileX = tileX;
 			prevTileY = tileY;
 
-			for (yTemp = 0; yTemp < CHAR_SIZE; yTemp++)
-				for (xTemp = 0; xTemp < CHAR_SIZE; xTemp++)
+			for (yTemp = 0; yTemp < GLYPH_SIZE; yTemp++)
+				for (xTemp = 0; xTemp < GLYPH_SIZE; xTemp++)
 					image.setRGB(xTemp, yTemp, map[xTemp + xOffsetTemp][yTemp + yOffsetTemp] ? fColorTemp : bColorTemp);
 
 			graphics.drawImage(image, screenX, screenY, canvas);

@@ -155,7 +155,7 @@ public class BrickBreaker implements MainProgram {
 
 		@Override
 		public void render() {
-			Drawer.drawChar((int) x, (int) y, Glyphs.WHITE_CIRCLE, 0x000FFF);
+			Drawer.draw((int) x, (int) y, Glyphs.WHITE_CIRCLE, 0x000FFF);
 		}
 
 	}
@@ -198,7 +198,7 @@ public class BrickBreaker implements MainProgram {
 		public void render() {
 			BoxDrawer.drawBox((int) x, (int) y, SIZE - 1, SIZE - 1, true, 0x421FFF);
 			if (multiplier)
-				Drawer.drawChar((int) x + 1, (int) y + 1, Glyphs.WHITE_SUN_WITH_RAYS, 0x111FFF);
+				Drawer.draw((int) x + 1, (int) y + 1, Glyphs.WHITE_SUN_WITH_RAYS, 0x111FFF);
 		}
 
 	}
