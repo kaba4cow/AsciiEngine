@@ -148,13 +148,13 @@ public class GUIFrame {
 		height--;
 		int totalHeight = 2;
 		for (int i = 0; i < list.size(); i++)
-			totalHeight += list.get(i).totalLines(width);
+			totalHeight += list.get(i).totalLines(width - 1);
 
 		if (totalHeight > height + 1) {
 			scrollable = true;
 			totalHeight = 2;
 			for (int i = 0; i < list.size(); i++)
-				totalHeight += list.get(i).totalLines(width - 1);
+				totalHeight += list.get(i).totalLines(width - 2);
 		} else
 			scrollable = false;
 
@@ -204,7 +204,7 @@ public class GUIFrame {
 	}
 
 	public int totalHeight(int width) {
-		width--;
+		width -= 2;
 		int totalHeight = 2;
 		for (int i = 0; i < list.size(); i++)
 			totalHeight += list.get(i).totalLines(width);

@@ -7,7 +7,7 @@ import kaba4cow.ascii.drawing.drawers.Drawer;
 
 public class GUIButton extends GUIObject {
 
-	private final String text;
+	private String text;
 
 	private final Consumer<?> function;
 
@@ -40,6 +40,10 @@ public class GUIButton extends GUIObject {
 
 	public String getText() {
 		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
 	}
 
 }
