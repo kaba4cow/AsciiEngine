@@ -8,6 +8,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Stack;
 import java.util.Vector;
@@ -53,8 +55,7 @@ public class DataFile {
 		return read(new File(fileName));
 	}
 
-	public static DataFile read(File file) {
-		Printer.println("Loading data file: " + file.getAbsolutePath());
+	private static DataFile read(BufferedReader reader) {
 		DataFile dataFile = new DataFile();
 
 		String[] propertyLine;
@@ -65,11 +66,9 @@ public class DataFile {
 		stack.push(dataFile);
 
 		try {
-			FileInputStream in = new FileInputStream(file);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			String line = reader.readLine();
 			while (true) {
-				line = line.trim();
+				line = line.trim().replaceAll("\r", "");
 
 				if (!line.isEmpty()) {
 					if (line.contains(ASSIGNMENT)) {
@@ -120,12 +119,24 @@ public class DataFile {
 					break;
 			}
 			reader.close();
-			files.put(file.getAbsolutePath(), dataFile);
 		} catch (IOException e) {
-			Engine.terminate(e);
+			e.printStackTrace();
 		}
 
 		return dataFile;
+	}
+
+	public static DataFile read(File file) {
+		Printer.println("Loading data file: " + file.getAbsolutePath());
+
+		try {
+			FileInputStream in = new FileInputStream(file);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			return read(reader);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public static boolean write(DataFile dataFile, String fileName) {
@@ -444,6 +455,25 @@ public class DataFile {
 		for (int i = 0; i < array.length; i++)
 			array[i] = node(i).getVector3();
 		return array;
+	}
+
+	public static DataFile fromString(String string) {
+		StringReader input = new StringReader(string);
+		BufferedReader reader = new BufferedReader(input);
+		return read(reader);
+	}
+
+	@Override
+	public String toString() {
+		StringWriter string = new StringWriter();
+		BufferedWriter writer = new BufferedWriter(string);
+		try {
+			write(this, writer);
+			writer.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return string.toString();
 	}
 
 }

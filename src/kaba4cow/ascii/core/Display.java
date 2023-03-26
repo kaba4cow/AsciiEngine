@@ -295,7 +295,7 @@ public final class Display {
 
 		int mouseX = Mouse.getTileX();
 		int mouseY = Mouse.getTileY();
-		if (drawCursor && Mouse.getY() >= 0) {
+		if (drawCursor && Mouse.getY() >= 0 && mouseX < WIDTH && mouseY < HEIGHT) {
 			frame.glyphs[mouseY * WIDTH + mouseX] = cursorGlyph;
 			frame.colors[mouseY * WIDTH + mouseX] = 0x000FFF;
 		}
