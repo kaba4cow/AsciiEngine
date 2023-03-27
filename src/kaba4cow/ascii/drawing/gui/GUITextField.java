@@ -26,6 +26,8 @@ public class GUITextField extends GUIObject {
 	private String text;
 	private boolean active;
 
+	private int maxCharacters;
+
 	private int cursor;
 	private int cursorX;
 	private int cursorY;
@@ -37,6 +39,7 @@ public class GUITextField extends GUIObject {
 		this.builder = new StringBuilder(string);
 		this.text = string;
 		this.active = false;
+		this.maxCharacters = Integer.MAX_VALUE;
 		this.cursor = 0;
 		this.cursorX = 0;
 		this.cursorY = 0;
@@ -109,7 +112,7 @@ public class GUITextField extends GUIObject {
 						builder.deleteCharAt(cursor);
 						modified = true;
 					}
-				} else if (c >= 32 && c < DELETE) {
+				} else if (c >= 32 && c < DELETE && text.length() < maxCharacters) {
 					builder.insert(cursor, c);
 					text = builder.toString();
 					moveCursor(RIGHT);
@@ -150,6 +153,14 @@ public class GUITextField extends GUIObject {
 		this.text = text;
 		this.builder.setLength(0);
 		this.builder.append(text);
+	}
+
+	public int getMaxCharacters() {
+		return maxCharacters;
+	}
+
+	public void setMaxCharacters(int maxCharacters) {
+		this.maxCharacters = maxCharacters;
 	}
 
 	private void moveCursor(int movement) {

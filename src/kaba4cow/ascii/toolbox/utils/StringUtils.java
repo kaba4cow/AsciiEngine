@@ -1,9 +1,18 @@
 package kaba4cow.ascii.toolbox.utils;
 
+import java.util.ArrayList;
+
 public final class StringUtils {
 
 	private StringUtils() {
 
+	}
+
+	public static String[] divideString(String string, int maxLength) {
+		ArrayList<String> parts = new ArrayList<>();
+		for (int i = 0; i < string.length(); i += maxLength)
+			parts.add(string.substring(i, Math.min(i + maxLength, string.length())));
+		return parts.toArray(new String[0]);
 	}
 
 	public static String repeat(String string, int times) {
