@@ -35,9 +35,11 @@ public class GUIFrame {
 
 	private final ArrayList<GUIObject> list;
 
-	public int color;
-	public final boolean resizable;
-	public final boolean moveable;
+	private int color;
+	private boolean transparent;
+
+	private final boolean resizable;
+	private final boolean moveable;
 
 	public GUIFrame(int color, boolean resizable, boolean moveable) {
 		this.title = "";
@@ -178,7 +180,8 @@ public class GUIFrame {
 		int currentY = y + 1;
 		if (totalHeight > height + 1)
 			currentY -= scroll;
-		BoxDrawer.drawBox(x, y, width, height, false, color);
+		if (!transparent)
+			BoxDrawer.drawBox(x, y, width, height, false, color);
 		for (int i = 0; i < title.length(); i++) {
 			Drawer.draw(x + i + 1, y, title.charAt(i), color);
 			if (i + 2 >= width)
@@ -247,6 +250,15 @@ public class GUIFrame {
 		return this;
 	}
 
+	public boolean isTransparent() {
+		return transparent;
+	}
+
+	public GUIFrame setTransparent(boolean transparent) {
+		this.transparent = transparent;
+		return this;
+	}
+
 	public boolean wasClicked() {
 		return clicked;
 	}
@@ -259,32 +271,36 @@ public class GUIFrame {
 		return x;
 	}
 
-	public void setX(int x) {
+	public GUIFrame setX(int x) {
 		this.x = x;
+		return this;
 	}
 
 	public int getY() {
 		return y;
 	}
 
-	public void setY(int y) {
+	public GUIFrame setY(int y) {
 		this.y = y;
+		return this;
 	}
 
 	public int getWidth() {
 		return width;
 	}
 
-	public void setWidth(int width) {
+	public GUIFrame setWidth(int width) {
 		this.width = width;
+		return this;
 	}
 
 	public int getHeight() {
 		return height;
 	}
 
-	public void setHeight(int height) {
+	public GUIFrame setHeight(int height) {
 		this.height = height;
+		return this;
 	}
 
 }

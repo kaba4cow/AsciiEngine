@@ -12,7 +12,7 @@ public abstract class GUIObject {
 
 	public GUIObject(GUIFrame frame, int color) {
 		this.frame = frame;
-		this.color = color == -1 ? frame.color : color;
+		this.color = color == -1 ? frame.getColor() : color;
 		frame.add(this);
 	}
 
