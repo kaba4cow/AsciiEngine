@@ -66,8 +66,8 @@ public class DataFile {
 		stack.push(dataFile);
 
 		try {
-			String line = reader.readLine();
-			while (true) {
+			String line;
+			while ((line = reader.readLine()) != null) {
 				line = line.trim().replaceAll("\r", "");
 
 				if (!line.isEmpty()) {
@@ -113,10 +113,6 @@ public class DataFile {
 						}
 					}
 				}
-
-				line = reader.readLine();
-				if (line == null)
-					break;
 			}
 			reader.close();
 		} catch (IOException e) {

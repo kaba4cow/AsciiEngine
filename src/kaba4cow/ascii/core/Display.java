@@ -474,6 +474,14 @@ public final class Display {
 		return DISPLAY_HEIGHT;
 	}
 
+	public static int getScreenWidth() {
+		return SCREEN_WIDTH;
+	}
+
+	public static int getScreenHeight() {
+		return SCREEN_HEIGHT;
+	}
+
 	public static int getGlyphSize() {
 		return GLYPH_SIZE;
 	}
