@@ -627,13 +627,15 @@ public final class Display {
 				brTemp = (bColorTemp >> 8) & 0xF;
 				bgTemp = (bColorTemp >> 4) & 0xF;
 				bbTemp = (bColorTemp >> 0) & 0xF;
-				bColorTemp = (brTemp << 20) | (bgTemp << 12) | (bbTemp << 4);
+				bColorTemp = (brTemp << 20) | (brTemp << 16) | (bgTemp << 12) | (bgTemp << 8) | (bbTemp << 4)
+						| (bbTemp << 0);
 
 				fColorTemp = (color >> 0) & 0xFFF;
 				frTemp = (fColorTemp >> 8) & 0xF;
 				fgTemp = (fColorTemp >> 4) & 0xF;
 				fbTemp = (fColorTemp >> 0) & 0xF;
-				fColorTemp = (frTemp << 20) | (fgTemp << 12) | (fbTemp << 4);
+				fColorTemp = (frTemp << 20) | (frTemp << 16) | (fgTemp << 12) | (fgTemp << 8) | (fbTemp << 4)
+						| (fbTemp << 0);
 			}
 			prevColorTemp = color;
 
