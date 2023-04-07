@@ -49,8 +49,9 @@ import kaba4cow.ascii.toolbox.utils.ProgramUtils;
 public final class Display {
 
 	private static final int BAR_COLOR = 0xEEE000;
-
 	private static final int GLYPH_SIZE = 16;
+
+	private static String SCREENSHOT_LOCATION = "";
 
 	private static int IMAGE_GLYPH_COLUMNS;
 
@@ -268,20 +269,17 @@ public final class Display {
 	public static void render() {
 		if (takingScreenshot) {
 			takingScreenshot = false;
-			File file = new File("screenshot_" + ProgramUtils.getDate() + ".png");
+			File file = new File(SCREENSHOT_LOCATION + "screenshot_" + ProgramUtils.getDate() + ".png");
+			Printer.println("Saving screenshot at: " + file.getAbsolutePath());
 			if (saveImage(frame, file))
-				Printer.println("Screenshot saved at: " + file.getAbsolutePath());
+				Printer.println("Screenshot saved");
 			else
 				Printer.println("Could not save the screenshot");
 		}
 
-//		do {
-//			do {
 		graphics = bufferStrategy.getDrawGraphics();
 		paint();
-//			} while (bufferStrategy.contentsRestored());
 		bufferStrategy.show();
-//		} while (bufferStrategy.contentsLost());
 	}
 
 	private static final HashMap<Integer, Stack<int[]>> pixelMap = new HashMap<>();
@@ -456,6 +454,13 @@ public final class Display {
 	public static void setTitle(String title) {
 		if (title != null)
 			TITLE = title;
+	}
+
+	public static void setScreenshotLocation(String location) {
+		SCREENSHOT_LOCATION = location;
+		File file = new File(location);
+		if (!file.exists())
+			file.mkdirs();
 	}
 
 	public static int getWidth() {
