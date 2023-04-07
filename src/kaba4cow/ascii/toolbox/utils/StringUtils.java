@@ -119,15 +119,15 @@ public final class StringUtils {
 	}
 
 	public static String format1(float value) {
-		return String.format("%.1f", value);
+		return String.format("%.1f", value).replace(',', '.');
 	}
 
 	public static String format2(float value) {
-		return String.format("%.2f", value);
+		return String.format("%.2f", value).replace(',', '.');
 	}
 
 	public static String format(float value, int digits) {
-		return String.format("%." + digits + "f", value);
+		return String.format("%." + digits + "f", value).replace(',', '.');
 	}
 
 }
