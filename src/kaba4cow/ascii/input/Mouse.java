@@ -5,7 +5,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import kaba4cow.ascii.core.Display;
@@ -14,12 +13,12 @@ import kaba4cow.ascii.toolbox.maths.vectors.Vector2i;
 
 public final class Mouse implements MouseListener, MouseMotionListener, MouseWheelListener {
 
-	private static final ArrayList<Integer> codes = new ArrayList<>();
+	private static final HashMap<Integer, String> codes = new HashMap<>();
 	private static final HashMap<Integer, Integer> indices = new HashMap<>();
 
-	public static final int LEFT = register(MouseEvent.BUTTON1);
-	public static final int MIDDLE = register(MouseEvent.BUTTON2);
-	public static final int RIGHT = register(MouseEvent.BUTTON3);
+	public static final int LEFT = register(MouseEvent.BUTTON1, "LEFT BUTTON");
+	public static final int MIDDLE = register(MouseEvent.BUTTON2, "MIDDLE BUTTON");
+	public static final int RIGHT = register(MouseEvent.BUTTON3, "RIGHT BUTTON");
 
 	public static final int NUM_MOUSE_BUTTONS = codes.size();
 
@@ -45,9 +44,9 @@ public final class Mouse implements MouseListener, MouseMotionListener, MouseWhe
 		return instance;
 	}
 
-	private static int register(int code) {
+	private static int register(int code, String name) {
 		indices.put(code, codes.size());
-		codes.add(code);
+		codes.put(code, name);
 		return code;
 	}
 
@@ -91,6 +90,10 @@ public final class Mouse implements MouseListener, MouseMotionListener, MouseWhe
 
 	private static int index(int code) {
 		return indices.get(code);
+	}
+
+	public static String name(int code) {
+		return codes.get(code);
 	}
 
 	public static int getScroll() {

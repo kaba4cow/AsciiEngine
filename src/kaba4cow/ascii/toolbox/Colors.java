@@ -8,12 +8,29 @@ public final class Colors {
 
 	}
 
-	public static int create(int r, int g, int b) {
+	public static int create(int br, int bg, int bb, int fr, int fg, int fb) {
+		return createBackground(br, bg, bb) | createForeground(fr, fg, fb);
+	}
+
+	public static int create(int background, int foreground) {
+		return createBackground(background, background, background)
+				| createForeground(foreground, foreground, foreground);
+	}
+
+	public static int createBackground(int r, int g, int b) {
+		return (((r & 0xF) << 8) | ((g & 0xF) << 4) | ((b & 0xF) << 0)) << 12;
+	}
+
+	public static int createBackground(int value) {
+		return createBackground(value, value, value);
+	}
+
+	public static int createForeground(int r, int g, int b) {
 		return ((r & 0xF) << 8) | ((g & 0xF) << 4) | ((b & 0xF) << 0);
 	}
 
-	public static int create(int value) {
-		return create(value, value, value);
+	public static int createForeground(int value) {
+		return createForeground(value, value, value);
 	}
 
 	public static int combine(int background, int foreground) {
@@ -47,7 +64,7 @@ public final class Colors {
 		int g = (int) Maths.blend(g0, g1, blendFactor);
 		int b = (int) Maths.blend(b0, b1, blendFactor);
 
-		return create(r, g, b) << 12;
+		return createBackground(r, g, b);
 	}
 
 	public static int blendForeground(int color0, int color1, float blendFactor) {
@@ -69,7 +86,7 @@ public final class Colors {
 		int g = (int) Maths.blend(g0, g1, blendFactor);
 		int b = (int) Maths.blend(b0, b1, blendFactor);
 
-		return create(r, g, b);
+		return createForeground(r, g, b);
 	}
 
 	public static int getRed(int color) {
