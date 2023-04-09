@@ -277,14 +277,14 @@ public final class Display {
 				Printer.println("Could not save the screenshot");
 		}
 
-		graphics = bufferStrategy.getDrawGraphics();
-		paint();
-		bufferStrategy.show();
+		repaint();
 	}
 
 	private static final HashMap<Integer, Stack<int[]>> pixelMap = new HashMap<>();
 
-	private static void paint() {
+	public static void repaint() {
+		graphics = bufferStrategy.getDrawGraphics();
+
 		Stack<int[]> positions;
 		int[] position;
 
@@ -348,6 +348,8 @@ public final class Display {
 			frame.glyphs[x] = backgroundGlyph;
 			frame.colors[x] = backgroundColor;
 		}
+
+		bufferStrategy.show();
 	}
 
 	public static boolean saveImage(Frame frame, File file) {
