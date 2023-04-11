@@ -5,13 +5,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
-import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.toolbox.Printer;
 import kaba4cow.ascii.toolbox.tools.Table;
 
@@ -83,16 +83,25 @@ public class TableFile {
 		Printer.println("Loading table file: " + file.getAbsolutePath());
 
 		try {
-			FileInputStream fis = new FileInputStream(file);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+			FileInputStream in = new FileInputStream(file);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			return read(reader);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-			TableFile tableFile = new TableFile();
+	public static TableFile read(BufferedReader reader) {
+		TableFile tableFile = new TableFile();
 
-			String line;
-			String[] strings;
-			String tag;
+		String line;
+		String[] strings;
+		String tag;
 
-			Table table = null;
+		Table table = null;
+
+		try {
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
 				if (line.isEmpty() || line.startsWith(COMMENT))
@@ -119,7 +128,7 @@ public class TableFile {
 
 			return tableFile;
 		} catch (Exception e) {
-			Engine.terminate(e);
+			e.printStackTrace();
 			return null;
 		}
 	}
