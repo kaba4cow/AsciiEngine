@@ -602,7 +602,7 @@ public final class Display {
 		public final int height;
 
 		public GlyphSheet() throws IOException {
-			InputStream is = getClass().getClassLoader().getResourceAsStream("kaba4cow/ascii/core/CP");
+			InputStream is = getClass().getClassLoader().getResourceAsStream("kaba4cow/ascii/core/CP.bmp");
 			sheet = ImageIO.read(is);
 
 			width = sheet.getWidth();

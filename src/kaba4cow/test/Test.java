@@ -50,7 +50,7 @@ public class Test implements MainProgram {
 
 		new GUIText(frame, -1, "Text Field:");
 		new GUITextField(frame, -1,
-				"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vehicula metus non efficitur fringilla. Maecenas vulputate at eros non porttitor. Donec pharetra non ipsum sed dapibus. Sed ullamcorper, sem non pharetra pellentesque, sapien lectus facilisis enim, at lacinia arcu neque a justo. Donec sodales suscipit libero, eu maximus felis faucibus et. Mauris interdum egestas lacus, ut convallis neque convallis ut. Nam lobortis imperdiet orci, a pellentesque enim faucibus sed. Duis sit amet velit dui. Curabitur ornare, nunc ac aliquam malesuada, mauris orci efficitur sem, non mollis metus ipsum nec nisi. Duis laoreet mi a tortor bibendum iaculis. Ut et mollis libero, id mollis libero. In ac viverra lacus. Aenean auctor commodo maximus.");
+				"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vehicula metus non efficitur fringilla. Maecenas vulputate at eros non porttitor. Donec pharetra non ipsum sed dapibus.");
 		new GUISeparator(frame, -1, false);
 
 		new GUIText(frame, -1, "Buttons:");

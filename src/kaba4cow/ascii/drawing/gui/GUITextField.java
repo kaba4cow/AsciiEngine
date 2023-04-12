@@ -1,11 +1,10 @@
 package kaba4cow.ascii.drawing.gui;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.DataFlavor;
-
 import kaba4cow.ascii.core.Display;
+import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.drawing.drawers.BoxDrawer;
 import kaba4cow.ascii.drawing.drawers.Drawer;
+import kaba4cow.ascii.input.Input;
 import kaba4cow.ascii.input.Keyboard;
 import kaba4cow.ascii.toolbox.Colors;
 
@@ -22,6 +21,8 @@ public class GUITextField extends GUIObject {
 	private static final int DOWN = 5;
 
 	private final StringBuilder builder;
+
+	private String charset;
 
 	private String text;
 	private boolean active;
@@ -43,12 +44,16 @@ public class GUITextField extends GUIObject {
 		this.cursor = 0;
 		this.cursorX = 0;
 		this.cursorY = 0;
+		this.charset = null;
 	}
 
 	@Override
 	public void update(int mouseX, int mouseY, boolean clicked) {
 		if (clicked) {
-			active = mouseX >= bX + 1 && mouseX < bX + bWidth - 1 && mouseY >= bY + 1 && mouseY < bY + bHeight - 1;
+			boolean prevActive = active;
+			active = mouseX >= bX && mouseX < bX + bWidth && mouseY >= bY && mouseY < bY + bHeight;
+			if (active != prevActive)
+				Keyboard.resetLastTyped();
 
 			if (active) {
 				int length = text.length();
@@ -89,14 +94,16 @@ public class GUITextField extends GUIObject {
 				moveCursor(DOWN);
 			else if (Keyboard.isKey(Keyboard.KEY_CONTROL_LEFT) && Keyboard.isKeyDown(Keyboard.KEY_V)) {
 				try {
-					String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard()
-							.getData(DataFlavor.stringFlavor);
-					data = data.replace('\t', ' ').replace('\r', ' ').replace('\n', ' ');
-					int dataLength = data.length();
+					String data = Input.readClipboard();
+					StringBuilder newData = new StringBuilder();
+					for (int i = 0; i < data.length(); i++)
+						if (isAllowed(data.charAt(i)))
+							newData.append(data.charAt(i));
+					data = newData.toString();
 					builder.insert(cursor, data);
-					text = builder.toString();
-					for (int i = 0; i < dataLength; i++)
+					for (int i = 0; i < data.length(); i++)
 						moveCursor(RIGHT);
+					text = builder.toString();
 				} catch (Exception e) {
 				}
 			} else if (Keyboard.getLastTyped() != null) {
@@ -112,7 +119,7 @@ public class GUITextField extends GUIObject {
 						builder.deleteCharAt(cursor);
 						modified = true;
 					}
-				} else if (c >= 32 && c < DELETE && text.length() < maxCharacters) {
+				} else if (c >= 32 && c < DELETE && isAllowed(c) && text.length() < maxCharacters) {
 					builder.insert(cursor, c);
 					text = builder.toString();
 					moveCursor(RIGHT);
@@ -125,6 +132,14 @@ public class GUITextField extends GUIObject {
 		}
 	}
 
+	private boolean isAllowed(char c) {
+		if (c == '\t' || c == '\r' || c == '\n')
+			return false;
+		if (charset == null || charset.isEmpty())
+			return true;
+		return charset.indexOf(c, 0) != -1;
+	}
+
 	@Override
 	public int render(int x, int y, int width, int height) {
 		int totalLines = totalLines(width);
@@ -132,10 +147,9 @@ public class GUITextField extends GUIObject {
 		BoxDrawer.drawBox(x, y, width - 1, totalLines - 1, true, color);
 		totalLines = 2 + Drawer.drawString(x + 1, y + 1, false, width - 2, text, color);
 
-		if (active) {
-			int newColor = Colors.swap(Display.getColor(x + 1 + cursorX, y + 1 + cursorY));
+		if (active && Engine.getElapsedTime() % 0.8f < 0.4f) {
 			char newChar = Display.getGlyph(x + 1 + cursorX, y + 1 + cursorY);
-			Drawer.draw(x + 1 + cursorX, y + 1 + cursorY, newChar, newColor);
+			Drawer.draw(x + 1 + cursorX, y + 1 + cursorY, newChar, Colors.swap(color));
 		}
 		return totalLines;
 	}
@@ -149,18 +163,31 @@ public class GUITextField extends GUIObject {
 		return text;
 	}
 
-	public void setText(String text) {
+	public GUITextField setText(String text) {
 		this.text = text;
 		this.builder.setLength(0);
 		this.builder.append(text);
+		return this;
 	}
 
 	public int getMaxCharacters() {
 		return maxCharacters;
 	}
 
-	public void setMaxCharacters(int maxCharacters) {
+	public GUITextField setMaxCharacters(int maxCharacters) {
 		this.maxCharacters = maxCharacters;
+		return this;
+	}
+
+	public GUITextField setCharset(String charset) {
+		this.charset = charset;
+		return this;
+	}
+
+	public GUITextField setActive() {
+		Keyboard.resetLastTyped();
+		active = true;
+		return this;
 	}
 
 	private void moveCursor(int movement) {

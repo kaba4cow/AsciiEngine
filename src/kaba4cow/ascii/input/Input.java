@@ -27,7 +27,6 @@ public class Input {
 	public static String readClipboard() {
 		try {
 			String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-			data = data.replace('\t', ' ').replace('\r', ' ').replace('\n', ' ');
 			return data;
 		} catch (Exception e) {
 			return "";
