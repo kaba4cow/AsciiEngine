@@ -2,11 +2,11 @@ package kaba4cow.ascii.drawing.gui;
 
 import java.util.ArrayList;
 
-import kaba4cow.ascii.core.Display;
+import kaba4cow.ascii.core.Input;
+import kaba4cow.ascii.core.Window;
 import kaba4cow.ascii.drawing.drawers.BoxDrawer;
 import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.drawing.glyphs.Glyphs;
-import kaba4cow.ascii.input.Mouse;
 import kaba4cow.ascii.toolbox.maths.Maths;
 
 public class GUIFrame {
@@ -67,10 +67,10 @@ public class GUIFrame {
 		}
 		rendered = false;
 
-		int mX = Mouse.getTileX();
-		int mY = Mouse.getTileY();
+		int mX = Input.getTileX();
+		int mY = Input.getTileY();
 
-		if (Mouse.isKeyDown(Mouse.LEFT)) {
+		if (Input.isButtonDown(Input.LEFT)) {
 			if (resizable && mY == y + height && mX == x + width) {
 				resizing = true;
 				tempX = mX;
@@ -81,13 +81,13 @@ public class GUIFrame {
 			}
 		}
 
-		if (Mouse.isKeyUp(Mouse.LEFT)) {
+		if (Input.isButtonUp(Input.LEFT)) {
 			if (resizing) {
 				resizing = false;
-				if (mX >= Display.getWidth())
-					mX = Display.getWidth() - 1;
-				if (mY >= Display.getHeight())
-					mY = Display.getHeight() - 1;
+				if (mX >= Window.getWidth())
+					mX = Window.getWidth() - 1;
+				if (mY >= Window.getHeight())
+					mY = Window.getHeight() - 1;
 				width = Maths.max(width + mX - tempX, 5);
 				height = Maths.max(height + mY - tempY, 2);
 			} else if (moving)
@@ -99,26 +99,26 @@ public class GUIFrame {
 			y = mY;
 			if (x < 0)
 				x = 0;
-			if (x >= Display.getWidth())
-				x = Display.getWidth() - 1;
+			if (x >= Window.getWidth())
+				x = Window.getWidth() - 1;
 			if (y < 0)
 				y = 0;
-			if (y >= Display.getHeight())
-				y = Display.getHeight() - 1;
+			if (y >= Window.getHeight())
+				y = Window.getHeight() - 1;
 		}
 
 		if (mX > x && mX < x + width && mY > y && mY < y + height) {
-			scroll -= Mouse.getScroll();
-			clicked = Mouse.isKeyDown(Mouse.LEFT);
+			scroll -= Input.getScroll();
+			clicked = Input.isButtonDown(Input.LEFT);
 		} else
 			clicked = false;
 
 		for (int i = 0; i < list.size(); i++)
 			list.get(i).update(mX, mY, clicked);
 
-		if (scrollable && Mouse.isKeyDown(Mouse.LEFT) && mX == x + width - 1 && mY >= y + 2 && mY < y + height)
+		if (scrollable && Input.isButtonDown(Input.LEFT) && mX == x + width - 1 && mY >= y + 2 && mY < y + height)
 			scrolling = true;
-		if (!scrollable || Mouse.isKeyUp(Mouse.LEFT))
+		if (!scrollable || Input.isButtonUp(Input.LEFT))
 			scrolling = false;
 
 		if (scrolling) {
@@ -126,7 +126,7 @@ public class GUIFrame {
 			scroll = (int) (position * maxScroll);
 		}
 
-		clicked = Mouse.isKey(Mouse.LEFT) && mX >= x && mX <= x + width && mY >= y && mY <= y + height;
+		clicked = Input.isButton(Input.LEFT) && mX >= x && mX <= x + width && mY >= y && mY <= y + height;
 		frameClicked = clicked;
 	}
 
@@ -134,8 +134,8 @@ public class GUIFrame {
 		if (resizing) {
 			int tempWidth = width;
 			int tempHeight = height;
-			width = Maths.max(width + Mouse.getTileX() - tempX, 5);
-			height = Maths.max(height + Mouse.getTileY() - tempY, 2);
+			width = Maths.max(width + Input.getTileX() - tempX, 5);
+			height = Maths.max(height + Input.getTileY() - tempY, 2);
 			render(x, y, width + 1, height + 1, false);
 			width = tempWidth;
 			height = tempHeight;

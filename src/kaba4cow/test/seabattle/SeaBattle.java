@@ -1,15 +1,15 @@
 package kaba4cow.test.seabattle;
 
 import kaba4cow.ascii.MainProgram;
-import kaba4cow.ascii.core.Display;
 import kaba4cow.ascii.core.Engine;
+import kaba4cow.ascii.core.Input;
+import kaba4cow.ascii.core.Window;
 import kaba4cow.ascii.drawing.drawers.BoxDrawer;
 import kaba4cow.ascii.drawing.gui.GUIButton;
 import kaba4cow.ascii.drawing.gui.GUICheckbox;
 import kaba4cow.ascii.drawing.gui.GUIFrame;
 import kaba4cow.ascii.drawing.gui.GUISeparator;
 import kaba4cow.ascii.drawing.gui.GUIText;
-import kaba4cow.ascii.input.Keyboard;
 
 public class SeaBattle implements MainProgram {
 
@@ -113,7 +113,7 @@ public class SeaBattle implements MainProgram {
 	public void update(float dt) {
 		switch (state) {
 		case STATE_MENU:
-			if (Keyboard.isKey(Keyboard.KEY_ESCAPE))
+			if (Input.isKey(Input.KEY_ESCAPE))
 				Engine.requestClose();
 			menuFrame.update();
 			break;
@@ -127,7 +127,7 @@ public class SeaBattle implements MainProgram {
 			}
 			if (playerField.isReady() && enemyField.isReady()) {
 				moveTime += dt;
-				Display.setCursorWaiting(!playerMove);
+				Window.setCursorWaiting(!playerMove);
 				if (moveTime >= MOVE_DELAY) {
 					boolean play;
 					Field field1 = playerMove ? playerField : enemyField;
@@ -152,7 +152,7 @@ public class SeaBattle implements MainProgram {
 				playerField.plot(true, manualPlotting.isSelected());
 				enemyField.plot(false, false);
 			}
-			if (Keyboard.isKey(Keyboard.KEY_ESCAPE))
+			if (Input.isKey(Input.KEY_ESCAPE))
 				switchState(STATE_PAUSE);
 			break;
 		case STATE_PAUSE:
@@ -163,11 +163,11 @@ public class SeaBattle implements MainProgram {
 
 	@Override
 	public void render() {
-		int w = Display.getWidth();
-		int h = Display.getHeight();
+		int w = Window.getWidth();
+		int h = Window.getHeight();
 
 		if (state != STATE_GAME)
-			Display.setCursorWaiting(false);
+			Window.setCursorWaiting(false);
 
 		switch (state) {
 		case STATE_MENU:
@@ -201,9 +201,9 @@ public class SeaBattle implements MainProgram {
 	public static void main(String[] args) {
 		Engine.init("Sea Battle", 30);
 		if (args != null && args.length == 1 && args[0].equals("-fs"))
-			Display.createFullscreen();
+			Window.createFullscreen();
 		else
-			Display.createWindowed(30, 20);
+			Window.createWindowed(30, 20);
 		Engine.start(new SeaBattle());
 	}
 

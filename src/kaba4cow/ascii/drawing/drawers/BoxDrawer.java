@@ -1,6 +1,6 @@
 package kaba4cow.ascii.drawing.drawers;
 
-import kaba4cow.ascii.core.Display;
+import kaba4cow.ascii.core.Window;
 import kaba4cow.ascii.drawing.glyphs.BoxGlyphs;
 import kaba4cow.ascii.drawing.glyphs.Glyphs;
 
@@ -21,7 +21,7 @@ public final class BoxDrawer {
 	}
 
 	public static void drawChar(int x, int y, char c, int color) {
-		char s = Display.getGlyph(x, y);
+		char s = Window.getGlyph(x, y);
 		if (collisionEnable && BoxGlyphs.isBoxGlyph(s) && BoxGlyphs.isBoxGlyph(c))
 			c = BoxGlyphs.getIntersection(s, c);
 		Drawer.draw(x, y, c, color);

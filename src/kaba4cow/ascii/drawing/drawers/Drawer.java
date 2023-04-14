@@ -1,6 +1,6 @@
 package kaba4cow.ascii.drawing.drawers;
 
-import kaba4cow.ascii.core.Display;
+import kaba4cow.ascii.core.Window;
 import kaba4cow.ascii.drawing.Frame;
 import kaba4cow.ascii.toolbox.maths.Maths;
 import kaba4cow.ascii.toolbox.maths.vectors.Vector2i;
@@ -44,7 +44,7 @@ public final class Drawer {
 	}
 
 	public static void resetFrame() {
-		Drawer.frame = Display.getFrame();
+		Drawer.frame = Window.getFrame();
 	}
 
 	public static boolean isClipped(int x, int y) {
@@ -167,10 +167,10 @@ public final class Drawer {
 		if (string == null)
 			return 1;
 
-		int size = Display.getGlyphSize();
+		int size = Window.GLYPH_SIZE;
 		int length = string.length();
 
-		boolean[][] map = Display.getGlyphSheetMap();
+		boolean[][] map = Window.getGlyphMap();
 		int columns = map.length / size;
 
 		char stringGlyph;
@@ -247,10 +247,10 @@ public final class Drawer {
 		if (string == null)
 			return 1;
 
-		int size = Display.getGlyphSize();
+		int size = Window.GLYPH_SIZE;
 		int length = string.length();
 
-		boolean[][] map = Display.getGlyphSheetMap();
+		boolean[][] map = Window.getGlyphMap();
 		int columns = map.length / size;
 
 		char glyph;

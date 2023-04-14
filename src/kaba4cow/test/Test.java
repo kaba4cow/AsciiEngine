@@ -1,8 +1,9 @@
 package kaba4cow.test;
 
 import kaba4cow.ascii.MainProgram;
-import kaba4cow.ascii.core.Display;
 import kaba4cow.ascii.core.Engine;
+import kaba4cow.ascii.core.Input;
+import kaba4cow.ascii.core.Window;
 import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.drawing.gui.GUIButton;
 import kaba4cow.ascii.drawing.gui.GUICheckbox;
@@ -14,7 +15,6 @@ import kaba4cow.ascii.drawing.gui.GUISeparator;
 import kaba4cow.ascii.drawing.gui.GUISlider;
 import kaba4cow.ascii.drawing.gui.GUIText;
 import kaba4cow.ascii.drawing.gui.GUITextField;
-import kaba4cow.ascii.input.Keyboard;
 import kaba4cow.ascii.toolbox.rng.RNG;
 
 public class Test implements MainProgram {
@@ -27,7 +27,7 @@ public class Test implements MainProgram {
 
 	@Override
 	public void init() {
-		frame = new GUIFrame(0x000FFF, true, true).setTitle("Window");
+		frame = new GUIFrame(0x000FFF, true, true).setTitle("Window").setWidth(30).setHeight(30);
 
 		new GUIText(frame, -1, "Sliders:");
 		for (int i = 1; i <= 3; i++)
@@ -63,11 +63,17 @@ public class Test implements MainProgram {
 	public void update(float dt) {
 		frame.update();
 
-		if (Keyboard.isKey(Keyboard.KEY_ESCAPE))
+		if (Input.isKey(Input.KEY_ESCAPE))
 			Engine.requestClose();
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_ENTER))
+		if (Input.isKeyDown(Input.KEY_ENTER))
 			init();
+
+		if (Input.isKeyDown(Input.KEY_F))
+			if (Window.isFullscreen())
+				Window.createWindowed(40, 40);
+			else
+				Window.createFullscreen();
 	}
 
 	@Override
@@ -78,7 +84,7 @@ public class Test implements MainProgram {
 
 	public static void main(String[] args) throws Exception {
 		Engine.init("Test", 60);
-		Display.createWindowed(40, 40);
+		Window.createWindowed(40, 40);
 		Engine.start(new Test());
 	}
 

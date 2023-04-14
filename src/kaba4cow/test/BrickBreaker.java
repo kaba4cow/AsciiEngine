@@ -3,12 +3,12 @@ package kaba4cow.test;
 import java.util.ArrayList;
 
 import kaba4cow.ascii.MainProgram;
-import kaba4cow.ascii.core.Display;
 import kaba4cow.ascii.core.Engine;
+import kaba4cow.ascii.core.Input;
+import kaba4cow.ascii.core.Window;
 import kaba4cow.ascii.drawing.drawers.BoxDrawer;
 import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.drawing.glyphs.Glyphs;
-import kaba4cow.ascii.input.Keyboard;
 import kaba4cow.ascii.toolbox.maths.Maths;
 import kaba4cow.ascii.toolbox.maths.vectors.Vector2f;
 import kaba4cow.ascii.toolbox.rng.RNG;
@@ -29,10 +29,10 @@ public class BrickBreaker implements MainProgram {
 		list.add(plate = new Plate());
 		list.add(new Ball(plate));
 
-		int offset = Display.getWidth() % Box.SIZE;
+		int offset = Window.getWidth() % Box.SIZE;
 
-		int columns = (Display.getWidth() - offset / 2) / Box.SIZE;
-		int rows = (Display.getHeight() - Display.getHeight() / 3) / Box.SIZE;
+		int columns = (Window.getWidth() - offset / 2) / Box.SIZE;
+		int rows = (Window.getHeight() - Window.getHeight() / 3) / Box.SIZE;
 
 		for (int i = 0; i < columns; i++)
 			for (int j = 0; j < rows; j++)
@@ -56,9 +56,9 @@ public class BrickBreaker implements MainProgram {
 		if (boxes == 0)
 			init();
 
-		if (Keyboard.isKey(Keyboard.KEY_ESCAPE))
+		if (Input.isKey(Input.KEY_ESCAPE))
 			Engine.requestClose();
-		if (Keyboard.isKeyDown(Keyboard.KEY_ENTER))
+		if (Input.isKeyDown(Input.KEY_ENTER))
 			init();
 	}
 
@@ -72,8 +72,8 @@ public class BrickBreaker implements MainProgram {
 
 	public static void main(String[] args) {
 		Engine.init("Brick Breaker", 60);
-		Display.createFullscreen();
-		Display.setDrawCursor(false);
+		Window.createFullscreen();
+		Window.setDrawCursor(false);
 		Engine.start(new BrickBreaker());
 	}
 
@@ -122,15 +122,15 @@ public class BrickBreaker implements MainProgram {
 			if (x < 0f) {
 				x = 0f;
 				collideY();
-			} else if (x > Display.getWidth() - 1f) {
-				x = Display.getWidth() - 1f;
+			} else if (x > Window.getWidth() - 1f) {
+				x = Window.getWidth() - 1f;
 				collideY();
 			}
 
 			if (y < 0f) {
 				y = 0f;
 				collideX();
-			} else if (y > Display.getHeight())
+			} else if (y > Window.getHeight())
 				return true;
 
 			if (x > plate.x - Plate.SIZE / 2 - 1 && x < plate.x + Plate.SIZE / 2 && y > plate.y - 1f
@@ -208,21 +208,21 @@ public class BrickBreaker implements MainProgram {
 		public static final int SIZE = 10;
 
 		public Plate() {
-			super(Display.getWidth() / 2, Display.getHeight() - 3);
+			super(Window.getWidth() / 2, Window.getHeight() - 3);
 		}
 
 		@Override
 		public boolean update(float dt) {
 			float speed = 40f * dt;
-			if (Keyboard.isKey(Keyboard.KEY_A))
+			if (Input.isKey(Input.KEY_A))
 				x -= speed;
-			else if (Keyboard.isKey(Keyboard.KEY_D))
+			else if (Input.isKey(Input.KEY_D))
 				x += speed;
 
 			if (x < SIZE / 2 + 1)
 				x = SIZE / 2 + 1;
-			else if (x > Display.getWidth() - SIZE / 2 - 1)
-				x = Display.getWidth() - SIZE / 2 - 1;
+			else if (x > Window.getWidth() - SIZE / 2 - 1)
+				x = Window.getWidth() - SIZE / 2 - 1;
 
 			return false;
 		}

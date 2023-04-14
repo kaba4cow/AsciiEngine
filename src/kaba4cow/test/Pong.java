@@ -1,12 +1,12 @@
 package kaba4cow.test;
 
 import kaba4cow.ascii.MainProgram;
-import kaba4cow.ascii.core.Display;
 import kaba4cow.ascii.core.Engine;
+import kaba4cow.ascii.core.Input;
+import kaba4cow.ascii.core.Window;
 import kaba4cow.ascii.drawing.drawers.BoxDrawer;
 import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.drawing.glyphs.Glyphs;
-import kaba4cow.ascii.input.Keyboard;
 import kaba4cow.ascii.toolbox.maths.Maths;
 import kaba4cow.ascii.toolbox.maths.vectors.Vector2f;
 import kaba4cow.ascii.toolbox.maths.vectors.Vectors;
@@ -31,14 +31,14 @@ public class Pong implements MainProgram {
 
 		pause = true;
 
-		Display.setDrawCursor(false);
+		Window.setDrawCursor(false);
 	}
 
 	@Override
 	public void update(float dt) {
-		if (Keyboard.isKey(Keyboard.KEY_ESCAPE))
+		if (Input.isKey(Input.KEY_ESCAPE))
 			Engine.requestClose();
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+		if (Input.isKeyDown(Input.KEY_SPACE))
 			pause = !pause;
 		if (pause)
 			return;
@@ -55,14 +55,14 @@ public class Pong implements MainProgram {
 			plate.render();
 
 		if (pause) {
-			BoxDrawer.drawBox(Display.getWidth() / 2 - 3, Display.getHeight() / 2 - 1, 7, 3, false, 0x000FFF);
-			Drawer.drawString(Display.getWidth() / 2, Display.getHeight() / 2, true, "PAUSE", 0x000FFF);
+			BoxDrawer.drawBox(Window.getWidth() / 2 - 3, Window.getHeight() / 2 - 1, 7, 3, false, 0x000FFF);
+			Drawer.drawString(Window.getWidth() / 2, Window.getHeight() / 2, true, "PAUSE", 0x000FFF);
 		}
 	}
 
 	public static void main(String[] args) {
 		Engine.init("Pong", 30);
-		Display.createWindowed(40, 40);
+		Window.createWindowed(40, 40);
 		Engine.start(new Pong());
 	}
 
@@ -76,13 +76,13 @@ public class Pong implements MainProgram {
 		private int score;
 
 		public Plate(boolean top) {
-			this.pos = new Vector2f(Display.getWidth() / 2, 0);
+			this.pos = new Vector2f(Window.getWidth() / 2, 0);
 			this.top = top;
 			this.score = 0;
 			if (top)
 				pos.y = 2;
 			else
-				pos.y = Display.getHeight() - 3;
+				pos.y = Window.getHeight() - 3;
 		}
 
 		public void update(float dt, Ball ball) {
@@ -96,20 +96,20 @@ public class Pong implements MainProgram {
 						pos.x += speed;
 				}
 			} else {
-				if (Keyboard.isKey(Keyboard.KEY_A))
+				if (Input.isKey(Input.KEY_A))
 					pos.x -= speed;
-				if (Keyboard.isKey(Keyboard.KEY_D))
+				if (Input.isKey(Input.KEY_D))
 					pos.x += speed;
 			}
-			pos.x = Maths.limit(pos.x, SIZE / 2, Display.getWidth() - 1 - SIZE / 2);
+			pos.x = Maths.limit(pos.x, SIZE / 2, Window.getWidth() - 1 - SIZE / 2);
 		}
 
 		public void render() {
 			Drawer.drawLine((int) pos.x - SIZE / 2, (int) pos.y, (int) pos.x + SIZE / 2, (int) pos.y,
 					Glyphs.BLACK_SQUARE, 0xFFF000);
 
-			int scoreY = top ? 0 : (Display.getHeight() - 1);
-			Drawer.drawString(Display.getWidth() / 2, scoreY, true, "SCORE: " + score, 0x000FFF);
+			int scoreY = top ? 0 : (Window.getHeight() - 1);
+			Drawer.drawString(Window.getWidth() / 2, scoreY, true, "SCORE: " + score, 0x000FFF);
 		}
 
 		public boolean isColliding(Vector2f ballPos) {
@@ -153,14 +153,14 @@ public class Pong implements MainProgram {
 			if (pos.x <= 0) {
 				pos.x = 0;
 				vel.x *= -1f;
-			} else if (pos.x >= Display.getWidth() - 1) {
-				pos.x = Display.getWidth() - 1;
+			} else if (pos.x >= Window.getWidth() - 1) {
+				pos.x = Window.getWidth() - 1;
 				vel.x *= -1f;
 			}
 			if (pos.y <= -1) {
 				plates[1].score();
 				reset();
-			} else if (pos.y >= Display.getHeight()) {
+			} else if (pos.y >= Window.getHeight()) {
 				plates[0].score();
 				reset();
 			}
@@ -183,8 +183,8 @@ public class Pong implements MainProgram {
 		}
 
 		public void reset() {
-			pos.x = Display.getWidth() / 2;
-			pos.y = Display.getHeight() / 2;
+			pos.x = Window.getWidth() / 2;
+			pos.y = Window.getHeight() / 2;
 
 			vel.x = RNG.randomFloat(-1f, 1f);
 			vel.y = (RNG.randomBoolean() ? 1f : -1f) * RNG.randomFloat(0.25f, 0.75f);

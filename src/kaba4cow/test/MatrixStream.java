@@ -3,10 +3,10 @@ package kaba4cow.test;
 import java.util.ArrayList;
 
 import kaba4cow.ascii.MainProgram;
-import kaba4cow.ascii.core.Display;
 import kaba4cow.ascii.core.Engine;
+import kaba4cow.ascii.core.Input;
+import kaba4cow.ascii.core.Window;
 import kaba4cow.ascii.drawing.drawers.Drawer;
-import kaba4cow.ascii.input.Keyboard;
 import kaba4cow.ascii.toolbox.maths.Maths;
 import kaba4cow.ascii.toolbox.rng.RNG;
 
@@ -20,16 +20,16 @@ public class MatrixStream implements MainProgram {
 
 	public void init() {
 		streams = new ArrayList<>();
-		for (int i = 0; i < Display.getWidth(); i++)
+		for (int i = 0; i < Window.getWidth(); i++)
 			streams.add(new Stream(i));
 
-		Display.setDrawCursor(false);
+		Window.setDrawCursor(false);
 	}
 
 	public void update(float dt) {
 		streams.forEach(s -> s.update(dt));
 
-		if (Keyboard.isKey(Keyboard.KEY_ESCAPE))
+		if (Input.isKey(Input.KEY_ESCAPE))
 			Engine.requestClose();
 	}
 
@@ -39,7 +39,7 @@ public class MatrixStream implements MainProgram {
 
 	public static void main(String[] args) {
 		Engine.init("Matrix Stream", 30);
-		Display.createFullscreen();
+		Window.createFullscreen();
 		Engine.start(new MatrixStream());
 	}
 
@@ -56,7 +56,7 @@ public class MatrixStream implements MainProgram {
 
 		public Stream(int x) {
 			this.x = x;
-			this.y = RNG.randomFloat(Display.getHeight());
+			this.y = RNG.randomFloat(Window.getHeight());
 			reset();
 		}
 
@@ -75,7 +75,7 @@ public class MatrixStream implements MainProgram {
 
 		public void update(float dt) {
 			y += speed * dt;
-			if (y >= Display.getHeight()) {
+			if (y >= Window.getHeight()) {
 				reset();
 				y = -length;
 			}

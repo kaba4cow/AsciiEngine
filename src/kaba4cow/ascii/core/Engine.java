@@ -1,8 +1,8 @@
 package kaba4cow.ascii.core;
 
+import org.lwjgl.opengl.Display;
+
 import kaba4cow.ascii.MainProgram;
-import kaba4cow.ascii.input.Keyboard;
-import kaba4cow.ascii.input.Mouse;
 import kaba4cow.ascii.toolbox.Printer;
 
 public final class Engine {
@@ -34,7 +34,7 @@ public final class Engine {
 
 		CLOSE_REQUESTED = false;
 
-		Display.init(title);
+		Window.init(title);
 	}
 
 	public static void start(MainProgram program) {
@@ -69,10 +69,9 @@ public final class Engine {
 				render = true;
 				unprocessedTime -= FRAMETIME;
 
+				Input.update();
 				PROGRAM.update(FRAMETIME);
-				Display.update();
-				Keyboard.update();
-				Mouse.update();
+				Window.update();
 				ELAPSED_TIME += FRAMETIME;
 
 				if (frameCounter >= nanoseconds) {
@@ -84,7 +83,8 @@ public final class Engine {
 
 			if (render) {
 				PROGRAM.render();
-				Display.render();
+				Window.render();
+				Display.update();
 				frames++;
 			} else
 				sleep(1l);
@@ -94,7 +94,7 @@ public final class Engine {
 		}
 
 		Printer.println("Destroying engine");
-		Display.destroy();
+		Window.destroy();
 		PROGRAM.onClose();
 		if (SAVE_LOG_ON_EXIT)
 			Printer.saveLog();

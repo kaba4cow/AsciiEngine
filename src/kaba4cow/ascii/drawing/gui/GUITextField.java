@@ -1,16 +1,14 @@
 package kaba4cow.ascii.drawing.gui;
 
-import kaba4cow.ascii.core.Display;
 import kaba4cow.ascii.core.Engine;
+import kaba4cow.ascii.core.Input;
+import kaba4cow.ascii.core.Window;
 import kaba4cow.ascii.drawing.drawers.BoxDrawer;
 import kaba4cow.ascii.drawing.drawers.Drawer;
-import kaba4cow.ascii.input.Input;
-import kaba4cow.ascii.input.Keyboard;
 import kaba4cow.ascii.toolbox.Colors;
 
 public class GUITextField extends GUIObject {
 
-	private static final char BACKSPACE = 0x08;
 	private static final char DELETE = 0x7F;
 
 	private static final int HOME = 0;
@@ -50,10 +48,7 @@ public class GUITextField extends GUIObject {
 	@Override
 	public void update(int mouseX, int mouseY, boolean clicked) {
 		if (clicked) {
-			boolean prevActive = active;
 			active = mouseX >= bX && mouseX < bX + bWidth && mouseY >= bY && mouseY < bY + bHeight;
-			if (active != prevActive)
-				Keyboard.resetLastTyped();
 
 			if (active) {
 				int length = text.length();
@@ -78,21 +73,28 @@ public class GUITextField extends GUIObject {
 			int length = text.length();
 			boolean modified = false;
 
-			if (Keyboard.isKeyDown(Keyboard.KEY_ENTER))
+			if (Input.isKeyDown(Input.KEY_ENTER))
 				active = false;
-			else if (Keyboard.isKeyDown(Keyboard.KEY_HOME))
+			else if (Input.isKeyDown(Input.KEY_HOME))
 				moveCursor(HOME);
-			else if (Keyboard.isKeyDown(Keyboard.KEY_END))
+			else if (Input.isKeyDown(Input.KEY_END))
 				moveCursor(END);
-			else if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
+			else if (Input.isKeyDown(Input.KEY_LEFT))
 				moveCursor(LEFT);
-			else if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+			else if (Input.isKeyDown(Input.KEY_RIGHT))
 				moveCursor(RIGHT);
-			else if (Keyboard.isKeyDown(Keyboard.KEY_UP))
+			else if (Input.isKeyDown(Input.KEY_UP))
 				moveCursor(UP);
-			else if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+			else if (Input.isKeyDown(Input.KEY_DOWN))
 				moveCursor(DOWN);
-			else if (Keyboard.isKey(Keyboard.KEY_CONTROL_LEFT) && Keyboard.isKeyDown(Keyboard.KEY_V)) {
+			else if (Input.isKeyDown(Input.KEY_BACKSPACE) && cursor > 0 && cursor <= length) {
+				builder.deleteCharAt(cursor - 1);
+				moveCursor(LEFT);
+				modified = true;
+			} else if (Input.isKeyDown(Input.KEY_DELETE) && cursor >= 0 && cursor < length) {
+				builder.deleteCharAt(cursor);
+				modified = true;
+			} else if (Input.isKey(Input.KEY_CONTROL_LEFT) && Input.isKeyDown(Input.KEY_V)) {
 				try {
 					String data = Input.readClipboard();
 					StringBuilder newData = new StringBuilder();
@@ -106,25 +108,13 @@ public class GUITextField extends GUIObject {
 					text = builder.toString();
 				} catch (Exception e) {
 				}
-			} else if (Keyboard.getLastTyped() != null) {
-				char c = Keyboard.getLastTyped().getKeyChar();
-				if (c == BACKSPACE) {
-					if (cursor > 0 && cursor <= length) {
-						builder.deleteCharAt(cursor - 1);
-						moveCursor(LEFT);
-						modified = true;
-					}
-				} else if (c == DELETE) {
-					if (cursor >= 0 && cursor < length) {
-						builder.deleteCharAt(cursor);
-						modified = true;
-					}
-				} else if (c >= 32 && c < DELETE && isAllowed(c) && text.length() < maxCharacters) {
+			} else if (Input.isTyped()) {
+				char c = Input.getCharacter();
+				if (c >= 32 && c < DELETE && isAllowed(c) && text.length() < maxCharacters) {
 					builder.insert(cursor, c);
 					text = builder.toString();
 					moveCursor(RIGHT);
 				}
-				Keyboard.resetLastTyped();
 			}
 
 			if (modified)
@@ -148,7 +138,7 @@ public class GUITextField extends GUIObject {
 		totalLines = 2 + Drawer.drawString(x + 1, y + 1, false, width - 2, text, color);
 
 		if (active && Engine.getElapsedTime() % 0.8f < 0.4f) {
-			char newChar = Display.getGlyph(x + 1 + cursorX, y + 1 + cursorY);
+			char newChar = Window.getGlyph(x + 1 + cursorX, y + 1 + cursorY);
 			Drawer.draw(x + 1 + cursorX, y + 1 + cursorY, newChar, Colors.swap(color));
 		}
 		return totalLines;
@@ -185,7 +175,6 @@ public class GUITextField extends GUIObject {
 	}
 
 	public GUITextField setActive() {
-		Keyboard.resetLastTyped();
 		active = true;
 		return this;
 	}

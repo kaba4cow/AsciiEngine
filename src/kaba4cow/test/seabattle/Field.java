@@ -2,10 +2,10 @@ package kaba4cow.test.seabattle;
 
 import java.util.ArrayList;
 
-import kaba4cow.ascii.core.Display;
+import kaba4cow.ascii.core.Input;
+import kaba4cow.ascii.core.Window;
 import kaba4cow.ascii.drawing.drawers.Drawer;
 import kaba4cow.ascii.drawing.glyphs.Glyphs;
-import kaba4cow.ascii.input.Mouse;
 import kaba4cow.ascii.toolbox.rng.RNG;
 
 public class Field {
@@ -85,9 +85,9 @@ public class Field {
 	public int play(Field field, boolean player, boolean smartAi) {
 		int x, y;
 		if (player) {
-			x = Mouse.getTileX() - Display.getWidth() / 2;
-			y = Mouse.getTileY();
-			if (Mouse.isKeyDown(Mouse.LEFT) && field.isValidMove(x, y))
+			x = Input.getTileX() - Window.getWidth() / 2;
+			y = Input.getTileY();
+			if (Input.isButtonDown(Input.LEFT) && field.isValidMove(x, y))
 				return field.hit(x, y) ? HIT : MISS;
 		} else {
 			do {
@@ -128,11 +128,11 @@ public class Field {
 			return;
 		int x, y;
 		if (player && manualPlotting) {
-			if (Mouse.getScroll() != 0)
+			if (Input.getScroll() != 0)
 				vertical = !vertical;
-			if (Mouse.isKeyDown(Mouse.LEFT)) {
-				x = Mouse.getTileX();
-				y = Mouse.getTileY();
+			if (Input.isKeyDown(Input.LEFT)) {
+				x = Input.getTileX();
+				y = Input.getTileY();
 				if (isValidPosition(x, y))
 					plot(x, y);
 			}
@@ -214,7 +214,7 @@ public class Field {
 			if (ships.get(i).update(field))
 				ships.remove(i);
 
-		int offX = player ? 0 : Display.getWidth() / 2;
+		int offX = player ? 0 : Window.getWidth() / 2;
 		int x, y;
 		char c = 0;
 		int color = 0;
@@ -240,8 +240,8 @@ public class Field {
 			}
 
 		if (player && length > 0) {
-			x = Mouse.getTileX();
-			y = Mouse.getTileY();
+			x = Input.getTileX();
+			y = Input.getTileY();
 			color = isValidPosition(x, y) ? 0x0006F6 : 0x000F66;
 			for (int i = 0; i < length; i++) {
 				if (x < 0 || x >= SIZE || y < 0 || y >= SIZE)
