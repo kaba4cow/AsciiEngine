@@ -1,11 +1,10 @@
-package kaba4cow.ascii.drawing.glyphs;
+package kaba4cow.ascii.drawing;
 
 public final class Glyphs {
 
 	private static int numGlyphs = 0;
 
-	// Printable glyphs
-	public static final char STAR = (char) numGlyphs++;
+	public static final char NUL = (char) numGlyphs++;
 	public static final char WHITE_SMILING_FACE = (char) numGlyphs++;
 	public static final char BLACK_SMILING_FACE = (char) numGlyphs++;
 	public static final char BLACK_HEART_SUIT = (char) numGlyphs++;
@@ -23,12 +22,12 @@ public final class Glyphs {
 	public static final char WHITE_SUN_WITH_RAYS = (char) numGlyphs++;
 	public static final char BLACK_RIGHT_POINTING_POINTER = (char) numGlyphs++;
 	public static final char BLACK_LEFT_POINTING_POINTER = (char) numGlyphs++;
-	public static final char ENTER_ARROW = (char) numGlyphs++;
+	public static final char UP_DOWN_ARROW = (char) numGlyphs++;
 	public static final char DOUBLE_EXCLAMATION_MARK = (char) numGlyphs++;
 	public static final char PILCROW_SIGN = (char) numGlyphs++;
 	public static final char SECTION_SIGN = (char) numGlyphs++;
 	public static final char BLACK_RECTANGLE = (char) numGlyphs++;
-	public static final char UP_DOWN_ARROW = (char) numGlyphs++;
+	public static final char UP_DOWN_ARROW_WITH_BASE = (char) numGlyphs++;
 	public static final char UPWARDS_ARROW = (char) numGlyphs++;
 	public static final char DOWNWARDS_ARROW = (char) numGlyphs++;
 	public static final char RIGHTWARDS_ARROW = (char) numGlyphs++;
@@ -260,14 +259,7 @@ public final class Glyphs {
 	public static final char SUPERSCRIPT_LATIN_SMALL_LETTER_N = (char) numGlyphs++;
 	public static final char SUPERSCRIPT_TWO = (char) numGlyphs++;
 	public static final char BLACK_SQUARE = (char) numGlyphs++;
-	public static final char CROSS = (char) numGlyphs++;
-
-	// System glyphs
-	public static final char SYSTEM_HIDE_WINDOW = (char) (numGlyphs + 0);
-	public static final char SYSTEM_CLOSE_WINDOW = (char) (numGlyphs + 1);
-	public static final char SYSTEM_CURSOR = (char) (numGlyphs + 2);
-	public static final char SYSTEM_CURSOR_GRABBED = (char) (numGlyphs + 3);
-	public static final char SYSTEM_CURSOR_WAITING = (char) (numGlyphs + 4);
+	public static final char NON_BREAKING_SPACE = (char) numGlyphs++;
 
 	private Glyphs() {
 

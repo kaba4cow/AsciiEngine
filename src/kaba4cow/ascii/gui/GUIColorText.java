@@ -1,8 +1,8 @@
-package kaba4cow.ascii.drawing.gui;
+package kaba4cow.ascii.gui;
 
 import java.util.HashMap;
 
-import kaba4cow.ascii.drawing.drawers.Drawer;
+import kaba4cow.ascii.drawing.Drawer;
 
 public class GUIColorText extends GUIObject {
 

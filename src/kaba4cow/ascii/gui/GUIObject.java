@@ -1,4 +1,4 @@
-package kaba4cow.ascii.drawing.gui;
+package kaba4cow.ascii.gui;
 
 public abstract class GUIObject {
 

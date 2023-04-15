@@ -1,7 +1,6 @@
-package kaba4cow.ascii.drawing.drawers;
+package kaba4cow.ascii.drawing;
 
 import kaba4cow.ascii.core.Window;
-import kaba4cow.ascii.drawing.Frame;
 import kaba4cow.ascii.toolbox.maths.Maths;
 import kaba4cow.ascii.toolbox.maths.vectors.Vector2i;
 
@@ -167,11 +166,10 @@ public final class Drawer {
 		if (string == null)
 			return 1;
 
-		int size = Window.GLYPH_SIZE;
 		int length = string.length();
 
 		boolean[][] map = Window.getGlyphMap();
-		int columns = map.length / size;
+		int columns = map.length / 16;
 
 		char stringGlyph;
 		int i, tX, tY, mX, mY, minX, maxX;
@@ -179,23 +177,23 @@ public final class Drawer {
 		int totalWidth = 0;
 
 		for (i = 0; i < length; i++) {
-			minX = size;
+			minX = 16;
 			maxX = 0;
 			stringGlyph = string.charAt(i);
 
 			tX = stringGlyph % columns;
 			tY = stringGlyph / columns;
-			for (mY = 0; mY < size; mY++)
-				for (mX = 0; mX < size; mX++)
-					if (map[mX + size * tX][mY + size * tY]) {
+			for (mY = 0; mY < 16; mY++)
+				for (mX = 0; mX < 16; mX++)
+					if (map[mX + 16 * tX][mY + 16 * tY]) {
 						if (mX < minX)
 							minX = mX;
 						else if (mX > maxX)
 							maxX = mX;
 					}
-			if (minX == size) {
+			if (minX == 16) {
 				minX = 0;
-				maxX = size / 2;
+				maxX = 8;
 			}
 			minX--;
 			maxX++;
@@ -206,36 +204,36 @@ public final class Drawer {
 
 		if (centered) {
 			x -= totalWidth / 2;
-			y -= size / 2;
+			y -= 8;
 		}
 
 		for (i = 0; i < length; i++) {
-			minX = size;
+			minX = 16;
 			maxX = 0;
 			stringGlyph = string.charAt(i);
 
 			tX = stringGlyph % columns;
 			tY = stringGlyph / columns;
-			for (mY = 0; mY < size; mY++)
-				for (mX = 0; mX < size; mX++)
-					if (map[mX + size * tX][mY + size * tY]) {
+			for (mY = 0; mY < 16; mY++)
+				for (mX = 0; mX < 16; mX++)
+					if (map[mX + 16 * tX][mY + 16 * tY]) {
 						if (mX < minX)
 							minX = mX;
 						else if (mX > maxX)
 							maxX = mX;
 					}
-			if (minX == size) {
+			if (minX == 16) {
 				minX = 0;
-				maxX = size / 2;
+				maxX = 8;
 			}
 			minX--;
 			maxX++;
 
 			x -= minX;
 
-			for (mY = 0; mY < size; mY++)
-				for (mX = 0; mX < size; mX++)
-					if (map[mX + size * tX][mY + size * tY])
+			for (mY = 0; mY < 16; mY++)
+				for (mX = 0; mX < 16; mX++)
+					if (map[mX + 16 * tX][mY + 16 * tY])
 						draw(x + mX, y + mY, glyph, color);
 			x += maxX;
 		}
@@ -247,11 +245,10 @@ public final class Drawer {
 		if (string == null)
 			return 1;
 
-		int size = Window.GLYPH_SIZE;
 		int length = string.length();
 
 		boolean[][] map = Window.getGlyphMap();
-		int columns = map.length / size;
+		int columns = map.length / 16;
 
 		char glyph;
 		int i, tX, tY, mX, mY, minX, maxX;
@@ -259,23 +256,23 @@ public final class Drawer {
 		int totalWidth = 0;
 
 		for (i = 0; i < length; i++) {
-			minX = size;
+			minX = 16;
 			maxX = 0;
 			glyph = string.charAt(i);
 
 			tX = glyph % columns;
 			tY = glyph / columns;
-			for (mY = 0; mY < size; mY++)
-				for (mX = 0; mX < size; mX++)
-					if (map[mX + size * tX][mY + size * tY]) {
+			for (mY = 0; mY < 16; mY++)
+				for (mX = 0; mX < 16; mX++)
+					if (map[mX + 16 * tX][mY + 16 * tY]) {
 						if (mX < minX)
 							minX = mX;
 						else if (mX > maxX)
 							maxX = mX;
 					}
-			if (minX == size) {
+			if (minX == 16) {
 				minX = 0;
-				maxX = size / 2;
+				maxX = 8;
 			}
 			minX--;
 			maxX++;

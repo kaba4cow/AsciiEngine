@@ -284,19 +284,19 @@ public class Input {
 	}
 
 	public static int getTileX() {
-		return getX() / Window.GLYPH_SIZE;
+		return getX() / Window.getGlyphSize();
 	}
 
 	public static int getTileY() {
-		return getY() / Window.GLYPH_SIZE;
+		return getY() / Window.getGlyphSize();
 	}
 
 	public static int getTileDX() {
-		return getDX() / Window.GLYPH_SIZE;
+		return getDX() / Window.getGlyphSize();
 	}
 
 	public static int getTileDY() {
-		return getDY() / Window.GLYPH_SIZE;
+		return getDY() / Window.getGlyphSize();
 	}
 
 	public static int getScroll() {

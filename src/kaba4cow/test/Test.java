@@ -3,23 +3,26 @@ package kaba4cow.test;
 import kaba4cow.ascii.MainProgram;
 import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.core.Input;
+import kaba4cow.ascii.core.Renderer;
 import kaba4cow.ascii.core.Window;
-import kaba4cow.ascii.drawing.drawers.Drawer;
-import kaba4cow.ascii.drawing.gui.GUIButton;
-import kaba4cow.ascii.drawing.gui.GUICheckbox;
-import kaba4cow.ascii.drawing.gui.GUIFrame;
-import kaba4cow.ascii.drawing.gui.GUIProgressBar;
-import kaba4cow.ascii.drawing.gui.GUIRadioButton;
-import kaba4cow.ascii.drawing.gui.GUIRadioPanel;
-import kaba4cow.ascii.drawing.gui.GUISeparator;
-import kaba4cow.ascii.drawing.gui.GUISlider;
-import kaba4cow.ascii.drawing.gui.GUIText;
-import kaba4cow.ascii.drawing.gui.GUITextField;
+import kaba4cow.ascii.drawing.Drawer;
+import kaba4cow.ascii.gui.GUIButton;
+import kaba4cow.ascii.gui.GUICheckbox;
+import kaba4cow.ascii.gui.GUIFrame;
+import kaba4cow.ascii.gui.GUIProgressBar;
+import kaba4cow.ascii.gui.GUIRadioButton;
+import kaba4cow.ascii.gui.GUIRadioPanel;
+import kaba4cow.ascii.gui.GUISeparator;
+import kaba4cow.ascii.gui.GUISlider;
+import kaba4cow.ascii.gui.GUIText;
+import kaba4cow.ascii.gui.GUITextField;
 import kaba4cow.ascii.toolbox.rng.RNG;
 
 public class Test implements MainProgram {
 
 	private GUIFrame frame;
+
+	private int font = 0;
 
 	public Test() {
 
@@ -74,12 +77,25 @@ public class Test implements MainProgram {
 				Window.createWindowed(40, 40);
 			else
 				Window.createFullscreen();
+
+		if (Input.isKeyDown(Input.KEY_A)) {
+			font--;
+			if (font < 0)
+				font = 0;
+			Renderer.setFont(font);
+		} else if (Input.isKeyDown(Input.KEY_D)) {
+			font++;
+			if (font >= Renderer.getFonts().length)
+				font = Renderer.getFonts().length - 1;
+			Renderer.setFont(font);
+		}
 	}
 
 	@Override
 	public void render() {
 		frame.render();
 		Drawer.drawString(0, 0, false, "FPS " + Engine.getCurrentFramerate(), 0x333F33);
+		Drawer.drawString(0, 1, false, Renderer.getFonts()[font], 0x333F33);
 	}
 
 	public static void main(String[] args) throws Exception {

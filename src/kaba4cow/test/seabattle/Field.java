@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import kaba4cow.ascii.core.Input;
 import kaba4cow.ascii.core.Window;
-import kaba4cow.ascii.drawing.drawers.Drawer;
-import kaba4cow.ascii.drawing.glyphs.Glyphs;
+import kaba4cow.ascii.drawing.Drawer;
+import kaba4cow.ascii.drawing.Glyphs;
 import kaba4cow.ascii.toolbox.rng.RNG;
 
 public class Field {

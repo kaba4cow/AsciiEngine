@@ -1,4 +1,4 @@
-package kaba4cow.ascii.drawing.glyphs;
+package kaba4cow.ascii.drawing;
 
 public enum BoxGlyphs {
 

@@ -24,7 +24,13 @@ public final class Engine {
 	}
 
 	public static void init(String title, int framerate) {
+		init(title, 16, framerate);
+	}
+
+	public static void init(String title, int glyphSize, int framerate) {
 		Printer.println("Initializing engine");
+
+		Thread.currentThread().setName("Main");
 
 		FRAMERATE = framerate;
 		FRAMETIME = 1f / (float) FRAMERATE;
@@ -34,7 +40,7 @@ public final class Engine {
 
 		CLOSE_REQUESTED = false;
 
-		Window.init(title);
+		Window.init(title, glyphSize);
 	}
 
 	public static void start(MainProgram program) {

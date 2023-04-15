@@ -24,7 +24,6 @@ import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
@@ -32,24 +31,16 @@ import java.util.Stack;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Cursor;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.GL11;
-
+import kaba4cow.ascii.drawing.Drawer;
 import kaba4cow.ascii.drawing.Frame;
-import kaba4cow.ascii.drawing.drawers.Drawer;
-import kaba4cow.ascii.drawing.glyphs.Glyphs;
-import kaba4cow.ascii.toolbox.DisplayListener;
+import kaba4cow.ascii.drawing.Glyphs;
 import kaba4cow.ascii.toolbox.Printer;
 
 public final class Window {
 
 	private static final int BAR_COLOR = 0xEEE000;
-	public static final int GLYPH_SIZE = 16;
+
+	private static int GLYPH_SIZE;
 
 	private static int SCREEN_WIDTH;
 	private static int SCREEN_HEIGHT;
@@ -59,25 +50,18 @@ public final class Window {
 	private static int WIDTH;
 	private static int HEIGHT;
 
-	private static int DISPLAY_WIDTH;
-	private static int DISPLAY_HEIGHT;
-
 	private static GraphicsDevice device;
 	private static WindowListener windowListener;
 	private static JFrame display;
 	private static Canvas canvas;
 
-	private static final ArrayList<DisplayListener> listeners = new ArrayList<>();
 	private static boolean[][] glyphMap;
 	private static Frame frame;
 
-	private static char cursorGlyph;
 	private static char backgroundGlyph;
 	private static int backgroundColor;
 
 	private static boolean fullscreen;
-	private static boolean drawCursor;
-	private static boolean cursorWaiting;
 	private static boolean ignoreClosing;
 
 	private static boolean cursorOnBar;
@@ -91,13 +75,12 @@ public final class Window {
 
 	}
 
-	public static void init(String title) {
+	public static void init(String title, int glyphSize) {
 		Printer.println("Initializing display");
 
-		InputStream is = Window.class.getClassLoader().getResourceAsStream("kaba4cow/ascii/core/CP.bmp");
-		BufferedImage sheet;
 		try {
-			sheet = ImageIO.read(is);
+			InputStream is = Window.class.getClassLoader().getResourceAsStream("kaba4cow/ascii/core/CP.bmp");
+			BufferedImage sheet = ImageIO.read(is);
 			ColorModel colorModel = sheet.getColorModel();
 			glyphMap = new boolean[sheet.getWidth()][sheet.getHeight()];
 			for (int y = 0; y < sheet.getHeight(); y++)
@@ -112,6 +95,8 @@ public final class Window {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		SCREEN_WIDTH = screenSize.width;
 		SCREEN_HEIGHT = screenSize.height;
+
+		GLYPH_SIZE = glyphSize;
 
 		TITLE = title;
 
@@ -128,7 +113,7 @@ public final class Window {
 	}
 
 	private static void create(int width, int height) {
-		fullscreen = width == 0 || height == 0;
+		fullscreen = width <= 0 || height <= 0;
 
 		if (fullscreen) {
 			WIDTH = SCREEN_WIDTH / GLYPH_SIZE;
@@ -148,16 +133,9 @@ public final class Window {
 		if (display != null) {
 			ignoreClosing = true;
 			Renderer.destroy();
-			Display.destroy();
 			display.dispose();
 		}
 		ignoreClosing = false;
-
-		DISPLAY_WIDTH = WIDTH * GLYPH_SIZE;
-		DISPLAY_HEIGHT = HEIGHT * GLYPH_SIZE;
-
-		drawCursor = true;
-		cursorWaiting = false;
 
 		frame = new Frame(WIDTH, HEIGHT);
 		Drawer.resetFrame();
@@ -174,7 +152,7 @@ public final class Window {
 		windowListener = new WindowListener(display);
 		new DropTarget(display, windowListener);
 
-		Dimension dimension = new Dimension(DISPLAY_WIDTH, DISPLAY_HEIGHT + GLYPH_SIZE);
+		Dimension dimension = new Dimension(WIDTH * GLYPH_SIZE, HEIGHT * GLYPH_SIZE + GLYPH_SIZE);
 
 		canvas = new Canvas();
 		canvas.setFocusable(false);
@@ -194,22 +172,7 @@ public final class Window {
 		if (fullscreen)
 			device.setFullScreenWindow(display);
 
-		try {
-			DisplayMode mode = new DisplayMode(canvas.getWidth(), canvas.getHeight());
-			if (fullscreen)
-				Display.setDisplayModeAndFullscreen(mode);
-			else
-				Display.setDisplayMode(mode);
-			Display.setParent(canvas);
-			Display.create();
-			Display.setResizable(false);
-			GL11.glViewport(0, 0, canvas.getWidth(), canvas.getHeight());
-			Mouse.setNativeCursor(new Cursor(1, 1, 0, 0, 1, BufferUtils.createIntBuffer(1), null));
-		} catch (LWJGLException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		}
-		Renderer.init();
+		Renderer.init(canvas, fullscreen);
 
 		display.requestFocus();
 		display.setFocusTraversalKeysEnabled(false);
@@ -219,9 +182,6 @@ public final class Window {
 		display.setVisible(true);
 
 		barGlyphsTemp = new int[WIDTH];
-
-		for (DisplayListener listener : listeners)
-			listener.onWindowCreated(WIDTH, HEIGHT);
 	}
 
 	public static void destroy() {
@@ -230,14 +190,11 @@ public final class Window {
 		Printer.println("Destroying display");
 		ignoreClosing = false;
 		Renderer.destroy();
-		Display.destroy();
 		display.dispose();
 	}
 
 	public static void update() {
 		if (fullscreen) {
-			cursorGlyph = cursorWaiting ? Glyphs.SYSTEM_CURSOR_WAITING
-					: (Input.isButton(Input.LEFT) ? Glyphs.SYSTEM_CURSOR_GRABBED : Glyphs.SYSTEM_CURSOR);
 			windowListener.setActive(false);
 			return;
 		}
@@ -254,11 +211,9 @@ public final class Window {
 			mouseIndex = Input.getTileX();
 			tempCursorOnBar = true;
 		}
-		if (!tempCursorOnBar && drawCursor)
+		if (!tempCursorOnBar)
 			mouseIndex = Input.getTileY() * WIDTH + Input.getTileX();
 		cursorOnBar = false;
-		cursorGlyph = cursorWaiting ? Glyphs.SYSTEM_CURSOR_WAITING
-				: (Input.isButton(Input.LEFT) ? Glyphs.SYSTEM_CURSOR_GRABBED : Glyphs.SYSTEM_CURSOR);
 
 		if (tempCursorOnBar && Input.isButtonUp(Input.LEFT)) {
 			if (mouseIndex == WIDTH - 1)
@@ -282,13 +237,6 @@ public final class Window {
 		int titleLength = TITLE.length();
 		int barOffset = fullscreen ? 0 : 1;
 
-		int mouseX = Input.getTileX();
-		int mouseY = Input.getTileY();
-		if (drawCursor && Input.getY() >= 0 && mouseX < WIDTH && mouseY < HEIGHT) {
-			frame.glyphs[mouseY * WIDTH + mouseX] = cursorGlyph;
-			frame.colors[mouseY * WIDTH + mouseX] = 0x000FFF;
-		}
-
 		pixelMap.clear();
 		for (yTemp = 0; yTemp < HEIGHT; yTemp++)
 			for (xTemp = 0; xTemp < WIDTH; xTemp++) {
@@ -300,14 +248,12 @@ public final class Window {
 		if (!fullscreen)
 			for (xTemp = 0; xTemp < WIDTH; xTemp++) {
 				if (xTemp == WIDTH - 2)
-					glyphTemp = Glyphs.SYSTEM_HIDE_WINDOW;
+					glyphTemp = Glyphs.HYPHEN_MINUS;
 				else if (xTemp == WIDTH - 1)
-					glyphTemp = Glyphs.SYSTEM_CLOSE_WINDOW;
+					glyphTemp = Glyphs.LATIN_SMALL_LETTER_X;
 				else
 					glyphTemp = Glyphs.SPACE;
-				if (cursorOnBar && xTemp == mouseX)
-					glyphTemp = cursorGlyph;
-				else if (xTemp > 0 && xTemp - 1 < titleLength)
+				if (xTemp > 0 && xTemp - 1 < titleLength)
 					glyphTemp = TITLE.charAt(xTemp - 1);
 				barGlyphsTemp[xTemp] = glyphTemp;
 
@@ -396,33 +342,8 @@ public final class Window {
 		return glyphMap;
 	}
 
-	public static void setDrawCursor(boolean draw) {
-		drawCursor = draw;
-	}
-
-	public static boolean isDrawCursor() {
-		return drawCursor;
-	}
-
-	public static void setCursorWaiting(boolean waiting) {
-		cursorWaiting = waiting;
-	}
-
-	public static boolean isCursorWaiting() {
-		return cursorWaiting;
-	}
-
 	public static boolean isCursorOnBar() {
 		return cursorOnBar;
-	}
-
-	public static void addListener(DisplayListener listener) {
-		listeners.add(listener);
-	}
-
-	public static void removeListener(DisplayListener listener) {
-		if (listeners.contains(listener))
-			listeners.remove(listener);
 	}
 
 	public static String getTitle() {
@@ -456,6 +377,10 @@ public final class Window {
 
 	public static int getCursorOffset() {
 		return fullscreen ? 0 : -GLYPH_SIZE;
+	}
+
+	public static int getGlyphSize() {
+		return GLYPH_SIZE;
 	}
 
 	private static class WindowListener implements FocusListener, DropTargetListener {

@@ -6,9 +6,9 @@ import kaba4cow.ascii.MainProgram;
 import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.core.Input;
 import kaba4cow.ascii.core.Window;
-import kaba4cow.ascii.drawing.drawers.BoxDrawer;
-import kaba4cow.ascii.drawing.drawers.Drawer;
-import kaba4cow.ascii.drawing.glyphs.Glyphs;
+import kaba4cow.ascii.drawing.BoxDrawer;
+import kaba4cow.ascii.drawing.Drawer;
+import kaba4cow.ascii.drawing.Glyphs;
 import kaba4cow.ascii.toolbox.maths.Maths;
 import kaba4cow.ascii.toolbox.maths.vectors.Vector2i;
 import kaba4cow.ascii.toolbox.maths.vectors.Vectors;
@@ -42,8 +42,6 @@ public class Snake implements MainProgram {
 		newDirection = new Vector2i();
 
 		reset();
-
-		Window.setDrawCursor(false);
 	}
 
 	private void reset() {
@@ -187,7 +185,7 @@ public class Snake implements MainProgram {
 	}
 
 	public static void main(String[] args) {
-		Engine.init("Snake", 60);
+		Engine.init("Snake", 16, 60);
 		Window.createWindowed(24, 24);
 		Engine.start(new Snake());
 	}

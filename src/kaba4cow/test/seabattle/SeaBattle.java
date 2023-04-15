@@ -4,12 +4,12 @@ import kaba4cow.ascii.MainProgram;
 import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.core.Input;
 import kaba4cow.ascii.core.Window;
-import kaba4cow.ascii.drawing.drawers.BoxDrawer;
-import kaba4cow.ascii.drawing.gui.GUIButton;
-import kaba4cow.ascii.drawing.gui.GUICheckbox;
-import kaba4cow.ascii.drawing.gui.GUIFrame;
-import kaba4cow.ascii.drawing.gui.GUISeparator;
-import kaba4cow.ascii.drawing.gui.GUIText;
+import kaba4cow.ascii.drawing.BoxDrawer;
+import kaba4cow.ascii.gui.GUIButton;
+import kaba4cow.ascii.gui.GUICheckbox;
+import kaba4cow.ascii.gui.GUIFrame;
+import kaba4cow.ascii.gui.GUISeparator;
+import kaba4cow.ascii.gui.GUIText;
 
 public class SeaBattle implements MainProgram {
 
@@ -127,7 +127,6 @@ public class SeaBattle implements MainProgram {
 			}
 			if (playerField.isReady() && enemyField.isReady()) {
 				moveTime += dt;
-				Window.setCursorWaiting(!playerMove);
 				if (moveTime >= MOVE_DELAY) {
 					boolean play;
 					Field field1 = playerMove ? playerField : enemyField;
@@ -166,9 +165,6 @@ public class SeaBattle implements MainProgram {
 		int w = Window.getWidth();
 		int h = Window.getHeight();
 
-		if (state != STATE_GAME)
-			Window.setCursorWaiting(false);
-
 		switch (state) {
 		case STATE_MENU:
 			menuFrame.render(0, 0, w, h, false);
@@ -199,7 +195,7 @@ public class SeaBattle implements MainProgram {
 	}
 
 	public static void main(String[] args) {
-		Engine.init("Sea Battle", 30);
+		Engine.init("Sea Battle", 16, 30);
 		if (args != null && args.length == 1 && args[0].equals("-fs"))
 			Window.createFullscreen();
 		else

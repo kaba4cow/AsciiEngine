@@ -1,8 +1,6 @@
-package kaba4cow.ascii.drawing.drawers;
+package kaba4cow.ascii.drawing;
 
 import kaba4cow.ascii.core.Window;
-import kaba4cow.ascii.drawing.glyphs.BoxGlyphs;
-import kaba4cow.ascii.drawing.glyphs.Glyphs;
 
 public final class BoxDrawer {
 

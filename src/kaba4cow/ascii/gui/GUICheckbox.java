@@ -1,7 +1,7 @@
-package kaba4cow.ascii.drawing.gui;
+package kaba4cow.ascii.gui;
 
-import kaba4cow.ascii.drawing.drawers.Drawer;
-import kaba4cow.ascii.drawing.glyphs.Glyphs;
+import kaba4cow.ascii.drawing.Drawer;
+import kaba4cow.ascii.drawing.Glyphs;
 
 public class GUICheckbox extends GUIObject {
 

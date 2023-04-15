@@ -1,10 +1,10 @@
-package kaba4cow.ascii.drawing.gui;
+package kaba4cow.ascii.gui;
 
 import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.core.Input;
 import kaba4cow.ascii.core.Window;
-import kaba4cow.ascii.drawing.drawers.BoxDrawer;
-import kaba4cow.ascii.drawing.drawers.Drawer;
+import kaba4cow.ascii.drawing.BoxDrawer;
+import kaba4cow.ascii.drawing.Drawer;
 import kaba4cow.ascii.toolbox.Colors;
 
 public class GUITextField extends GUIObject {

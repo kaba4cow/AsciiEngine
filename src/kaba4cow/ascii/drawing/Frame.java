@@ -1,6 +1,5 @@
 package kaba4cow.ascii.drawing;
 
-import kaba4cow.ascii.drawing.glyphs.Glyphs;
 import kaba4cow.ascii.toolbox.files.ImageFile;
 
 public class Frame {

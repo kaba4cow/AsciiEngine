@@ -1,9 +1,9 @@
-package kaba4cow.ascii.drawing.gui;
+package kaba4cow.ascii.gui;
 
 import java.util.function.Consumer;
 
-import kaba4cow.ascii.drawing.drawers.BoxDrawer;
-import kaba4cow.ascii.drawing.drawers.Drawer;
+import kaba4cow.ascii.drawing.BoxDrawer;
+import kaba4cow.ascii.drawing.Drawer;
 
 public class GUIButton extends GUIObject {
 

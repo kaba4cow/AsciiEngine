@@ -6,9 +6,9 @@ import kaba4cow.ascii.MainProgram;
 import kaba4cow.ascii.core.Engine;
 import kaba4cow.ascii.core.Input;
 import kaba4cow.ascii.core.Window;
-import kaba4cow.ascii.drawing.drawers.BoxDrawer;
-import kaba4cow.ascii.drawing.drawers.Drawer;
-import kaba4cow.ascii.drawing.glyphs.Glyphs;
+import kaba4cow.ascii.drawing.BoxDrawer;
+import kaba4cow.ascii.drawing.Drawer;
+import kaba4cow.ascii.drawing.Glyphs;
 import kaba4cow.ascii.toolbox.maths.Maths;
 import kaba4cow.ascii.toolbox.maths.vectors.Vector2f;
 import kaba4cow.ascii.toolbox.rng.RNG;
@@ -71,9 +71,8 @@ public class BrickBreaker implements MainProgram {
 	}
 
 	public static void main(String[] args) {
-		Engine.init("Brick Breaker", 60);
+		Engine.init("Brick Breaker", 16, 60);
 		Window.createFullscreen();
-		Window.setDrawCursor(false);
 		Engine.start(new BrickBreaker());
 	}
 

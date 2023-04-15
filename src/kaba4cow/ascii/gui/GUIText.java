@@ -1,6 +1,6 @@
-package kaba4cow.ascii.drawing.gui;
+package kaba4cow.ascii.gui;
 
-import kaba4cow.ascii.drawing.drawers.Drawer;
+import kaba4cow.ascii.drawing.Drawer;
 
 public class GUIText extends GUIObject {
 
