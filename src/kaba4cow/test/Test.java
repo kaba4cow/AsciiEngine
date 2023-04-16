@@ -94,8 +94,8 @@ public class Test implements MainProgram {
 	@Override
 	public void render() {
 		frame.render();
-		Drawer.drawString(0, 0, false, "FPS " + Engine.getCurrentFramerate(), 0x333F33);
-		Drawer.drawString(0, 1, false, Renderer.getFonts()[font], 0x333F33);
+		Drawer.drawString(0, 0, false, "FPS " + Engine.getCurrentFramerate(), 0x222FFF);
+		Drawer.drawString(0, 1, false, Renderer.getFonts()[font], 0x222FFF);
 	}
 
 	public static void main(String[] args) throws Exception {

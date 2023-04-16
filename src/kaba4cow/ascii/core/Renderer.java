@@ -83,6 +83,7 @@ public class Renderer {
 			Display.setResizable(false);
 			GL11.glViewport(0, 0, canvas.getWidth(), canvas.getHeight());
 			update();
+			Display.update();
 		} catch (LWJGLException e) {
 			Engine.terminate(e);
 		}
@@ -154,8 +155,12 @@ public class Renderer {
 
 		GL20.glUniform3f(scale_location, Display.getWidth(), Display.getHeight(), Window.getGlyphSize());
 
-		if (currentFont == -1)
+		int font = currentFont;
+		currentFont = -1;
+		if (font == -1)
 			setFont(0);
+		else
+			setFont(font);
 	}
 
 	public static void update() {

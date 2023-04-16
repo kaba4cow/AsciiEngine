@@ -71,6 +71,9 @@ public final class Window {
 			fColorTemp, frTemp, fgTemp, fbTemp, xTemp, yTemp;
 	private static int[] barGlyphsTemp;
 
+	private static int newWindowWidth = Integer.MAX_VALUE;
+	private static int newWindowHeight = Integer.MAX_VALUE;
+
 	private Window() {
 
 	}
@@ -105,11 +108,13 @@ public final class Window {
 	}
 
 	public static void createFullscreen() {
-		create(0, 0);
+		newWindowWidth = 0;
+		newWindowHeight = 0;
 	}
 
 	public static void createWindowed(int width, int height) {
-		create(width, height);
+		newWindowWidth = width;
+		newWindowHeight = height;
 	}
 
 	private static void create(int width, int height) {
@@ -191,6 +196,14 @@ public final class Window {
 		ignoreClosing = false;
 		Renderer.destroy();
 		display.dispose();
+	}
+
+	public static void refresh() {
+		if (newWindowWidth == Integer.MAX_VALUE || newWindowHeight == Integer.MAX_VALUE)
+			return;
+		create(newWindowWidth, newWindowHeight);
+		newWindowWidth = Integer.MAX_VALUE;
+		newWindowHeight = Integer.MAX_VALUE;
 	}
 
 	public static void update() {

@@ -60,6 +60,7 @@ public final class Engine {
 		long startTime;
 		long passedTime;
 
+		Window.refresh();
 		PROGRAM.init();
 
 		while (true) {
@@ -71,6 +72,7 @@ public final class Engine {
 			unprocessedTime += passedTime * invNanoseconds;
 			frameCounter += passedTime;
 
+			Window.refresh();
 			while (unprocessedTime > FRAMETIME) {
 				render = true;
 				unprocessedTime -= FRAMETIME;
