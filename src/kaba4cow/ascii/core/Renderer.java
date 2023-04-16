@@ -45,9 +45,12 @@ public class Renderer {
 			"else out_color = vec4(b_color, 1.0);\n" + //
 			"}";
 
-	private static final String[] FONTS = { "IBM BIOS", "IBM CGAthin", "Tandy2K G-TV", "DG One", "PhoenixEGA 8x8",
-			"NEC APC3 8x8", "NEC MultiSpeed", "ApricotPortable", "EpsonMGA", "ITT Xtra", "Kaypro2K G", "Master 512",
-			"Mindset", "SanyoMBC16", "SeequaCm", "Sharp PC3K" };
+	private static final String SYSTEM_FONT_LOCATION = "kaba4cow/ascii/drawing/fonts";
+	private static final String[] SYSTEM_FONTS = { "IBM BIOS", "IBM CGAthin", "PhoenixEGA 8x8", "NEC APC3 8x8",
+			"ITT Xtra" };
+
+	private static String USER_FONT_LOCATION = "";
+	private static String[] USER_FONTS = {};
 
 	private static final float[] VERTICES = { 0f, 1f, 0f, 0f, 1f, 0f, 1f, 1f };
 	private static final int[] INDICES = { 0, 1, 3, 3, 1, 2 };
@@ -117,14 +120,27 @@ public class Renderer {
 		GL20.glDeleteShader(fragment_shader_id);
 		GL20.glUseProgram(shader_id);
 
-		texture_ids = new int[FONTS.length];
-		for (int font = 0; font < FONTS.length; font++) {
+		texture_ids = new int[SYSTEM_FONTS.length + USER_FONTS.length];
+		for (int font = 0; font < SYSTEM_FONTS.length; font++) {
 			try {
 				InputStream input = Renderer.class.getClassLoader()
-						.getResourceAsStream("kaba4cow/ascii/drawing/fonts/" + FONTS[font]);
+						.getResourceAsStream(SYSTEM_FONT_LOCATION + "/" + SYSTEM_FONTS[font]);
 				texture_ids[font] = TextureLoader.getTexture("PNG", input).getTextureID();
 				GL13.glActiveTexture(GL13.GL_TEXTURE0 + font);
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture_ids[font]);
+				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+			} catch (IOException e) {
+				Engine.terminate(e);
+			}
+		}
+		for (int font = 0; font < USER_FONTS.length; font++) {
+			try {
+				InputStream input = Renderer.class.getClassLoader()
+						.getResourceAsStream(USER_FONT_LOCATION + "/" + USER_FONTS[font]);
+				texture_ids[SYSTEM_FONTS.length + font] = TextureLoader.getTexture("PNG", input).getTextureID();
+				GL13.glActiveTexture(GL13.GL_TEXTURE0 + SYSTEM_FONTS.length + font);
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture_ids[SYSTEM_FONTS.length + font]);
 				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 			} catch (IOException e) {
@@ -180,12 +196,37 @@ public class Renderer {
 		GL11.glDrawElements(GL11.GL_TRIANGLES, INDICES.length, GL11.GL_UNSIGNED_INT, 0);
 	}
 
-	public static String[] getFonts() {
-		return FONTS;
+	public static String[] getSystemFonts() {
+		return SYSTEM_FONTS;
+	}
+
+	public static String[] getUserFonts() {
+		return USER_FONTS;
+	}
+
+	public static String getFontName(int font) {
+		if (font < 0 || font >= getFontCount())
+			return "";
+		if (font < SYSTEM_FONTS.length)
+			return SYSTEM_FONTS[font];
+		return USER_FONTS[font - SYSTEM_FONTS.length];
+	}
+
+	public static int getFontCount() {
+		return SYSTEM_FONTS.length + USER_FONTS.length;
+	}
+
+	public static void setUserFontLocation(String location) {
+		USER_FONT_LOCATION = location;
+	}
+
+	public static void addUserFonts(String... fonts) {
+		if (fonts != null)
+			USER_FONTS = fonts;
 	}
 
 	public static boolean setFont(int font) {
-		if (font == currentFont || font < 0 || font >= FONTS.length)
+		if (font == currentFont || font < 0 || font >= SYSTEM_FONTS.length + USER_FONTS.length)
 			return false;
 		GL13.glActiveTexture(GL13.GL_TEXTURE0 + font);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture_ids[font]);
@@ -201,7 +242,7 @@ public class Renderer {
 	public static void destroy() {
 		GL20.glUseProgram(0);
 		GL20.glDeleteProgram(shader_id);
-		for (int i = 0; i < FONTS.length; i++)
+		for (int i = 0; i < SYSTEM_FONTS.length; i++)
 			GL11.glDeleteTextures(texture_ids[i]);
 		GL30.glDeleteVertexArrays(vao_id);
 		GL15.glDeleteBuffers(vertices_vbo_id);

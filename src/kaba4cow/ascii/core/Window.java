@@ -58,7 +58,6 @@ public final class Window {
 	private static boolean[][] glyphMap;
 	private static Frame frame;
 
-	private static char backgroundGlyph;
 	private static int backgroundColor;
 
 	private static boolean fullscreen;
@@ -82,7 +81,7 @@ public final class Window {
 		Printer.println("Initializing display");
 
 		try {
-			InputStream is = Window.class.getClassLoader().getResourceAsStream("kaba4cow/ascii/core/CP.bmp");
+			InputStream is = Window.class.getClassLoader().getResourceAsStream("kaba4cow/ascii/core/CP");
 			BufferedImage sheet = ImageIO.read(is);
 			ColorModel colorModel = sheet.getColorModel();
 			glyphMap = new boolean[sheet.getWidth()][sheet.getHeight()];
@@ -103,7 +102,6 @@ public final class Window {
 
 		TITLE = title;
 
-		backgroundGlyph = Glyphs.SPACE;
 		backgroundColor = 0x000FFF;
 	}
 
@@ -207,6 +205,11 @@ public final class Window {
 	}
 
 	public static void update() {
+		for (xTemp = 0; xTemp < frame.length; xTemp++) {
+			frame.glyphs[xTemp] = 0;
+			frame.colors[xTemp] = backgroundColor;
+		}
+
 		if (fullscreen) {
 			windowListener.setActive(false);
 			return;
@@ -291,11 +294,6 @@ public final class Window {
 				drawGlyph();
 			}
 		}
-
-		for (xTemp = 0; xTemp < frame.length; xTemp++) {
-			frame.glyphs[xTemp] = backgroundGlyph;
-			frame.colors[xTemp] = backgroundColor;
-		}
 	}
 
 	private static void drawGlyph() {
@@ -327,11 +325,6 @@ public final class Window {
 	}
 
 	public static void setBackground(char c, int color) {
-		if (backgroundGlyph != c) {
-			for (int i = 0; i < frame.glyphs.length; i++)
-				frame.glyphs[i] = c;
-			backgroundGlyph = c;
-		}
 		if (backgroundColor != color) {
 			for (int i = 0; i < frame.glyphs.length; i++)
 				frame.colors[i] = color;

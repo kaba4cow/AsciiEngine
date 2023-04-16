@@ -169,7 +169,6 @@ public final class Drawer {
 		int length = string.length();
 
 		boolean[][] map = Window.getGlyphMap();
-		int columns = map.length / 16;
 
 		char stringGlyph;
 		int i, tX, tY, mX, mY, minX, maxX;
@@ -181,8 +180,8 @@ public final class Drawer {
 			maxX = 0;
 			stringGlyph = string.charAt(i);
 
-			tX = stringGlyph % columns;
-			tY = stringGlyph / columns;
+			tX = stringGlyph % 16;
+			tY = stringGlyph / 16;
 			for (mY = 0; mY < 16; mY++)
 				for (mX = 0; mX < 16; mX++)
 					if (map[mX + 16 * tX][mY + 16 * tY]) {
@@ -212,8 +211,8 @@ public final class Drawer {
 			maxX = 0;
 			stringGlyph = string.charAt(i);
 
-			tX = stringGlyph % columns;
-			tY = stringGlyph / columns;
+			tX = stringGlyph % 16;
+			tY = stringGlyph / 16;
 			for (mY = 0; mY < 16; mY++)
 				for (mX = 0; mX < 16; mX++)
 					if (map[mX + 16 * tX][mY + 16 * tY]) {
@@ -248,7 +247,6 @@ public final class Drawer {
 		int length = string.length();
 
 		boolean[][] map = Window.getGlyphMap();
-		int columns = map.length / 16;
 
 		char glyph;
 		int i, tX, tY, mX, mY, minX, maxX;
@@ -260,8 +258,8 @@ public final class Drawer {
 			maxX = 0;
 			glyph = string.charAt(i);
 
-			tX = glyph % columns;
-			tY = glyph / columns;
+			tX = glyph % 16;
+			tY = glyph / 16;
 			for (mY = 0; mY < 16; mY++)
 				for (mX = 0; mX < 16; mX++)
 					if (map[mX + 16 * tX][mY + 16 * tY]) {

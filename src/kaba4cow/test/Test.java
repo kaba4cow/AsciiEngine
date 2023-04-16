@@ -85,8 +85,8 @@ public class Test implements MainProgram {
 			Renderer.setFont(font);
 		} else if (Input.isKeyDown(Input.KEY_D)) {
 			font++;
-			if (font >= Renderer.getFonts().length)
-				font = Renderer.getFonts().length - 1;
+			if (font >= Renderer.getFontCount())
+				font = Renderer.getFontCount() - 1;
 			Renderer.setFont(font);
 		}
 	}
@@ -95,7 +95,7 @@ public class Test implements MainProgram {
 	public void render() {
 		frame.render();
 		Drawer.drawString(0, 0, false, "FPS " + Engine.getCurrentFramerate(), 0x222FFF);
-		Drawer.drawString(0, 1, false, Renderer.getFonts()[font], 0x222FFF);
+		Drawer.drawString(0, 1, false, Renderer.getFontName(font), 0x222FFF);
 	}
 
 	public static void main(String[] args) throws Exception {
