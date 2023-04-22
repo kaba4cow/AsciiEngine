@@ -3,7 +3,7 @@ package kaba4cow.ascii.toolbox.maths.vectors;
 import kaba4cow.ascii.toolbox.maths.Maths;
 
 public final class Vectors {
-
+	
 	private Vectors() {
 
 	}

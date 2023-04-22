@@ -1,5 +1,7 @@
 package kaba4cow.ascii.core;
 
+import org.lwjgl.LWJGLException;
+import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.Display;
 
 import kaba4cow.ascii.MainProgram;
@@ -39,6 +41,12 @@ public final class Engine {
 		ELAPSED_TIME = 0f;
 
 		CLOSE_REQUESTED = false;
+
+		try {
+			AL.create();
+		} catch (LWJGLException e) {
+			terminate(e);
+		}
 
 		Window.init(title, glyphSize);
 	}
@@ -103,6 +111,7 @@ public final class Engine {
 
 		Printer.println("Destroying engine");
 		Window.destroy();
+		AL.destroy();
 		PROGRAM.onClose();
 		if (SAVE_LOG_ON_EXIT)
 			Printer.saveLog();

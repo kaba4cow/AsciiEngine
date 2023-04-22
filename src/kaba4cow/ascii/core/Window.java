@@ -253,6 +253,9 @@ public final class Window {
 		int titleLength = TITLE.length();
 		int barOffset = fullscreen ? 0 : 1;
 
+		prevColorTemp = -1;
+		prevGlyphTemp = -1;
+
 		pixelMap.clear();
 		for (yTemp = 0; yTemp < HEIGHT; yTemp++)
 			for (xTemp = 0; xTemp < WIDTH; xTemp++) {
@@ -324,7 +327,8 @@ public final class Window {
 		Renderer.draw(xTemp, yTemp, glyphTemp, brTemp, bgTemp, bbTemp, frTemp, fgTemp, fbTemp);
 	}
 
-	public static void setBackground(char c, int color) {
+	public static void setBackground(int color) {
+		color = color << 12;
 		if (backgroundColor != color) {
 			for (int i = 0; i < frame.glyphs.length; i++)
 				frame.colors[i] = color;
