@@ -1,9 +1,5 @@
 package kaba4cow.ascii.audio;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -36,7 +32,15 @@ public class WaveData {
 		this.totalBytes = (int) (stream.getFrameLength() * bytesPerFrame);
 		this.data = BufferUtils.createByteBuffer(totalBytes);
 		this.dataArray = new byte[totalBytes];
-		this.loadData();
+		try {
+			int bytesRead = stream.read(dataArray, 0, totalBytes);
+			data.clear();
+			data.put(dataArray, 0, bytesRead);
+			data.flip();
+		} catch (IOException e) {
+			System.err.println("Couldn't read bytes from audio stream");
+			e.printStackTrace();
+		}
 	}
 
 	protected void dispose() {
@@ -48,37 +52,10 @@ public class WaveData {
 		}
 	}
 
-	private ByteBuffer loadData() {
-		try {
-			int bytesRead = stream.read(dataArray, 0, totalBytes);
-			data.clear();
-			data.put(dataArray, 0, bytesRead);
-			data.flip();
-		} catch (IOException e) {
-			System.err.println("Couldn't read bytes from audio stream");
-			e.printStackTrace();
-		}
-		return data;
-	}
-
-	public static WaveData create(String file) {
-		try {
-			FileInputStream ins = new FileInputStream(new File(file));
-			InputStream bufferedInput = new BufferedInputStream(ins);
-			AudioInputStream stream = null;
-			try {
-				stream = AudioSystem.getAudioInputStream(bufferedInput);
-			} catch (IOException | UnsupportedAudioFileException e) {
-				e.printStackTrace();
-				return null;
-			}
-			WaveData wavStream = new WaveData(stream);
-			return wavStream;
-		} catch (FileNotFoundException e1) {
-			System.err.println("Couldn't find file: " + file);
-			e1.printStackTrace();
-			return null;
-		}
+	public static WaveData create(InputStream inputStream) throws UnsupportedAudioFileException, IOException {
+		AudioInputStream stream = AudioSystem.getAudioInputStream(inputStream);
+		WaveData waveData = new WaveData(stream);
+		return waveData;
 	}
 
 	private static int getOpenALFormat(int channels, int bitsPerSample) {

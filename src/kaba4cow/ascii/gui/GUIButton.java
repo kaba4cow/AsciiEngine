@@ -25,17 +25,17 @@ public class GUIButton extends GUIObject {
 
 	@Override
 	public int render(int x, int y, int width, int height) {
-		if (text.length() <= width - 2)
-			width = text.length() + 2;
 		int totalLines = totalLines(width);
 		updateBounds(x, y, width, totalLines);
 		BoxDrawer.drawBox(x, y, width - 1, totalLines - 1, true, color);
-		return 2 + Drawer.drawString(x + 1, y + 1, false, width, text, color);
+		return 2 + Drawer.drawString(x + 1, y + 1, false, width - 2, text, color);
 	}
 
 	@Override
 	public int totalLines(int width) {
-		return 2 + Drawer.totalLines(width, text);
+		if (text.length() <= width - 2)
+			width = text.length() + 2;
+		return 2 + Drawer.totalLines(width - 2, text);
 	}
 
 	public String getText() {

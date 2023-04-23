@@ -39,6 +39,12 @@ public class GUIRadioPanel extends GUIObject {
 		return buttons.size() - 1;
 	}
 
+	public void clear() {
+		for (int i = 0; i < buttons.size(); i++)
+			frame.remove(buttons.get(i));
+		buttons.clear();
+	}
+
 	public void setIndex(int index) {
 		if (index >= 0 && index < buttons.size())
 			this.index = index;

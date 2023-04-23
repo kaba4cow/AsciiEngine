@@ -21,8 +21,8 @@ public class GUISlider extends GUIObject {
 	@Override
 	public int render(int x, int y, int width, int height) {
 		updateBounds(x, y, width, 1);
-		Drawer.draw(x, y, Glyphs.BLACK_LEFT_POINTING_POINTER, color);
-		Drawer.draw(x + width - 1, y, Glyphs.BLACK_RIGHT_POINTING_POINTER, color);
+		Drawer.draw(x, y, Glyphs.BLACK_LEFT_POINTER, color);
+		Drawer.draw(x + width - 1, y, Glyphs.BLACK_RIGHT_POINTER, color);
 		int length = (int) (position * (width - 2));
 		char c;
 		for (int i = 0; i < width - 2; i++) {

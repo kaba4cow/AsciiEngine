@@ -57,7 +57,7 @@ public class Test implements MainProgram {
 		new GUISeparator(frame, -1, false);
 
 		new GUIText(frame, -1, "Buttons:");
-		for (int i = 1; i <= 3; i++)
+		for (int i = 1; i <= 10; i++)
 			new GUIButton(frame, -1, "Button #" + i, f -> new GUIText(frame, -1, "Button pressed"));
 		new GUISeparator(frame, -1, false);
 	}

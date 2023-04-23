@@ -1,18 +1,19 @@
 package kaba4cow.ascii.audio;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.util.vector.Vector3f;
 
-import kaba4cow.ascii.toolbox.Printer;
-
 public class AudioManager {
 
-	private static final HashMap<String, Integer> buffers = new HashMap<>();
+	private static final ArrayList<Integer> buffers = new ArrayList<>();
 	private static final ArrayList<Source> sources = new ArrayList<>();
 
 	public static final int LINEAR_DISTANCE = AL11.AL_LINEAR_DISTANCE;
@@ -38,22 +39,23 @@ public class AudioManager {
 		AL10.alListener3f(AL10.AL_VELOCITY, velocity.x, velocity.y, velocity.z);
 	}
 
-	public static int load(String file) {
-		if (buffers.containsKey(file))
-			return buffers.get(file);
-		Printer.println("Loading audio file: " + file);
+	private static int load(InputStream inputStream) throws Exception {
 		int buffer = AL10.alGenBuffers();
-		WaveData waveData = WaveData.create(file);
+		WaveData waveData = WaveData.create(inputStream);
 		AL10.alBufferData(buffer, waveData.format, waveData.data, waveData.samplerate);
 		waveData.dispose();
-		buffers.put(file, buffer);
+		buffers.add(buffer);
 		return buffer;
 	}
 
-	public static int get(String file) {
-		if (!buffers.containsKey(file))
-			load(file);
-		return buffers.get(file);
+	public static int load(File file) throws Exception {
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+		return load(inputStream);
+	}
+
+	public static int load(String path) throws Exception {
+		InputStream inputStream = AudioManager.class.getClassLoader().getResourceAsStream(path);
+		return load(inputStream);
 	}
 
 	protected static void add(Source source) {
@@ -70,8 +72,8 @@ public class AudioManager {
 	public static void cleanUp() {
 		for (int i = 0; i < sources.size(); i++)
 			sources.get(i).delete();
-		for (String key : buffers.keySet())
-			AL10.alDeleteBuffers(buffers.get(key));
+		for (int i = 0; i < buffers.size(); i++)
+			AL10.alDeleteBuffers(buffers.get(i));
 		AL.destroy();
 	}
 

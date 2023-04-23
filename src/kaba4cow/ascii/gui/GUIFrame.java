@@ -88,8 +88,8 @@ public class GUIFrame {
 					mX = Window.getWidth() - 1;
 				if (mY >= Window.getHeight())
 					mY = Window.getHeight() - 1;
-				width = Maths.max(width + mX - tempX, 5);
-				height = Maths.max(height + mY - tempY, 2);
+				width = Maths.max(width + mX - tempX, 6);
+				height = Maths.max(height + mY - tempY, 3);
 			} else if (moving)
 				moving = false;
 		}
@@ -134,8 +134,8 @@ public class GUIFrame {
 		if (resizing) {
 			int tempWidth = width;
 			int tempHeight = height;
-			width = Maths.max(width + Input.getTileX() - tempX, 5);
-			height = Maths.max(height + Input.getTileY() - tempY, 2);
+			width = Maths.max(width + Input.getTileX() - tempX, 6);
+			height = Maths.max(height + Input.getTileY() - tempY, 3);
 			render(x, y, width + 1, height + 1, false);
 			width = tempWidth;
 			height = tempHeight;
@@ -152,7 +152,7 @@ public class GUIFrame {
 		for (int i = 0; i < list.size(); i++)
 			totalHeight += list.get(i).totalLines(width - 1);
 
-		if (totalHeight > height + 1) {
+		if (totalHeight > height) {
 			scrollable = true;
 			totalHeight = 2;
 			for (int i = 0; i < list.size(); i++)
@@ -196,8 +196,8 @@ public class GUIFrame {
 
 		if (scrollable) {
 			x = x + width;
-			Drawer.draw(x, y + 1, Glyphs.BLACK_UP_POINTING_TRIANGLE, color);
-			Drawer.draw(x, y + height - 1, Glyphs.BLACK_DOWN_POINTING_TRIANGLE, color);
+			Drawer.draw(x, y + 1, Glyphs.BLACK_UP_TRIANGLE, color);
+			Drawer.draw(x, y + height - 1, Glyphs.BLACK_DOWN_TRIANGLE, color);
 			for (currentY = y + 2; currentY < y + height - 1; currentY++)
 				Drawer.draw(x, currentY, Glyphs.BOX_DRAWINGS_SINGLE_VERTICAL, color);
 
@@ -214,9 +214,20 @@ public class GUIFrame {
 		return totalHeight;
 	}
 
+	public GUIFrame clear() {
+		list.clear();
+		return this;
+	}
+
 	public GUIFrame add(GUIObject object) {
 		if (object != null && !list.contains(object))
 			list.add(object);
+		return this;
+	}
+
+	public GUIFrame remove(GUIObject object) {
+		if (object != null && list.contains(object))
+			list.remove(object);
 		return this;
 	}
 
@@ -226,7 +237,7 @@ public class GUIFrame {
 	}
 
 	public GUIFrame resetScrollMax() {
-		scroll = maxScroll + 128;
+		scroll = maxScroll;
 		return this;
 	}
 

@@ -20,8 +20,8 @@ public final class Glyphs {
 	public static final char EIGHTH_NOTE = (char) numGlyphs++;
 	public static final char BEAMED_EIGHTH_NOTES = (char) numGlyphs++;
 	public static final char WHITE_SUN_WITH_RAYS = (char) numGlyphs++;
-	public static final char BLACK_RIGHT_POINTING_POINTER = (char) numGlyphs++;
-	public static final char BLACK_LEFT_POINTING_POINTER = (char) numGlyphs++;
+	public static final char BLACK_RIGHT_POINTER = (char) numGlyphs++;
+	public static final char BLACK_LEFT_POINTER = (char) numGlyphs++;
 	public static final char UP_DOWN_ARROW = (char) numGlyphs++;
 	public static final char DOUBLE_EXCLAMATION_MARK = (char) numGlyphs++;
 	public static final char PILCROW_SIGN = (char) numGlyphs++;
@@ -34,8 +34,8 @@ public final class Glyphs {
 	public static final char LEFTWARDS_ARROW = (char) numGlyphs++;
 	public static final char RIGHT_ANGLE = (char) numGlyphs++;
 	public static final char LEFT_RIGHT_ARROW = (char) numGlyphs++;
-	public static final char BLACK_UP_POINTING_TRIANGLE = (char) numGlyphs++;
-	public static final char BLACK_DOWN_POINTING_TRIANGLE = (char) numGlyphs++;
+	public static final char BLACK_UP_TRIANGLE = (char) numGlyphs++;
+	public static final char BLACK_DOWN_TRIANGLE = (char) numGlyphs++;
 	public static final char SPACE = (char) numGlyphs++;
 	public static final char EXCLAMATION_MARK = (char) numGlyphs++;
 	public static final char QUOTATION_MARK = (char) numGlyphs++;

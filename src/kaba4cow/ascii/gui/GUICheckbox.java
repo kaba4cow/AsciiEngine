@@ -33,7 +33,7 @@ public class GUICheckbox extends GUIObject {
 
 	@Override
 	public int totalLines(int width) {
-		return Drawer.totalLines(width - 2, text);
+		return Drawer.totalLines(width - 4, text);
 	}
 
 	public boolean isSelected() {

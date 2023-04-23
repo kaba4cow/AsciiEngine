@@ -174,6 +174,14 @@ public class GUITextField extends GUIObject {
 		return this;
 	}
 
+	public GUITextField setOnlyDigits() {
+		return setCharset("0123456789");
+	}
+
+	public GUITextField setOnlyLetters() {
+		return setCharset("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz");
+	}
+
 	public GUITextField setActive() {
 		active = true;
 		return this;
