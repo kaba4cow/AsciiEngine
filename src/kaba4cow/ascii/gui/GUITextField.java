@@ -20,7 +20,8 @@ public class GUITextField extends GUIObject {
 
 	private final StringBuilder builder;
 
-	private String charset;
+	private String allowedCharset;
+	private String forbiddenCharset;
 
 	private String text;
 	private boolean active;
@@ -42,7 +43,8 @@ public class GUITextField extends GUIObject {
 		this.cursor = 0;
 		this.cursorX = 0;
 		this.cursorY = 0;
-		this.charset = null;
+		this.allowedCharset = null;
+		this.forbiddenCharset = null;
 	}
 
 	@Override
@@ -123,11 +125,19 @@ public class GUITextField extends GUIObject {
 	}
 
 	private boolean isAllowed(char c) {
-		if (c == '\t' || c == '\r' || c == '\n')
+		if (isForbidden(c))
 			return false;
-		if (charset == null || charset.isEmpty())
+		if (allowedCharset == null || allowedCharset.isEmpty())
 			return true;
-		return charset.indexOf(c, 0) != -1;
+		return allowedCharset.indexOf(c, 0) != -1;
+	}
+
+	private boolean isForbidden(char c) {
+		if (c == '\t' || c == '\r' || c == '\n')
+			return true;
+		if (forbiddenCharset == null || forbiddenCharset.isEmpty())
+			return false;
+		return forbiddenCharset.indexOf(c) == -1;
 	}
 
 	@Override
@@ -169,17 +179,22 @@ public class GUITextField extends GUIObject {
 		return this;
 	}
 
-	public GUITextField setCharset(String charset) {
-		this.charset = charset;
+	public GUITextField setAllowedCharset(String charset) {
+		this.allowedCharset = charset;
+		return this;
+	}
+
+	public GUITextField setForbiddenCharset(String charset) {
+		this.forbiddenCharset = charset;
 		return this;
 	}
 
 	public GUITextField setOnlyDigits() {
-		return setCharset("0123456789");
+		return setAllowedCharset("0123456789");
 	}
 
 	public GUITextField setOnlyLetters() {
-		return setCharset("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz");
+		return setAllowedCharset("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz");
 	}
 
 	public GUITextField setActive() {

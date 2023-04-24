@@ -39,7 +39,7 @@ public class AudioManager {
 		AL10.alListener3f(AL10.AL_VELOCITY, velocity.x, velocity.y, velocity.z);
 	}
 
-	private static int load(InputStream inputStream) throws Exception {
+	public static int load(InputStream inputStream) throws Exception {
 		int buffer = AL10.alGenBuffers();
 		WaveData waveData = WaveData.create(inputStream);
 		AL10.alBufferData(buffer, waveData.format, waveData.data, waveData.samplerate);
