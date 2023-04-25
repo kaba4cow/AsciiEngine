@@ -76,17 +76,17 @@ public final class StringUtils {
 	}
 
 	public static void encode(String string, File file) throws IOException {
-		FileOutputStream fos = new FileOutputStream(file);
+		FileOutputStream output = new FileOutputStream(file);
 		byte[] bytes = StringUtils.encode(string);
-		fos.write(bytes);
-		fos.close();
+		output.write(bytes);
+		output.close();
 	}
 
 	public static String decode(File file) throws IOException {
-		FileInputStream fis = new FileInputStream(file);
+		FileInputStream input = new FileInputStream(file);
 		byte[] bytes = new byte[(int) file.length()];
-		fis.read(bytes);
-		fis.close();
+		input.read(bytes);
+		input.close();
 		return decode(bytes);
 	}
 
@@ -97,14 +97,23 @@ public final class StringUtils {
 		return parts.toArray(new String[0]);
 	}
 
-	public static String repeat(String string, int times) {
-		if (times == 1)
+	public static String repeat(String string, int amount) {
+		if (amount == 1)
 			return string;
-		if (times == 0)
+		if (amount == 0)
 			return "";
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < times; i++)
+		for (int i = 0; i < amount; i++)
 			builder.append(string);
+		return builder.toString();
+	}
+
+	public static String repeat(char c, int amount) {
+		if (amount == 0)
+			return "";
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < amount; i++)
+			builder.append(c);
 		return builder.toString();
 	}
 
