@@ -108,7 +108,8 @@ public class GUIFrame {
 		}
 
 		if (mX > x && mX < x + width && mY > y && mY < y + height) {
-			scroll -= Input.getScroll();
+			if (!Input.isKey(Input.KEY_SHIFT_LEFT))
+				scroll -= Input.getScroll();
 			clicked = Input.isButtonDown(Input.LEFT);
 		} else
 			clicked = false;
@@ -189,7 +190,7 @@ public class GUIFrame {
 		}
 		if (scrollable)
 			width--;
-		Drawer.enableClipping(x, y + 1, x + width, y + height - 1);
+		Drawer.enableClipping(x + 1, y + 1, x + width - 1, y + height - 1);
 		for (int i = 0; i < list.size(); i++)
 			currentY += list.get(i).render(x + 1, currentY, width - 1, height);
 		Drawer.disableClipping();
