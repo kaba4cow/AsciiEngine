@@ -35,8 +35,11 @@ public class GUIFileTree extends GUIObject {
 			selectedNode = null;
 			if (openNode)
 				newSelectedNode.switchOpen();
-			else
+			else {
 				selectedNode = newSelectedNode;
+				if (selectedNode.file != null)
+					onNewFileSelected(selectedNode.file.getAbsoluteFile());
+			}
 		}
 		newSelectedNode = null;
 		openNode = false;
@@ -64,6 +67,10 @@ public class GUIFileTree extends GUIObject {
 	@Override
 	public int totalLines(int width) {
 		return root.totalLines();
+	}
+
+	public void onNewFileSelected(File file) {
+
 	}
 
 	public File getSelectedFile() {

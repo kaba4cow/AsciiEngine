@@ -12,6 +12,7 @@ import kaba4cow.ascii.toolbox.Colors;
 public class GUIFileBrowser extends GUIObject {
 
 	private File directory;
+	private File parent;
 	private ArrayList<File> files;
 
 	private int selectedFile;
@@ -33,10 +34,13 @@ public class GUIFileBrowser extends GUIObject {
 		if (clicked && newSelectedFile != -1) {
 			if (selectedFile == newSelectedFile) {
 				File newDirectory = files.get(selectedFile);
-				if (newDirectory != null)
-					setDirectory(newDirectory);
-			} else
+				setDirectory(newDirectory);
+			} else {
 				selectedFile = newSelectedFile;
+				File file = getSelectedFile();
+				if (file != null)
+					onNewFileSelected(file.getAbsoluteFile());
+			}
 		}
 		newSelectedFile = -1;
 
@@ -46,7 +50,7 @@ public class GUIFileBrowser extends GUIObject {
 		if (Input.isKey(Input.KEY_SHIFT_LEFT) && mouseX >= bX && mouseX < bX + bWidth && mouseY >= bY
 				&& mouseY < bY + bHeight)
 			scroll -= Input.getScroll();
-		int maxScroll = directory.getAbsolutePath().length() + 1;
+		int maxScroll = (directory == null ? 6 : directory.getAbsolutePath().length()) + 1;
 		for (int i = 1; i < files.size(); i++) {
 			int width = 2 + files.get(i).getName().length();
 			if (width > maxScroll)
@@ -66,18 +70,25 @@ public class GUIFileBrowser extends GUIObject {
 		int totalLines = totalLines(width);
 		updateBounds(x, y, width, totalLines);
 		x -= scroll;
-		Drawer.drawString(x, y++, false, directory.getAbsolutePath(), color);
+		Drawer.drawString(x, y++, false, directory == null ? "Drives" : directory.getAbsolutePath(), color);
 		int mX = Input.getTileX();
 		int mY = Input.getTileY();
-		int i = directory.getParentFile() == null ? 1 : 0;
-		for (; i < files.size(); i++) {
+		for (int i = 0; i < files.size(); i++) {
 			File file = files.get(i);
 			int currentColor = i == selectedFile ? Colors.swap(color) : color;
-			if (file.isDirectory())
+			if (i == 0)
+				Drawer.draw(x, y, Glyphs.UPWARDS_ARROW, currentColor);
+			else if (file.isDirectory())
 				Drawer.draw(x, y, Glyphs.RIGHTWARDS_ARROW, currentColor);
 			else
 				Drawer.draw(x, y, Glyphs.BULLET, color);
-			String name = i == 0 ? ".." : file.getName();
+			String name;
+			if (file == null || file == parent)
+				name = "..";
+			else if (directory == null)
+				name = file.getAbsolutePath();
+			else
+				name = file.getName();
 			Drawer.drawString(x + 1, y, false, name, currentColor);
 			if (mY == y && mX >= x && mX <= x + name.length())
 				newSelectedFile = i;
@@ -91,16 +102,20 @@ public class GUIFileBrowser extends GUIObject {
 		return files.size() + 2;
 	}
 
+	public void onNewFileSelected(File file) {
+
+	}
+
 	public GUIFileBrowser setDirectory(File newDirectory) {
-		if (newDirectory == null || !newDirectory.isDirectory())
+		if (newDirectory != null && !newDirectory.isDirectory())
 			return this;
 		selectedFile = -1;
 		newSelectedFile = -1;
 		directory = newDirectory;
+		parent = directory == null ? null : directory.getParentFile();
 		files.clear();
-		File[] list = directory.listFiles();
-		if (directory.getParentFile() != null)
-			files.add(directory.getParentFile());
+		files.add(parent);
+		File[] list = directory == null ? File.listRoots() : directory.listFiles();
 		for (int i = 0; i < list.length; i++)
 			if (list[i].isDirectory() && list[i].listFiles() != null)
 				files.add(list[i]);
@@ -109,6 +124,29 @@ public class GUIFileBrowser extends GUIObject {
 				if (filter == null || filter.accept(list[i]))
 					files.add(list[i]);
 		return this;
+	}
+
+	public GUIFileBrowser openDriveList() {
+		selectedFile = -1;
+		newSelectedFile = -1;
+		directory = null;
+		files.clear();
+
+		File[] list = File.listRoots();
+		files.add(null);
+		for (int i = 0; i < list.length; i++) {
+			files.add(list[i]);
+		}
+
+		return this;
+	}
+
+	public GUIFileBrowser refresh() {
+		return setDirectory(directory);
+	}
+
+	public File getDirectory() {
+		return directory;
 	}
 
 	public File getSelectedFile() {
