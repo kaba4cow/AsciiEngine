@@ -20,7 +20,7 @@ public class Track {
 		this.name = String.format("Track %02d", index + 1);
 		this.defaultSample = 0;
 		this.volume = 1f;
-		this.source = new Source(Composition.SOURCE_TAG);
+		this.source = new Source();
 	}
 
 	public void update(Pattern pattern, int position) {
@@ -49,7 +49,7 @@ public class Track {
 	}
 
 	private static float getPitch(int note) {
-		float pow = (note - Composition.NOTE_A) / 12f;
+		float pow = (note - Composition.NOTE_C) / 12f;
 		return Maths.pow(2f, pow);
 	}
 

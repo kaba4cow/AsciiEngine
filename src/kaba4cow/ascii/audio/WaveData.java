@@ -23,24 +23,23 @@ public class WaveData {
 	private final AudioInputStream stream;
 	private final byte[] dataArray;
 
-	private WaveData(AudioInputStream stream) {
-		AudioFormat audioFormat = stream.getFormat();
+	private WaveData(AudioInputStream stream) throws IOException {
+		AudioFormat format = stream.getFormat();
+		format = new AudioFormat(format.getSampleRate(), 16, format.getChannels(), true, false);
+		stream = AudioSystem.getAudioInputStream(format, stream);
+
 		this.stream = stream;
-		this.format = getOpenALFormat(audioFormat.getChannels(), audioFormat.getSampleSizeInBits());
-		this.samplerate = (int) audioFormat.getSampleRate();
-		this.bytesPerFrame = audioFormat.getFrameSize();
+		this.format = getFormat(format.getChannels(), format.getSampleSizeInBits());
+		this.samplerate = (int) format.getSampleRate();
+		this.bytesPerFrame = format.getFrameSize();
 		this.totalBytes = (int) (stream.getFrameLength() * bytesPerFrame);
 		this.data = BufferUtils.createByteBuffer(totalBytes);
 		this.dataArray = new byte[totalBytes];
-		try {
-			int bytesRead = stream.read(dataArray, 0, totalBytes);
-			data.clear();
-			data.put(dataArray, 0, bytesRead);
-			data.flip();
-		} catch (IOException e) {
-			System.err.println("Couldn't read bytes from audio stream");
-			e.printStackTrace();
-		}
+
+		int bytesRead = stream.read(dataArray, 0, totalBytes);
+		data.clear();
+		data.put(dataArray, 0, bytesRead);
+		data.flip();
 	}
 
 	protected void dispose() {
@@ -58,7 +57,7 @@ public class WaveData {
 		return waveData;
 	}
 
-	private static int getOpenALFormat(int channels, int bitsPerSample) {
+	private static int getFormat(int channels, int bitsPerSample) {
 		if (channels == 1)
 			return bitsPerSample == 8 ? AL10.AL_FORMAT_MONO8 : AL10.AL_FORMAT_MONO16;
 		else

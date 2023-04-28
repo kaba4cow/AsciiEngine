@@ -10,7 +10,7 @@ public class Source {
 	private boolean wasStopped;
 	private boolean deleteOnStop;
 
-	public Source(String tag, Vector3f position) {
+	public Source(Vector3f position) {
 		this.source = AL10.alGenSources();
 		this.deleteOnStop = false;
 		this.wasStopped = false;
@@ -19,8 +19,8 @@ public class Source {
 		this.setPosition(position);
 	}
 
-	public Source(String tag) {
-		this(tag, new Vector3f());
+	public Source() {
+		this(new Vector3f());
 	}
 
 	public Source play(int buffer) {

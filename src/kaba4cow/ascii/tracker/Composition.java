@@ -20,8 +20,6 @@ public class Composition {
 	public static final int INVALID = -1;
 	public static final int BREAK = 128;
 
-	public static final String SOURCE_TAG = "TRACKER";
-
 	private static final float DURATION = 240f / (float) PATTERN_LENGTH;
 
 	private String author;

@@ -64,9 +64,8 @@ public class AudioManager {
 	}
 
 	protected static void remove(Source source) {
-		if (source != null && sources.contains(source)) {
+		if (source != null && sources.contains(source))
 			sources.remove(source);
-		}
 	}
 
 	public static void cleanUp() {

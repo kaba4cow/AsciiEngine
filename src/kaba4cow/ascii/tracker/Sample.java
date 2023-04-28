@@ -38,9 +38,9 @@ public class Sample {
 		this.buffer = AudioManager.load(new ByteArrayInputStream(bytes));
 	}
 
-	public static void loadLibrary(String location) {
+	public static void loadLibrary(File directory) {
 		library.clear();
-		load(new File(location), new Stack<>());
+		load(directory, new Stack<>());
 	}
 
 	private static void load(File dir, Stack<String> stack) {
