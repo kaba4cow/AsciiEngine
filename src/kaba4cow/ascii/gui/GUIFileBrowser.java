@@ -22,10 +22,17 @@ public class GUIFileBrowser extends GUIObject {
 
 	private FileFilter filter;
 
+	private char returnGlyph;
+	private char directoryGlyph;
+	private char fileGlyph;
+
 	public GUIFileBrowser(GUIFrame frame, int color, File home) {
 		super(frame, color);
 		this.files = new ArrayList<>();
 		this.filter = null;
+		this.returnGlyph = Glyphs.UPWARDS_ARROW;
+		this.directoryGlyph = Glyphs.RIGHTWARDS_ARROW;
+		this.fileGlyph = Glyphs.BULLET;
 		setDirectory(home.getAbsoluteFile());
 	}
 
@@ -77,11 +84,11 @@ public class GUIFileBrowser extends GUIObject {
 			File file = files.get(i);
 			int currentColor = i == selectedFile ? Colors.swap(color) : color;
 			if (i == 0)
-				Drawer.draw(x, y, Glyphs.UPWARDS_ARROW, currentColor);
+				Drawer.draw(x, y, returnGlyph, currentColor);
 			else if (file.isDirectory())
-				Drawer.draw(x, y, Glyphs.RIGHTWARDS_ARROW, currentColor);
+				Drawer.draw(x, y, directoryGlyph, currentColor);
 			else
-				Drawer.draw(x, y, Glyphs.BULLET, color);
+				Drawer.draw(x, y, fileGlyph, color);
 			String name;
 			if (file == null || file == parent)
 				name = "..";
@@ -157,6 +164,21 @@ public class GUIFileBrowser extends GUIObject {
 
 	public GUIFileBrowser setFileFilter(FileFilter filter) {
 		this.filter = filter;
+		return this;
+	}
+
+	public GUIFileBrowser setDirectoryGlyph(char glyph) {
+		this.directoryGlyph = glyph;
+		return this;
+	}
+
+	public GUIFileBrowser setReturnGlyph(char glyph) {
+		this.returnGlyph = glyph;
+		return this;
+	}
+
+	public GUIFileBrowser setFileGlyph(char glyph) {
+		this.fileGlyph = glyph;
 		return this;
 	}
 

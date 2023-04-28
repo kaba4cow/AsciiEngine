@@ -39,6 +39,7 @@ public class Sample {
 	}
 
 	public static void loadLibrary(String location) {
+		library.clear();
 		load(new File(location), new Stack<>());
 	}
 

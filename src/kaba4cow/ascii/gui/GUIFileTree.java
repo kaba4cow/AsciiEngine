@@ -2,6 +2,7 @@ package kaba4cow.ascii.gui;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
 
 import kaba4cow.ascii.core.Input;
 import kaba4cow.ascii.drawing.Drawer;
@@ -10,7 +11,7 @@ import kaba4cow.ascii.toolbox.Colors;
 
 public class GUIFileTree extends GUIObject {
 
-	private final Node root;
+	private Node root;
 
 	private Node selectedNode;
 	private Node newSelectedNode;
@@ -20,13 +21,18 @@ public class GUIFileTree extends GUIObject {
 
 	private FileFilter filter;
 
+	private char directoryClosedGlyph;
+	private char directoryOpenGlyph;
+	private char fileGlyph;
+
 	public GUIFileTree(GUIFrame frame, int color, File directory) {
 		super(frame, color);
-		this.root = new Node(directory, -1, true);
-		this.selectedNode = null;
-		this.newSelectedNode = null;
 		this.scroll = 0;
 		this.filter = null;
+		this.directoryClosedGlyph = Glyphs.RIGHTWARDS_ARROW;
+		this.directoryOpenGlyph = Glyphs.DOWNWARDS_ARROW;
+		this.fileGlyph = Glyphs.BULLET;
+		setDirectory(directory);
 	}
 
 	@Override
@@ -73,6 +79,21 @@ public class GUIFileTree extends GUIObject {
 
 	}
 
+	public GUIFileTree setDirectory(File directory) {
+		root = new Node(directory, -1, true);
+		selectedNode = null;
+		newSelectedNode = null;
+		return this;
+	}
+
+	public GUIFileTree refresh() {
+		return setDirectory(getDirectory());
+	}
+
+	public File getDirectory() {
+		return root.file;
+	}
+
 	public File getSelectedFile() {
 		if (selectedNode == null)
 			return null;
@@ -84,10 +105,21 @@ public class GUIFileTree extends GUIObject {
 		return this;
 	}
 
+	public GUIFileTree setDirectoryGlyphs(char open, char closed) {
+		this.directoryOpenGlyph = open;
+		this.directoryClosedGlyph = closed;
+		return this;
+	}
+
+	public GUIFileTree setFileGlyph(char glyph) {
+		this.fileGlyph = glyph;
+		return this;
+	}
+
 	private class Node {
 
 		public final File file;
-		public final Node[] children;
+		public final ArrayList<Node> children;
 
 		public final int depth;
 
@@ -96,23 +128,23 @@ public class GUIFileTree extends GUIObject {
 		public Node(File file, int depth, boolean open) {
 			File[] list = file.isFile() ? new File[0] : file.listFiles();
 			this.file = file;
-			this.children = new Node[list.length];
+			this.children = new ArrayList<>();
 			this.depth = depth;
 			this.open = open;
 			for (int i = 0; i < list.length; i++)
 				if (list[i].isDirectory() || filter == null || filter.accept(list[i]))
-					children[i] = new Node(list[i], depth + 1, false);
+					children.add(new Node(list[i], depth + 1, false));
 		}
 
 		public int render(int x, int y, int mX, int mY) {
 			int currentColor = selectedNode == this ? Colors.swap(color) : color;
 			if (depth != -1) {
 				if (file.isFile())
-					Drawer.draw(x, y, Glyphs.BULLET, currentColor);
+					Drawer.draw(x, y, fileGlyph, currentColor);
 				else if (open)
-					Drawer.draw(x, y, Glyphs.DOWNWARDS_ARROW, currentColor);
+					Drawer.draw(x, y, directoryOpenGlyph, currentColor);
 				else
-					Drawer.draw(x, y, Glyphs.RIGHTWARDS_ARROW, currentColor);
+					Drawer.draw(x, y, directoryClosedGlyph, currentColor);
 				if (mY == y && mX >= x && mX <= x + file.getName().length()) {
 					newSelectedNode = this;
 					openNode = mX == x;
@@ -122,12 +154,12 @@ public class GUIFileTree extends GUIObject {
 			}
 			int totalLines = depth == -1 ? 0 : 1;
 			if (open) {
-				for (int i = 0; i < children.length; i++)
-					if (children[i].file.isDirectory())
-						totalLines += children[i].render(x, y + totalLines, mX, mY);
-				for (int i = 0; i < children.length; i++)
-					if (children[i].file.isFile())
-						totalLines += children[i].render(x, y + totalLines, mX, mY);
+				for (int i = 0; i < children.size(); i++)
+					if (children.get(i).file.isDirectory())
+						totalLines += children.get(i).render(x, y + totalLines, mX, mY);
+				for (int i = 0; i < children.size(); i++)
+					if (children.get(i).file.isFile())
+						totalLines += children.get(i).render(x, y + totalLines, mX, mY);
 			}
 			return totalLines;
 		}
@@ -137,8 +169,8 @@ public class GUIFileTree extends GUIObject {
 			if (depth != -1)
 				max = depth + 2 + file.getName().length();
 			if (open)
-				for (int i = 0; i < children.length; i++) {
-					int width = children[i].maxWidth();
+				for (int i = 0; i < children.size(); i++) {
+					int width = children.get(i).maxWidth();
 					if (width > max)
 						max = width;
 				}
@@ -148,8 +180,8 @@ public class GUIFileTree extends GUIObject {
 		public int totalLines() {
 			int total = depth == -1 ? 0 : 1;
 			if (open)
-				for (int i = 0; i < children.length; i++)
-					total += children[i].totalLines();
+				for (int i = 0; i < children.size(); i++)
+					total += children.get(i).totalLines();
 			return total;
 		}
 
@@ -161,8 +193,8 @@ public class GUIFileTree extends GUIObject {
 
 		public void close() {
 			open = false;
-			for (int i = 0; i < children.length; i++)
-				children[i].close();
+			for (int i = 0; i < children.size(); i++)
+				children.get(i).close();
 		}
 
 	}
