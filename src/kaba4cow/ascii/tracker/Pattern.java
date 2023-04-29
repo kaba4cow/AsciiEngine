@@ -5,8 +5,8 @@ public class Pattern {
 	private final Composition composition;
 	private final int index;
 
-	private final int[][] notes;
-	private final int[][] samples;
+	private final int[] notes;
+	private final int[] samples;
 
 	public Pattern(Composition composition, int index) {
 		this(composition, index, new Data());
@@ -24,104 +24,102 @@ public class Pattern {
 	}
 
 	public void setData(Data data) {
-		for (int i = 0; i < Composition.MAX_TRACKS; i++)
-			for (int j = 0; j < Composition.PATTERN_LENGTH; j++) {
-				this.notes[i][j] = data.notes[i][j];
-				this.samples[i][j] = data.samples[i][j];
+			for (int i = 0; i < Composition.PATTERN_LENGTH; i++) {
+				this.notes[i] = data.notes[i];
+				this.samples[i] = data.samples[i];
 			}
 	}
 
 	public void clear() {
-		for (int i = 0; i < Composition.MAX_TRACKS; i++)
-			for (int j = 0; j < Composition.PATTERN_LENGTH; j++) {
-				this.notes[i][j] = Composition.INVALID;
-				this.samples[i][j] = 0;
+			for (int i = 0; i < Composition.PATTERN_LENGTH; i++) {
+				this.notes[i] = Composition.INVALID;
+				this.samples[i] = 0;
 			}
 	}
 
-	public int[][] getNotes() {
+	public int[] getNotes() {
 		return notes;
 	}
 
-	public int[][] getSamples() {
+	public int[] getSamples() {
 		return samples;
 	}
 
-	public void deleteNote(int track, int position) {
-		notes[track][position] = Composition.INVALID;
-		samples[track][position] = 0;
+	public void deleteNote(int position) {
+		notes[position] = Composition.INVALID;
+		samples[position] = 0;
 	}
 
-	public void setBreak(int track, int position) {
-		notes[track][position] = Composition.BREAK;
+	public void setBreak(int position) {
+		notes[position] = Composition.BREAK;
 	}
 
-	public void setNote(int track, int position, int note) {
-		notes[track][position] = note;
+	public void setNote(int position, int note) {
+		notes[position] = note;
 	}
 
-	public void prevNote(int track, int position) {
-		if (notes[track][position] == Composition.INVALID || notes[track][position] == Composition.BREAK)
-			notes[track][position] = Composition.NOTE_C;
-		else if (notes[track][position] > 0)
-			notes[track][position]--;
+	public void prevNote(int position) {
+		if (notes[position] == Composition.INVALID || notes[position] == Composition.BREAK)
+			notes[position] = Composition.NOTE_C;
+		else if (notes[position] > 0)
+			notes[position]--;
 	}
 
-	public void nextNote(int track, int position) {
-		if (notes[track][position] == Composition.INVALID || notes[track][position] == Composition.BREAK)
-			notes[track][position] = Composition.NOTE_C;
-		else if (notes[track][position] < 127)
-			notes[track][position]++;
+	public void nextNote(int position) {
+		if (notes[position] == Composition.INVALID || notes[position] == Composition.BREAK)
+			notes[position] = Composition.NOTE_C;
+		else if (notes[position] < 127)
+			notes[position]++;
 	}
 
-	public void prevOctave(int track, int position) {
-		if (notes[track][position] == Composition.INVALID || notes[track][position] == Composition.BREAK)
-			notes[track][position] = Composition.NOTE_C;
-		else if (notes[track][position] > 12)
-			notes[track][position] -= 12;
+	public void prevOctave(int position) {
+		if (notes[position] == Composition.INVALID || notes[position] == Composition.BREAK)
+			notes[position] = Composition.NOTE_C;
+		else if (notes[position] > 12)
+			notes[position] -= 12;
 	}
 
-	public void nextOctave(int track, int position) {
-		if (notes[track][position] == Composition.INVALID || notes[track][position] == Composition.BREAK)
-			notes[track][position] = Composition.NOTE_C;
-		else if (notes[track][position] < 115)
-			notes[track][position] += 12;
+	public void nextOctave(int position) {
+		if (notes[position] == Composition.INVALID || notes[position] == Composition.BREAK)
+			notes[position] = Composition.NOTE_C;
+		else if (notes[position] < 115)
+			notes[position] += 12;
 	}
 
-	public void setSample(int track, int position, int sample) {
-		if (notes[track][position] == Composition.INVALID)
-			notes[track][position] = Composition.NOTE_C;
-		samples[track][position] = sample;
+	public void setSample(int position, int sample) {
+		if (notes[position] == Composition.INVALID)
+			notes[position] = Composition.NOTE_C;
+		samples[position] = sample;
 	}
 
-	public void prevSample(int track, int position) {
-		if (notes[track][position] == Composition.INVALID)
-			notes[track][position] = Composition.NOTE_C;
-		if (samples[track][position] - 1 >= 0)
-			samples[track][position]--;
+	public void prevSample(int position) {
+		if (notes[position] == Composition.INVALID)
+			notes[position] = Composition.NOTE_C;
+		if (samples[position] - 1 >= 0)
+			samples[position]--;
 		else
-			samples[track][position] = composition.getSamples().size();
+			samples[position] = composition.getSamples().size();
 	}
 
-	public void nextSample(int track, int position) {
-		if (notes[track][position] == Composition.INVALID)
-			notes[track][position] = Composition.NOTE_C;
-		if (samples[track][position] + 1 <= composition.getSamples().size())
-			samples[track][position]++;
+	public void nextSample(int position) {
+		if (notes[position] == Composition.INVALID)
+			notes[position] = Composition.NOTE_C;
+		if (samples[position] + 1 <= composition.getSamples().size())
+			samples[position]++;
 		else
-			samples[track][position] = 0;
+			samples[position] = 0;
 	}
 
-	public boolean contains(int track, int position) {
-		return notes[track][position] != Composition.INVALID;
+	public boolean contains(int position) {
+		return notes[position] != Composition.INVALID;
 	}
 
-	public int getNote(int track, int position) {
-		return notes[track][position];
+	public int getNote(int position) {
+		return notes[position];
 	}
 
-	public int getSample(int track, int position) {
-		return samples[track][position];
+	public int getSample(int position) {
+		return samples[position];
 	}
 
 	public int getIndex() {
@@ -130,27 +128,25 @@ public class Pattern {
 
 	public static class Data {
 
-		private final int[][] notes;
-		private final int[][] samples;
+		private final int[] notes;
+		private final int[] samples;
 
-		public Data(int[][] notes, int[][] samples) {
-			this.notes = new int[Composition.MAX_TRACKS][Composition.PATTERN_LENGTH];
-			this.samples = new int[Composition.MAX_TRACKS][Composition.PATTERN_LENGTH];
-			for (int i = 0; i < Composition.MAX_TRACKS; i++)
-				for (int j = 0; j < Composition.PATTERN_LENGTH; j++) {
-					this.notes[i][j] = notes[i][j];
-					this.samples[i][j] = samples[i][j];
-				}
+		public Data(int[] notes, int[] samples) {
+			this.notes = new int[Composition.PATTERN_LENGTH];
+			this.samples = new int[Composition.PATTERN_LENGTH];
+			for (int i = 0; i < Composition.PATTERN_LENGTH; i++) {
+				this.notes[i] = notes[i];
+				this.samples[i] = samples[i];
+			}
 		}
 
 		public Data() {
-			this.notes = new int[Composition.MAX_TRACKS][Composition.PATTERN_LENGTH];
-			this.samples = new int[Composition.MAX_TRACKS][Composition.PATTERN_LENGTH];
-			for (int i = 0; i < Composition.MAX_TRACKS; i++)
-				for (int j = 0; j < Composition.PATTERN_LENGTH; j++) {
-					this.notes[i][j] = Composition.INVALID;
-					this.samples[i][j] = 0;
-				}
+			this.notes = new int[Composition.PATTERN_LENGTH];
+			this.samples = new int[Composition.PATTERN_LENGTH];
+			for (int i = 0; i < Composition.PATTERN_LENGTH; i++) {
+				this.notes[i] = Composition.INVALID;
+				this.samples[i] = 0;
+			}
 		}
 
 	}

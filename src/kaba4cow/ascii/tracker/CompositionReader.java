@@ -12,9 +12,8 @@ public class CompositionReader {
 
 	private static final int INFO = 0x00;
 	private static final int TRACK = 0x01;
-	private static final int ORDER = 0x02;
-	private static final int PATTERN = 0x03;
-	private static final int SAMPLE = 0x04;
+	private static final int PATTERN = 0x02;
+	private static final int SAMPLE = 0x03;
 
 	private static final int INVALID = 0x80;
 	private static final int BREAK = 0x81;
@@ -36,7 +35,6 @@ public class CompositionReader {
 	public static Composition read(InputStream input) throws Exception {
 		Composition composition = new Composition();
 
-		int[] patternOrder = composition.getPatternOrder();
 		Pattern[] patternList = composition.getPatternList();
 
 		int b;
@@ -44,7 +42,6 @@ public class CompositionReader {
 			if (b == INFO) {
 				composition.setName(readString(input));
 				composition.setAuthor(readString(input));
-				composition.setComment(readString(input));
 				composition.setLength(readInt(input));
 				composition.setTempo(readInt(input));
 				composition.setVolume(readFloat(input));
@@ -57,13 +54,13 @@ public class CompositionReader {
 				track.setName(name);
 				track.setDefaultSample(sample);
 				track.setVolume(volume);
-			} else if (b == ORDER) {
+				int[] order = track.getPatternOrder();
 				for (int i = 0; i < Composition.MAX_PATTERNS; i++) {
 					int pattern = readInt(input);
 					if (pattern == INVALID)
-						patternOrder[i] = Composition.INVALID;
+						order[i] = Composition.INVALID;
 					else
-						patternOrder[i] = pattern;
+						order[i] = pattern;
 				}
 			} else if (b == PATTERN) {
 				int index = readInt(input);
@@ -74,11 +71,11 @@ public class CompositionReader {
 						int position = readInt(input);
 						int note = readInt(input);
 						if (note == BREAK)
-							pattern.setNote(track, position, Composition.BREAK);
+							pattern.setNote(position, Composition.BREAK);
 						else {
 							int sample = readInt(input);
-							pattern.setNote(track, position, note);
-							pattern.setSample(track, position, sample);
+							pattern.setNote(position, note);
+							pattern.setSample(position, sample);
 						}
 					}
 				}
@@ -133,7 +130,6 @@ public class CompositionReader {
 		writeInt(output, INFO);
 		writeString(output, composition.getName());
 		writeString(output, composition.getAuthor());
-		writeString(output, composition.getComment());
 		writeInt(output, composition.getLength());
 		writeInt(output, composition.getTempo());
 		writeFloat(output, composition.getVolume());
@@ -146,15 +142,12 @@ public class CompositionReader {
 			writeInt(output, track.getDefaultSample());
 			writeFloat(output, track.getVolume());
 			writeString(output, track.getName());
-		}
-
-		int[] patternOrder = composition.getPatternOrder();
-		writeInt(output, ORDER);
-		for (int i = 0; i < Composition.MAX_PATTERNS; i++) {
-			if (patternOrder[i] == Composition.INVALID)
-				writeInt(output, INVALID);
-			else
-				writeInt(output, patternOrder[i]);
+			int[] order = track.getPatternOrder();
+			for (int j = 0; j < Composition.MAX_PATTERNS; j++)
+				if (order[j] == Composition.INVALID)
+					writeInt(output, INVALID);
+				else
+					writeInt(output, order[j]);
 		}
 
 		Pattern[] patternList = composition.getPatternList();
@@ -165,17 +158,17 @@ public class CompositionReader {
 			for (int track = 0; track < Composition.MAX_TRACKS; track++) {
 				int notes = 0;
 				for (int position = 0; position < Composition.PATTERN_LENGTH; position++)
-					if (pattern.getNote(track, position) != Composition.INVALID)
+					if (pattern.getNote(position) != Composition.INVALID)
 						notes++;
 				writeInt(output, notes);
 				for (int position = 0; position < Composition.PATTERN_LENGTH; position++) {
-					int note = pattern.getNote(track, position);
+					int note = pattern.getNote(position);
 					if (note != Composition.INVALID) {
 						writeInt(output, position);
 						if (note == Composition.BREAK)
 							writeInt(output, BREAK);
 						else {
-							int sample = pattern.getSample(track, position);
+							int sample = pattern.getSample(position);
 							writeInt(output, note);
 							writeInt(output, sample);
 						}

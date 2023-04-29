@@ -6,25 +6,32 @@ import kaba4cow.ascii.toolbox.maths.Maths;
 public class Track {
 
 	private final Composition composition;
-	private final int index;
 
 	private String name;
 	private int defaultSample;
 	private float volume;
 
+	private final int[] patternOrder;
+
 	private final Source source;
 
 	public Track(Composition composition, int index) {
 		this.composition = composition;
-		this.index = index;
 		this.name = String.format("Track %02d", index + 1);
 		this.defaultSample = 0;
 		this.volume = 1f;
+		this.patternOrder = new int[Composition.MAX_PATTERNS];
+		for (int i = 0; i < patternOrder.length; i++)
+			patternOrder[i] = Composition.INVALID;
 		this.source = new Source();
 	}
 
-	public void update(Pattern pattern, int position) {
-		play(pattern.getNote(index, position), pattern.getSample(index, position));
+	public void update(int bar, int position) {
+		int patternIndex = patternOrder[bar];
+		if (patternIndex == Composition.INVALID)
+			return;
+		Pattern pattern = composition.getPatternList()[patternIndex];
+		play(pattern.getNote(position), pattern.getSample(position));
 	}
 
 	public void play(int note, int sample) {
@@ -41,6 +48,10 @@ public class Track {
 		Sample s = composition.getSample(sample);
 		if (s != null)
 			playNote(note).play(s.getBuffer());
+	}
+
+	public void play(Pattern pattern, int position) {
+		play(pattern.getNote(position), pattern.getSample(position));
 	}
 
 	private Source playNote(int note) {
@@ -62,8 +73,6 @@ public class Track {
 	}
 
 	public void setDefaultSample(int defaultSample) {
-		if (defaultSample < 0 || defaultSample >= Sample.getLibrary().size())
-			return;
 		this.defaultSample = defaultSample;
 	}
 
@@ -81,6 +90,42 @@ public class Track {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public int[] getPatternOrder() {
+		return patternOrder;
+	}
+
+	public void setPattern(int bar, Pattern pattern) {
+		patternOrder[bar] = pattern.getIndex();
+	}
+
+	public void removePattern(int bar) {
+		patternOrder[bar] = Composition.INVALID;
+	}
+
+	public Pattern getPattern(int bar) {
+		if (patternOrder[bar] == Composition.INVALID)
+			return null;
+		return composition.getPatternList()[patternOrder[bar]];
+	}
+
+	public void prevPattern(int bar) {
+		if (patternOrder[bar] == Composition.INVALID)
+			patternOrder[bar] = Composition.MAX_PATTERNS - 1;
+		else if (patternOrder[bar] - 1 >= 0)
+			patternOrder[bar]--;
+		else
+			patternOrder[bar] = Composition.INVALID;
+	}
+
+	public void nextPattern(int bar) {
+		if (patternOrder[bar] == Composition.INVALID)
+			patternOrder[bar] = 0;
+		else if (patternOrder[bar] + 1 < Composition.MAX_PATTERNS)
+			patternOrder[bar]++;
+		else
+			patternOrder[bar] = Composition.INVALID;
 	}
 
 }

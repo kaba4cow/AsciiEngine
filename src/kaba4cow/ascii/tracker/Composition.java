@@ -22,16 +22,14 @@ public class Composition {
 
 	private static final float DURATION = 240f / (float) PATTERN_LENGTH;
 
-	private String author;
 	private String name;
-	private String comment;
+	private String author;
 
 	private int length;
 	private int tempo;
 	private float volume;
 
 	private final Track[] tracks;
-	private final int[] patternOrder;
 	private final Pattern[] patternList;
 
 	private final ArrayList<Sample> samples;
@@ -42,16 +40,12 @@ public class Composition {
 	private float duration;
 
 	public Composition() {
-		this.author = "";
-		this.name = "";
-		this.comment = "";
+		this.name = "Untitled";
+		this.author = "Unknown";
 		this.length = 8;
 		this.tempo = 100;
 		this.volume = 1f;
 		this.samples = new ArrayList<>();
-		this.patternOrder = new int[MAX_LENGTH];
-		for (int i = 0; i < patternOrder.length; i++)
-			patternOrder[i] = INVALID;
 		this.patternList = new Pattern[MAX_PATTERNS];
 		for (int i = 0; i < patternList.length; i++)
 			patternList[i] = new Pattern(this, i);
@@ -84,12 +78,8 @@ public class Composition {
 	public void play() {
 		playing = true;
 		duration = 0f;
-		if (patternOrder[bar] == INVALID)
-			return;
-		Pattern pattern = patternList[patternOrder[bar]];
-		if (pattern != null)
-			for (int i = 0; i < MAX_TRACKS; i++)
-				tracks[i].update(pattern, position);
+		for (int i = 0; i < MAX_TRACKS; i++)
+			tracks[i].update(bar, position);
 	}
 
 	public void stop() {
@@ -104,10 +94,6 @@ public class Composition {
 		return playing;
 	}
 
-	public int[] getPatternOrder() {
-		return patternOrder;
-	}
-
 	public Pattern[] getPatternList() {
 		return patternList;
 	}
@@ -118,38 +104,6 @@ public class Composition {
 
 	public Track[] getTracks() {
 		return tracks;
-	}
-
-	public void setPattern(int bar, Pattern pattern) {
-		patternOrder[bar] = pattern.getIndex();
-	}
-
-	public void removePattern(int bar) {
-		patternOrder[bar] = INVALID;
-	}
-
-	public Pattern getPattern(int bar) {
-		if (patternOrder[bar] == INVALID)
-			return null;
-		return patternList[patternOrder[bar]];
-	}
-
-	public void prevPattern(int bar) {
-		if (patternOrder[bar] == INVALID)
-			patternOrder[bar] = patternList.length - 1;
-		else if (patternOrder[bar] - 1 >= 0)
-			patternOrder[bar]--;
-		else
-			patternOrder[bar] = INVALID;
-	}
-
-	public void nextPattern(int bar) {
-		if (patternOrder[bar] == INVALID)
-			patternOrder[bar] = 0;
-		else if (patternOrder[bar] + 1 < patternList.length)
-			patternOrder[bar]++;
-		else
-			patternOrder[bar] = INVALID;
 	}
 
 	public void prevBar() {
@@ -204,14 +158,6 @@ public class Composition {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getComment() {
-		return comment;
-	}
-
-	public void setComment(String comment) {
-		this.comment = comment;
 	}
 
 	public int getTotalLength() {
